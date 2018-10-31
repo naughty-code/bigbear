@@ -206,8 +206,12 @@ def load_cabins_and_update_database():
     #update_cabin_database_table(cabins)
     update_amenities_database_table(cabins)
 
-def main():
-    
+
+def scrape_and_update():
+    scrape_and_store()
+    load_cabins_and_update_database()
+
+def scrape_and_store():
     results = []
     cabins = extract_all_cabins()
     for url in cabins:
@@ -215,6 +219,9 @@ def main():
         print('Cabin', result['id'], 'extracted!')
         results.append(result)
     write_json(OUTPUT_FILE, results)
+
+def main():
+    scrape_and_store()
 """
     with mp.Pool(8) as p:
         scraped = p.imap_unordered(scrape_cabin, cabins)
