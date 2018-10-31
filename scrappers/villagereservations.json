@@ -1,0 +1,835 @@
+[
+    {
+        "id": "60848",
+        "cabin_url:": "https://villagereservations.net/casa-sanchez",
+        "blocked_period": {}
+    },
+    {
+        "id": "292026",
+        "cabin_url:": "https://villagereservations.net/292026",
+        "blocked_period": {
+            "startdate": "12/28/2018",
+            "enddate": "12/30/2018",
+            "reason": "Reservation #2692129"
+        }
+    },
+    {
+        "id": "60853",
+        "cabin_url:": "https://villagereservations.net/aspen-chalet",
+        "blocked_period": [
+            {
+                "startdate": "10/01/2018",
+                "enddate": "10/07/2018",
+                "reason": "Reservation #2693686"
+            },
+            {
+                "startdate": "12/23/2018",
+                "enddate": "12/25/2018",
+                "reason": "Reservation #2693711"
+            },
+            {
+                "startdate": "02/16/2019",
+                "enddate": "02/17/2019",
+                "reason": "Reservation #2693652"
+            }
+        ]
+    },
+    {
+        "id": "237242",
+        "cabin_url:": "https://villagereservations.net/ski-in-ski-out-2",
+        "blocked_period": {
+            "startdate": "10/11/2018",
+            "enddate": "10/13/2018",
+            "reason": "Reservation #2693439"
+        }
+    },
+    {
+        "id": "209160",
+        "cabin_url:": "https://villagereservations.net/majestic-pines",
+        "blocked_period": {
+            "startdate": "03/14/2018",
+            "enddate": "11/18/2018",
+            "reason": "Reservation #2692719"
+        }
+    },
+    {
+        "id": "60766",
+        "cabin_url:": "https://villagereservations.net/sugarloaf-mountain-view",
+        "blocked_period": {
+            "startdate": "09/09/2018",
+            "enddate": "10/08/2018",
+            "reason": "Reservation #2693143"
+        }
+    },
+    {
+        "id": "60826",
+        "cabin_url:": "https://villagereservations.net/our-mountain-hideaway",
+        "blocked_period": {
+            "startdate": "09/17/2018",
+            "enddate": "09/18/2018",
+            "reason": "Reservation #2693735"
+        }
+    },
+    {
+        "id": "147093",
+        "cabin_url:": "https://villagereservations.net/cinnamon-bear",
+        "blocked_period": [
+            {
+                "startdate": "09/17/2018",
+                "enddate": "09/20/2018",
+                "reason": "Reservation #2693587"
+            },
+            {
+                "startdate": "10/05/2018",
+                "enddate": "10/07/2018",
+                "reason": "Reservation #2693675"
+            },
+            {
+                "startdate": "12/21/2018",
+                "enddate": "12/23/2018",
+                "reason": "Reservation #2693655"
+            }
+        ]
+    },
+    {
+        "id": "60829",
+        "cabin_url:": "https://villagereservations.net/sky-krest",
+        "blocked_period": [
+            {
+                "startdate": "11/19/2018",
+                "enddate": "11/24/2018",
+                "reason": "Reservation #2693744"
+            },
+            {
+                "startdate": "12/22/2018",
+                "enddate": "12/24/2018",
+                "reason": "Reservation #2693669"
+            },
+            {
+                "startdate": "12/29/2018",
+                "enddate": "12/30/2018",
+                "reason": "Reservation #2692125"
+            }
+        ]
+    },
+    {
+        "id": "60834",
+        "cabin_url:": "https://villagereservations.net/alpine-view",
+        "blocked_period": {}
+    },
+    {
+        "id": "60841",
+        "cabin_url:": "https://villagereservations.net/midoriland",
+        "blocked_period": [
+            {
+                "startdate": "09/28/2018",
+                "enddate": "09/29/2018",
+                "reason": "Reservation #2692688"
+            },
+            {
+                "startdate": "10/19/2018",
+                "enddate": "10/20/2018",
+                "reason": "Reservation #2691412"
+            },
+            {
+                "startdate": "11/03/2018",
+                "enddate": "11/04/2018",
+                "reason": "Reservation #2693647"
+            },
+            {
+                "startdate": "11/22/2018",
+                "enddate": "11/24/2018",
+                "reason": "Reservation #2693488"
+            },
+            {
+                "startdate": "02/01/2019",
+                "enddate": "02/02/2019",
+                "reason": "Reservation #2693591"
+            },
+            {
+                "startdate": "04/19/2019",
+                "enddate": "04/21/2019",
+                "reason": "Reservation #2693700"
+            }
+        ]
+    },
+    {
+        "id": "68729",
+        "cabin_url:": "https://villagereservations.net/Edgehill-Escape",
+        "blocked_period": {
+            "startdate": "11/21/2018",
+            "enddate": "11/23/2018",
+            "reason": "Reservation #2693698"
+        }
+    },
+    {
+        "id": "60791",
+        "cabin_url:": "https://villagereservations.net/a-robins-nest",
+        "blocked_period": {}
+    },
+    {
+        "id": "60783",
+        "cabin_url:": "https://villagereservations.net/lakeside-villa",
+        "blocked_period": {
+            "startdate": "10/01/2018",
+            "enddate": "02/28/2019",
+            "reason": "Reservation #2693440"
+        }
+    },
+    {
+        "id": "60768",
+        "cabin_url:": "https://villagereservations.net/dream-chalet",
+        "blocked_period": [
+            {
+                "startdate": "11/02/2018",
+                "enddate": "11/03/2018",
+                "reason": "Reservation #2693720"
+            },
+            {
+                "startdate": "11/21/2018",
+                "enddate": "11/24/2018",
+                "reason": "Reservation #2693571"
+            }
+        ]
+    },
+    {
+        "id": "60805",
+        "cabin_url:": "https://villagereservations.net/forest-retreat",
+        "blocked_period": {}
+    },
+    {
+        "id": "60837",
+        "cabin_url:": "https://villagereservations.net/family-fun-house",
+        "blocked_period": [
+            {
+                "startdate": "10/05/2018",
+                "enddate": "10/06/2018",
+                "reason": "Reservation #2693740"
+            },
+            {
+                "startdate": "11/13/2018",
+                "enddate": "11/14/2018",
+                "reason": "Reservation #2693754"
+            },
+            {
+                "startdate": "11/22/2018",
+                "enddate": "11/24/2018",
+                "reason": "Reservation #2693687"
+            },
+            {
+                "startdate": "12/14/2018",
+                "enddate": "12/15/2018",
+                "reason": "Reservation #2693745"
+            },
+            {
+                "startdate": "12/29/2018",
+                "enddate": "01/01/2019",
+                "reason": "Reservation #2693659"
+            },
+            {
+                "startdate": "01/04/2019",
+                "enddate": "01/05/2019",
+                "reason": "Reservation #2693678"
+            }
+        ]
+    },
+    {
+        "id": "60857",
+        "cabin_url:": "https://villagereservations.net/60857",
+        "blocked_period": {}
+    },
+    {
+        "id": "298783",
+        "cabin_url:": "https://villagereservations.net/Lakeside-oasis",
+        "blocked_period": {}
+    },
+    {
+        "id": "60787",
+        "cabin_url:": "https://villagereservations.net/chateau-shierman",
+        "blocked_period": [
+            {
+                "startdate": "09/21/2018",
+                "enddate": "09/22/2018",
+                "reason": "Reservation #2693704"
+            },
+            {
+                "startdate": "12/25/2018",
+                "enddate": "12/31/2018",
+                "reason": "Reservation #2691249"
+            }
+        ]
+    },
+    {
+        "id": "60852",
+        "cabin_url:": "https://villagereservations.net/beautiful-lake-condo",
+        "blocked_period": {}
+    },
+    {
+        "id": "60833",
+        "cabin_url:": "https://villagereservations.net/absolute-wilki",
+        "blocked_period": [
+            {
+                "startdate": "10/12/2018",
+                "enddate": "10/14/2018",
+                "reason": "Reservation #2693725"
+            },
+            {
+                "startdate": "12/23/2018",
+                "enddate": "12/25/2018",
+                "reason": "Reservation #2693103"
+            },
+            {
+                "startdate": "01/02/2019",
+                "enddate": "01/04/2019",
+                "reason": "Reservation #2693721"
+            }
+        ]
+    },
+    {
+        "id": "331202",
+        "cabin_url:": "https://villagereservations.net/Snow-Summit-Lodge",
+        "blocked_period": [
+            {
+                "startdate": "09/21/2018",
+                "enddate": "09/22/2018",
+                "reason": "Reservation #2693459"
+            },
+            {
+                "startdate": "09/28/2018",
+                "enddate": "09/29/2018",
+                "reason": "Reservation #2693658"
+            },
+            {
+                "startdate": "09/30/2018",
+                "enddate": "10/01/2018",
+                "reason": "Reservation #2693749"
+            },
+            {
+                "startdate": "10/05/2018",
+                "enddate": "10/06/2018",
+                "reason": "Reservation #2693558"
+            },
+            {
+                "startdate": "10/12/2018",
+                "enddate": "10/13/2018",
+                "reason": "Reservation #2693529"
+            },
+            {
+                "startdate": "10/26/2018",
+                "enddate": "10/27/2018",
+                "reason": "Reservation #2693592"
+            },
+            {
+                "startdate": "11/09/2018",
+                "enddate": "11/11/2018",
+                "reason": "Reservation #2693738"
+            },
+            {
+                "startdate": "11/21/2018",
+                "enddate": "11/24/2018",
+                "reason": "Reservation #2693192"
+            },
+            {
+                "startdate": "11/30/2018",
+                "enddate": "12/01/2018",
+                "reason": "Reservation #2693694"
+            },
+            {
+                "startdate": "12/08/2018",
+                "enddate": "12/11/2018",
+                "reason": "Reservation #2693679"
+            },
+            {
+                "startdate": "12/14/2018",
+                "enddate": "12/15/2018",
+                "reason": "Reservation #2693736"
+            },
+            {
+                "startdate": "12/24/2018",
+                "enddate": "12/26/2018",
+                "reason": "Reservation #2693693"
+            },
+            {
+                "startdate": "12/29/2018",
+                "enddate": "12/31/2018",
+                "reason": "Reservation #2693458"
+            },
+            {
+                "startdate": "01/04/2019",
+                "enddate": "01/05/2019",
+                "reason": "Reservation #2693737"
+            },
+            {
+                "startdate": "01/07/2019",
+                "enddate": "01/09/2019",
+                "reason": "Reservation #2693642"
+            },
+            {
+                "startdate": "01/11/2019",
+                "enddate": "01/12/2019",
+                "reason": "Reservation #2693688"
+            },
+            {
+                "startdate": "02/16/2019",
+                "enddate": "02/17/2019",
+                "reason": "Reservation #2693691"
+            },
+            {
+                "startdate": "06/11/2019",
+                "enddate": "06/13/2019",
+                "reason": "Reservation #2693714"
+            },
+            {
+                "startdate": "06/30/2019",
+                "enddate": "07/04/2019",
+                "reason": "Reservation #2693692"
+            },
+            {
+                "startdate": "07/19/2019",
+                "enddate": "07/23/2019",
+                "reason": "Reservation #2693690"
+            }
+        ]
+    },
+    {
+        "id": "60816",
+        "cabin_url:": "https://villagereservations.net/alpine-treehouse",
+        "blocked_period": [
+            {
+                "startdate": "09/21/2018",
+                "enddate": "09/22/2018",
+                "reason": "Reservation #2693651"
+            },
+            {
+                "startdate": "09/28/2018",
+                "enddate": "09/30/2018",
+                "reason": "Reservation #2693421"
+            },
+            {
+                "startdate": "10/05/2018",
+                "enddate": "10/06/2018",
+                "reason": "Reservation #2693696"
+            },
+            {
+                "startdate": "10/12/2018",
+                "enddate": "10/14/2018",
+                "reason": "Reservation #2693212"
+            },
+            {
+                "startdate": "10/19/2018",
+                "enddate": "10/20/2018",
+                "reason": "Reservation #2693562"
+            },
+            {
+                "startdate": "10/26/2018",
+                "enddate": "10/27/2018",
+                "reason": "Reservation #2693563"
+            },
+            {
+                "startdate": "12/22/2018",
+                "enddate": "12/23/2018",
+                "reason": "Reservation #2693559"
+            },
+            {
+                "startdate": "12/26/2018",
+                "enddate": "12/30/2018",
+                "reason": "Reservation #2693171"
+            },
+            {
+                "startdate": "02/16/2019",
+                "enddate": "02/17/2019",
+                "reason": "Reservation #2693656"
+            }
+        ]
+    },
+    {
+        "id": "60811",
+        "cabin_url:": "https://villagereservations.net/big-bear-biltmore",
+        "blocked_period": [
+            {
+                "startdate": "09/22/2018",
+                "enddate": "09/23/2018",
+                "reason": "Reservation #2693449"
+            },
+            {
+                "startdate": "09/27/2018",
+                "enddate": "09/29/2018",
+                "reason": "Reservation #2693739"
+            },
+            {
+                "startdate": "10/05/2018",
+                "enddate": "10/07/2018",
+                "reason": "Reservation #2693574"
+            },
+            {
+                "startdate": "11/23/2018",
+                "enddate": "11/24/2018",
+                "reason": "Reservation #2693513"
+            },
+            {
+                "startdate": "12/23/2018",
+                "enddate": "12/25/2018",
+                "reason": "Reservation #2692168"
+            },
+            {
+                "startdate": "12/26/2018",
+                "enddate": "12/28/2018",
+                "reason": "Reservation #2693637"
+            },
+            {
+                "startdate": "02/28/2019",
+                "enddate": "03/02/2019",
+                "reason": "Reservation #2693706"
+            }
+        ]
+    },
+    {
+        "id": "60845",
+        "cabin_url:": "https://villagereservations.net/silverado-retreat",
+        "blocked_period": [
+            {
+                "startdate": "08/23/2018",
+                "enddate": "09/22/2018",
+                "reason": "Reservation #2693593"
+            },
+            {
+                "startdate": "09/23/2018",
+                "enddate": "10/22/2018",
+                "reason": "Reservation #2693730"
+            }
+        ]
+    },
+    {
+        "id": "273853",
+        "cabin_url:": "https://villagereservations.net/Bear-Mountain-Escape",
+        "blocked_period": {
+            "startdate": "09/22/2018",
+            "enddate": "11/01/2018",
+            "reason": "Reservation #2693723"
+        }
+    },
+    {
+        "id": "81340",
+        "cabin_url:": "https://villagereservations.net/snow-summit-getaway",
+        "blocked_period": {
+            "startdate": "12/21/2018",
+            "enddate": "12/23/2018",
+            "reason": "Reservation #2693306"
+        }
+    },
+    {
+        "id": "60855",
+        "cabin_url:": "https://villagereservations.net/cedar-lodge",
+        "blocked_period": [
+            {
+                "startdate": "10/19/2018",
+                "enddate": "10/20/2018",
+                "reason": "Reservation #2693756"
+            },
+            {
+                "startdate": "12/24/2018",
+                "enddate": "12/31/2018",
+                "reason": "Reservation #2692126"
+            },
+            {
+                "startdate": "02/01/2019",
+                "enddate": "02/02/2019",
+                "reason": "Reservation #2693726"
+            }
+        ]
+    },
+    {
+        "id": "60799",
+        "cabin_url:": "https://villagereservations.net/ponderosa",
+        "blocked_period": {}
+    },
+    {
+        "id": "304251",
+        "cabin_url:": "https://villagereservations.net/Eagle",
+        "blocked_period": {
+            "startdate": "09/28/2018",
+            "enddate": "09/29/2018",
+            "reason": "Reservation #2693707"
+        }
+    },
+    {
+        "id": "200568",
+        "cabin_url:": "https://villagereservations.net/Eagles-Nest",
+        "blocked_period": {}
+    },
+    {
+        "id": "60842",
+        "cabin_url:": "https://villagereservations.net/cabin-on-the-lake",
+        "blocked_period": [
+            {
+                "startdate": "09/21/2018",
+                "enddate": "09/22/2018",
+                "reason": "Reservation #2693747"
+            },
+            {
+                "startdate": "10/05/2018",
+                "enddate": "10/07/2018",
+                "reason": "Reservation #2693709"
+            }
+        ]
+    },
+    {
+        "id": "306890",
+        "cabin_url:": "https://villagereservations.net/the-lodge",
+        "blocked_period": [
+            {
+                "startdate": "09/17/2018",
+                "enddate": "09/18/2018",
+                "reason": "Reservation #2693741"
+            },
+            {
+                "startdate": "09/19/2018",
+                "enddate": "09/20/2018",
+                "reason": "Reservation #2693742"
+            }
+        ]
+    },
+    {
+        "id": "60781",
+        "cabin_url:": "https://villagereservations.net/somen",
+        "blocked_period": {
+            "startdate": "12/23/2018",
+            "enddate": "12/25/2018",
+            "reason": "Reservation #2693632"
+        }
+    },
+    {
+        "id": "60819",
+        "cabin_url:": "https://villagereservations.net/big-bear-splash",
+        "blocked_period": [
+            {
+                "startdate": "09/20/2018",
+                "enddate": "09/22/2018",
+                "reason": "Reservation #2692525"
+            },
+            {
+                "startdate": "10/06/2018",
+                "enddate": "10/07/2018",
+                "reason": "Reservation #2693468"
+            },
+            {
+                "startdate": "10/31/2018",
+                "enddate": "11/01/2018",
+                "reason": "Reservation #2692998"
+            },
+            {
+                "startdate": "11/02/2018",
+                "enddate": "11/03/2018",
+                "reason": "Reservation #2692672"
+            },
+            {
+                "startdate": "12/18/2018",
+                "enddate": "12/19/2018",
+                "reason": "Reservation #2693531"
+            },
+            {
+                "startdate": "12/26/2018",
+                "enddate": "12/28/2018",
+                "reason": "Reservation #2693643"
+            },
+            {
+                "startdate": "12/29/2018",
+                "enddate": "01/01/2019",
+                "reason": "Reservation #2692726"
+            },
+            {
+                "startdate": "01/03/2019",
+                "enddate": "01/06/2019",
+                "reason": "Reservation #2693716"
+            },
+            {
+                "startdate": "01/18/2019",
+                "enddate": "01/19/2019",
+                "reason": "Reservation #2693753"
+            },
+            {
+                "startdate": "03/22/2019",
+                "enddate": "03/23/2019",
+                "reason": "Reservation #2693061"
+            }
+        ]
+    },
+    {
+        "id": "200818",
+        "cabin_url:": "https://villagereservations.net/Ski-In-Ski-Out",
+        "blocked_period": {
+            "startdate": "09/04/2018",
+            "enddate": "10/02/2018",
+            "reason": "Reservation #2693689"
+        }
+    },
+    {
+        "id": "60770",
+        "cabin_url:": "https://villagereservations.net/casa-oso-grande",
+        "blocked_period": {}
+    },
+    {
+        "id": "60773",
+        "cabin_url:": "https://villagereservations.net/wind-chimes",
+        "blocked_period": [
+            {
+                "startdate": "09/21/2018",
+                "enddate": "09/22/2018",
+                "reason": "Reservation #2693755"
+            },
+            {
+                "startdate": "09/28/2018",
+                "enddate": "09/29/2018",
+                "reason": "Reservation #2693731"
+            }
+        ]
+    },
+    {
+        "id": "60813",
+        "cabin_url:": "https://villagereservations.net/alpine-haus",
+        "blocked_period": [
+            {
+                "startdate": "09/28/2018",
+                "enddate": "09/29/2018",
+                "reason": "Reservation #2693757"
+            },
+            {
+                "startdate": "11/09/2018",
+                "enddate": "11/11/2018",
+                "reason": "Reservation #2693758"
+            },
+            {
+                "startdate": "11/21/2018",
+                "enddate": "11/23/2018",
+                "reason": "Reservation #2693630"
+            },
+            {
+                "startdate": "12/21/2018",
+                "enddate": "12/24/2018",
+                "reason": "Reservation #2693493"
+            },
+            {
+                "startdate": "12/26/2018",
+                "enddate": "12/28/2018",
+                "reason": "Reservation #2693494"
+            },
+            {
+                "startdate": "12/29/2018",
+                "enddate": "12/31/2018",
+                "reason": "Reservation #2693495"
+            }
+        ]
+    },
+    {
+        "id": "200865",
+        "cabin_url:": "https://villagereservations.net/peaceful-days",
+        "blocked_period": {}
+    },
+    {
+        "id": "60820",
+        "cabin_url:": "https://villagereservations.net/mountain-air",
+        "blocked_period": [
+            {
+                "startdate": "09/20/2018",
+                "enddate": "09/23/2018",
+                "reason": "Reservation #2693676"
+            },
+            {
+                "startdate": "10/04/2018",
+                "enddate": "10/08/2018",
+                "reason": "Reservation #2693515"
+            },
+            {
+                "startdate": "10/26/2018",
+                "enddate": "10/27/2018",
+                "reason": "Reservation #2693727"
+            },
+            {
+                "startdate": "12/23/2018",
+                "enddate": "12/28/2018",
+                "reason": "Reservation #2693568"
+            },
+            {
+                "startdate": "12/29/2018",
+                "enddate": "12/31/2018",
+                "reason": "Reservation #2693710"
+            },
+            {
+                "startdate": "01/16/2019",
+                "enddate": "01/21/2019",
+                "reason": "Reservation #2693677"
+            },
+            {
+                "startdate": "02/06/2019",
+                "enddate": "02/20/2019",
+                "reason": "Reservation #2693606"
+            },
+            {
+                "startdate": "02/21/2019",
+                "enddate": "02/24/2019",
+                "reason": "Reservation #2693743"
+            }
+        ]
+    },
+    {
+        "id": "208015",
+        "cabin_url:": "https://villagereservations.net/Just-Right-Cabin",
+        "blocked_period": [
+            {
+                "startdate": "10/19/2018",
+                "enddate": "10/20/2018",
+                "reason": "Reservation #2693719"
+            },
+            {
+                "startdate": "11/22/2018",
+                "enddate": "11/23/2018",
+                "reason": "Reservation #2693589"
+            },
+            {
+                "startdate": "12/29/2018",
+                "enddate": "12/31/2018",
+                "reason": "Reservation #2692165"
+            }
+        ]
+    },
+    {
+        "id": "147094",
+        "cabin_url:": "https://villagereservations.net/little-bear-hug",
+        "blocked_period": [
+            {
+                "startdate": "09/17/2018",
+                "enddate": "09/19/2018",
+                "reason": "Reservation #2693649"
+            },
+            {
+                "startdate": "09/21/2018",
+                "enddate": "09/22/2018",
+                "reason": "Reservation #2693733"
+            },
+            {
+                "startdate": "11/20/2018",
+                "enddate": "11/22/2018",
+                "reason": "Reservation #2693728"
+            },
+            {
+                "startdate": "12/07/2018",
+                "enddate": "12/09/2018",
+                "reason": "Reservation #2693682"
+            },
+            {
+                "startdate": "12/21/2018",
+                "enddate": "12/23/2018",
+                "reason": "Reservation #2693729"
+            }
+        ]
+    },
+    {
+        "id": "314555",
+        "cabin_url:": "https://villagereservations.net/moonridge-mile",
+        "blocked_period": {
+            "startdate": "09/17/2018",
+            "enddate": "09/23/2018",
+            "reason": "Reservation #2693701"
+        }
+    }
+]
