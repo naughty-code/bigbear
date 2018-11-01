@@ -2,6 +2,7 @@ from flask import Flask
 import psycopg2
 from flask_cors import CORS
 from flask import jsonify
+from flask_sqlalchemy import SQLAlchemy
 import os
 
 DATABASE_URL = os.environ['DATABASE_URL']

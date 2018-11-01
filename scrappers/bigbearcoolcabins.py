@@ -8,7 +8,7 @@ import sys
 import json
 import psycopg2
 import html
-import settings
+from scrappers import settings
 import re
 import itertools
 
@@ -252,6 +252,8 @@ def insert_cabins(cabins):
                 )
     connection.close()
 
+def insert_rates(rates):
+    pass
 
 def upload_to_database():
     with open('bbcc_cabin_urls.json') as f:
