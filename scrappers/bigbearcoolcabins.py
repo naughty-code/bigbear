@@ -10,11 +10,13 @@ import psycopg2
 import html
 import settings
 import re
+import itertools
 
 from urllib.parse import urljoin
 from datetime import date, datetime
 from calendar import month_name
 from bs4 import BeautifulSoup
+from psycopg2.extras import execute_batch
 
 BASE_URL = 'https://www.bigbearcoolcabins.com'
 
@@ -210,7 +212,26 @@ def crawl_cabins(urls, N=8):
     with mp.Pool(N) as p:
         yield from p.imap_unordered(scrape_cabin, urls)
 
-def upload_cabins_to_database(cabins):
+def insert_amenities(cabins):
+    connection = psycopg2.connect(os.getenv('DATABASE_URL'), sslmode=os.getenv('DB_SSL_MODE'))
+    with connection:
+        with connection.cursor() as cursor:
+            for cabin in cabins:
+                id = cabin['_params']['rcav[eid]']
+                amenities_section = ( f'{k}: {v}' if v else k for k,v in cabin['amenities_section'].items())
+                data = ((id, amenity) for amenity in itertools.chain(cabin['amenities'], amenities_section))
+                execute_batch(
+                        cursor,
+                        """INSERT INTO db.features (id, amenity)
+                            VALUES (%s, %s)
+                            ON CONFLICT (id, amenity) DO NOTHING
+                        """,
+                        data,
+                        page_size=10000
+                    )
+    connection.close()
+
+def insert_cabins(cabins):
     connection = psycopg2.connect(os.getenv('DATABASE_URL'), sslmode=os.getenv('DB_SSL_MODE'))
     with connection:
         with connection.cursor() as cursor:
@@ -237,7 +258,8 @@ def upload_to_database():
         cabins = json.load(f)
     connection = psycopg2.connect(os.getenv('DATABASE_URL'), sslmode=os.getenv('DB_SSL_MODE'))
     connection.close()
-    upload_cabins_to_database(cabins)
+    insert_cabins(cabins)
+    insert_amenities(cabins)
 
 def main():
 

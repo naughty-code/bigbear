@@ -207,7 +207,7 @@ def load_cabins_and_update_database():
     update_amenities_database_table(cabins)
 
 
-def scrape_and_update():
+def scrape_and_update_database():
     scrape_and_store()
     load_cabins_and_update_database()
 
