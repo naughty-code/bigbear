@@ -3,6 +3,7 @@ import psycopg2
 from flask_cors import CORS
 from flask import jsonify
 import os
+import json
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -34,6 +35,13 @@ def features():
     data = cursor.fetchall()
     return jsonify(data)
 
+@app.route('/api/availability')
+def availability():
+    cursor.execute('SELECT * FROM db.availability')
+    data = cursor.fetchall()
+    # return json.dumps(data)
+    return jsonify(data)
+
 @app.route('/')
 def root():
     return app.send_static_file('vrm.html')
@@ -49,3 +57,7 @@ def cabins_html():
 @app.route('/features')
 def features_html():
     return app.send_static_file('features.html')
+
+@app.route('/availability')
+def availability_html():
+    return app.send_static_file('availability.html')

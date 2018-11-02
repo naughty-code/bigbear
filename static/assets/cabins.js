@@ -19,8 +19,7 @@ $(document).ready(function() {
 							title: "DESCRIPTION",
 							render: function ( data, type, row ) {
 								return `<span class="d-inline-block text-truncate" style="max-width: 150px;" title="${data}">
-								${data}
-							</span>`;
+								${data}</span>`;
 							}
 						},
 						{ title: "ADRESS" },
