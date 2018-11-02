@@ -2,7 +2,6 @@ from flask import Flask
 import psycopg2
 from flask_cors import CORS
 from flask import jsonify
-from flask_sqlalchemy import SQLAlchemy
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -10,17 +9,8 @@ load_dotenv()
 DATABASE_URI = os.environ['DATABASE_URI']
 
 app = Flask(__name__, static_url_path='')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
-db = SQLAlchemy(app)
-CORS(app)
 
-class Vrm(db.Model):
-    __table_args__ = {"schema":"db"}
-    idvrm = db.Column(db.String(20), primary_key=True)
-    name = db.Column(db.String(100), unique=True, nullable=False)
-    website = db.Column(db.String(2083), unique=True, nullable=False)
-    ncabins = db.Column(db.Integer)
-    last_scrape = db.Column(db.DateTime)
+CORS(app)
 
 
 connection = psycopg2.connect(DATABASE_URI)
