@@ -28,6 +28,12 @@ def vrm():
     data = cursor.fetchall()
     return jsonify(data)
 
+@app.route('/api/features')
+def features():
+    cursor.execute('SELECT * FROM db.features')
+    data = cursor.fetchall()
+    return jsonify(data)
+
 @app.route('/')
 def root():
     return app.send_static_file('vrm.html')
@@ -39,3 +45,7 @@ def vrm_html():
 @app.route('/cabins')
 def cabins_html():
     return app.send_static_file('cabins.html')
+
+@app.route('/features')
+def features_html():
+    return app.send_static_file('features.html')
