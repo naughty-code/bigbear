@@ -7,8 +7,11 @@ import multiprocessing as mp
 import datetime as dt
 import os
 import psycopg2
-from psycopg2.extras import execute_values
 import html
+import util
+from psycopg2.extras import execute_values
+from datetime import datetime
+from datetime import timedelta
 from bs4 import BeautifulSoup
 
 DATABASE_URL = os.environ['DATABASE_URL']
@@ -124,6 +127,338 @@ def extract_calendar(soup):
 def parse_dates(dates):
     return [ str(d) for d in dates ]
 
+def get_availability_weekends_friday(id, booked):
+    availability = []
+    today = datetime(2018, 1, 1)
+    friday = today + timedelta( (4-today.weekday()) % 7 )
+
+    while friday.year == 2018:
+        saturday = friday + timedelta(days=1)
+        if (
+            friday.strftime("%Y-%m-%d") not in booked
+            and saturday.strftime("%Y-%m-%d") not in booked
+        ):
+            status = 'AVAILABLE'
+        else:
+            status = 'BOOKED'
+        
+        sunday = friday + timedelta(days=2)
+        rate = '0'
+        actual = [
+            'DBB' + id,
+            friday.strftime("%Y-%m-%d"),
+            sunday.strftime("%Y-%m-%d"),
+            status,
+            rate,
+            'Weekend'
+        ]
+        availability.append(actual)
+        friday = util.add_one_week(friday)
+    return availability
+
+def get_availability_MLK(id, booked):
+    availability = []
+    day1 = datetime(2018, 1, 12)
+    day2 = datetime(2018, 1, 13)
+    day3 = datetime(2018, 1, 14)
+
+    if (
+        day1.strftime("%Y-%m-%d") not in booked
+        and day2.strftime("%Y-%m-%d") not in booked
+        and day3.strftime("%Y-%m-%d") not in booked
+    ):
+        status = 'AVAILABLE'
+    else:
+        status = 'BOOKED'
+    rate = '0'
+    nextday = day3 + timedelta(days=1)
+    actual = [
+        'DBB' + id,
+        day1.strftime("%Y-%m-%d"),
+        nextday.strftime("%Y-%m-%d"),
+        status,
+        rate,
+        'MLK Day'
+    ]
+    availability.append(actual)
+    return availability
+
+def get_availability_president(id, booked):
+    availability = []
+    day1 = datetime(2018, 2, 16)
+    day2 = datetime(2018, 2, 19)
+
+    if (
+        day1.strftime("%Y-%m-%d") not in booked
+        and day2.strftime("%Y-%m-%d") not in booked
+    ):
+        status = 'AVAILABLE'
+    else:
+        status = 'BOOKED'
+    rate = '0'
+    nextday = day2 + timedelta(days=1)
+    actual = [
+        'DBB' + id,
+        day1.strftime("%Y-%m-%d"),
+        nextday.strftime("%Y-%m-%d"),
+        status,
+        rate,
+        'President\'s Day'
+    ]
+    availability.append(actual)
+    return availability
+
+def get_availability_patrick(id, booked):
+    availability = []
+    day = datetime(2018, 3, 16)
+
+    if day.strftime("%Y-%m-%d") not in booked:
+        status = 'AVAILABLE'
+    else:
+        status = 'BOOKED'
+    rate = '0'
+    nextday = day + timedelta(days=1)
+    actual = [
+        'DBB' + id,
+        day.strftime("%Y-%m-%d"),
+        nextday.strftime("%Y-%m-%d"),
+        status,
+        rate,
+        'St Patrick\'s Day'
+    ]
+    availability.append(actual)
+    return availability
+
+def get_availability_easter(id, booked):
+    availability = []
+    day1 = datetime(2018, 3, 30)
+    day2 = datetime(2018, 3, 31)
+
+    if ( day1.strftime("%Y-%m-%d") not in booked 
+        and day2.strftime("%Y-%m-%d") not in booked):
+        status = 'AVAILABLE'
+    else:
+        status = 'BOOKED'
+    rate = '0'
+    nextday = day2 + timedelta(days=1)
+    actual = [
+        'DBB' + id,
+        day1.strftime("%Y-%m-%d"),
+        nextday.strftime("%Y-%m-%d"),
+        status,
+        rate,
+        'Easter'
+    ]
+    availability.append(actual)
+    return availability
+
+def get_availability_cincomayo(id, booked):
+    availability = []
+    day = datetime(2018, 5, 4)
+
+    if day.strftime("%Y-%m-%d") not in booked:
+        status = 'AVAILABLE'
+    else:
+        status = 'BOOKED'
+    rate = '0'
+    nextday = day + timedelta(days=1)
+    actual = [
+        'DBB' + id,
+        day.strftime("%Y-%m-%d"),
+        nextday.strftime("%Y-%m-%d"),
+        status,
+        rate,
+        'Cinco de Mayo'
+    ]
+    availability.append(actual)
+    return availability
+
+def get_availability_memorial(id, booked):
+    availability = []
+    day1 = datetime(2018, 5, 25)
+    day2 = datetime(2018, 5, 26)
+    day3 = datetime(2018, 5, 27)
+
+    if ( day1.strftime("%Y-%m-%d") not in booked
+        and day2.strftime("%Y-%m-%d") not in booked
+        and day3.strftime("%Y-%m-%d") not in booked):
+        status = 'AVAILABLE'
+    else:
+        status = 'BOOKED'
+    rate = '0'
+    nextday = day3 + timedelta(days=1)
+    actual = [
+        'DBB' + id,
+        day1.strftime("%Y-%m-%d"),
+        nextday.strftime("%Y-%m-%d"),
+        status,
+        rate,
+        'Memorial Day'
+    ]
+    availability.append(actual)
+    return availability
+
+def get_availability_4july(id, booked):
+    availability = []
+    day1 = datetime(2018, 7, 4)
+    day2 = datetime(2018, 7, 7)
+
+    if day1.strftime("%Y-%m-%d") not in booked:
+        status = 'AVAILABLE'
+    else:
+        status = 'BOOKED'
+    rate = '0'
+    actual = [
+        'DBB' + id,
+        day1.strftime("%Y-%m-%d"),
+        day2.strftime("%Y-%m-%d"),
+        status,
+        rate,
+        '4th of July'
+    ]
+    availability.append(actual)
+    return availability
+
+def get_availability_labor(id, booked):
+    availability = []
+    day1 = datetime(2018, 8, 31)
+    day2 = datetime(2018, 9, 1)
+    day3 = datetime(2018, 9, 3)
+
+    if ( day1.strftime("%Y-%m-%d") not in booked
+        and day2.strftime("%Y-%m-%d") not in booked ):
+        status = 'AVAILABLE'
+    else:
+        status = 'BOOKED'
+    rate = '0'
+    actual = [
+        'DBB' + id,
+        day1.strftime("%Y-%m-%d"),
+        day3.strftime("%Y-%m-%d"),
+        status,
+        rate,
+        'Labor Day'
+    ]
+    availability.append(actual)
+    return availability
+
+def get_availability_columbus(id, booked):
+    availability = []
+    day1 = datetime(2018, 10, 5)
+    day2 = datetime(2018, 10, 6)
+    day3 = datetime(2018, 10, 7)
+    day4 = datetime(2018, 10, 8)
+
+    if ( day1.strftime("%Y-%m-%d") not in booked
+        and day2.strftime("%Y-%m-%d") not in booked 
+        and day3.strftime("%Y-%m-%d") not in booked):
+        status = 'AVAILABLE'
+    else:
+        status = 'BOOKED'
+    rate = '0'
+    actual = [
+        'DBB' + id,
+        day1.strftime("%Y-%m-%d"),
+        day4.strftime("%Y-%m-%d"),
+        status,
+        rate,
+        'Columbus Day'
+    ]
+    availability.append(actual)
+    return availability
+
+def get_availability_veterans(id, booked):
+    availability = []
+    day1 = datetime(2018, 11, 9)
+    day2 = datetime(2018, 11, 10)
+    day3 = datetime(2018, 11, 11)
+    day4 = datetime(2018, 11, 12)
+
+    if ( day1.strftime("%Y-%m-%d") not in booked
+        and day2.strftime("%Y-%m-%d") not in booked 
+        and day3.strftime("%Y-%m-%d") not in booked):
+        status = 'AVAILABLE'
+    else:
+        status = 'BOOKED'
+    rate = '0'
+    actual = [
+        'DBB' + id,
+        day1.strftime("%Y-%m-%d"),
+        day4.strftime("%Y-%m-%d"),
+        status,
+        rate,
+        'Veteran\'s Day'
+    ]
+    availability.append(actual)
+    return availability
+
+def get_availability_thanksgiving(id, booked):
+    availability = []
+    day1 = datetime(2018, 11, 22)
+    day2 = datetime(2018, 11, 23)
+    day3 = datetime(2018, 11, 24)
+
+    if ( day1.strftime("%Y-%m-%d") not in booked
+        and day2.strftime("%Y-%m-%d") not in booked 
+        and day3.strftime("%Y-%m-%d") not in booked):
+        status = 'AVAILABLE'
+    else:
+        status = 'BOOKED'
+    rate = '0'
+    actual = [
+        'DBB' + id,
+        day1.strftime("%Y-%m-%d"),
+        day3.strftime("%Y-%m-%d"),
+        status,
+        rate,
+        'Thanksgiving'
+    ]
+    availability.append(actual)
+    return availability
+
+def get_availability_christmas(id, booked):
+    availability = []
+    day1 = datetime(2018, 12, 21)
+    day2 = datetime(2018, 12, 22)
+    day3 = datetime(2018, 12, 23)
+    day4 = datetime(2018, 12, 24)
+    day5 = datetime(2018, 12, 25)
+    day6 = datetime(2018, 12, 26)
+    day7 = datetime(2018, 12, 27)
+    day8 = datetime(2018, 12, 28)
+    day9 = datetime(2018, 12, 29)
+    day10 = datetime(2018, 12, 30)
+    day11 = datetime(2018, 12, 31)
+    day12 = datetime(2019, 1, 1)
+
+    if ( day1.strftime("%Y-%m-%d") not in booked
+        and day2.strftime("%Y-%m-%d") not in booked 
+        and day3.strftime("%Y-%m-%d") not in booked
+        and day3.strftime("%Y-%m-%d") not in booked 
+        and day4.strftime("%Y-%m-%d") not in booked
+        and day5.strftime("%Y-%m-%d") not in booked 
+        and day6.strftime("%Y-%m-%d") not in booked
+        and day7.strftime("%Y-%m-%d") not in booked 
+        and day8.strftime("%Y-%m-%d") not in booked
+        and day9.strftime("%Y-%m-%d") not in booked 
+        and day10.strftime("%Y-%m-%d") not in booked
+        and day11.strftime("%Y-%m-%d") not in booked 
+        and day12.strftime("%Y-%m-%d") not in booked):
+        status = 'AVAILABLE'
+    else:
+        status = 'BOOKED'
+    rate = '0'
+    actual = [
+        'DBB' + id,
+        day1.strftime("%Y-%m-%d"),
+        day12.strftime("%Y-%m-%d"),
+        status,
+        rate,
+        'Christmas Season'
+    ]
+    availability.append(actual)
+    return availability
+
 def parse_data(html):
 
     keys = ['name', 'subtitle', 'properties', 'arrangements', 
@@ -159,6 +494,22 @@ def parse_data(html):
 
     booked = extract_calendar(soup)
     data['booked'] = parse_dates(booked)
+    # Obviously this needs to be changed but not tonight fellas
+    availabilities_weekends = get_availability_weekends_friday(id_, data['booked'])
+    availabilities_MLK = get_availability_MLK(id_, data['booked'])
+    availabilities_president = get_availability_president(id_, data['booked'])
+    availabilities_patrick = get_availability_patrick(id_, data['booked'])
+    availabilities_easter = get_availability_easter(id_, data['booked'])
+    availabilities_cincomayo = get_availability_cincomayo(id_, data['booked'])
+    availabilities_memorial = get_availability_memorial(id_, data['booked'])
+    availabilities_4july = get_availability_4july(id_, data['booked'])
+    availabilities_labor = get_availability_labor(id_, data['booked'])
+    availabilities_columbus = get_availability_columbus(id_, data['booked'])
+    availabilities_veterans = get_availability_veterans(id_, data['booked'])
+    availability_thanksgiving = get_availability_thanksgiving(id_, data['booked'])
+    availabilities_christmas = get_availability_christmas(id_, data['booked'])
+
+    data['availabilities'] = availabilities_weekends + availabilities_MLK + availabilities_president + availabilities_patrick + availabilities_easter + availabilities_cincomayo + availabilities_memorial + availabilities_4july + availabilities_labor + availabilities_columbus + availabilities_veterans + availability_thanksgiving + availabilities_christmas
 
     return data
 
@@ -168,7 +519,7 @@ def scrape_cabin(url):
     try:
         # First try, not so elegant
         # Request for html
-        print('Scraping...') 
+        print('Scraping...' + url) 
         resp = rq.get(url)
         html = resp.text # raise for status
 
@@ -193,21 +544,56 @@ def dump_from(filename, data):
         json.dump(data, fl, indent=2)
     return name
 
-def update_database(cursor, cabins, amenities):
-    # Update cabins
-    cursor.execute('DELETE FROM db.cabin WHERE idvrm=\'DBB\'')
-    str_sql = '''INSERT INTO db.cabin (idvrm, id, name, website, description, bedrooms, 
-        occupancy) VALUES %s ON CONFLICT (id) DO UPDATE SET name = 
-        excluded.name, website = excluded.website, description = excluded.description, bedrooms = 
-        excluded.bedrooms, occupancy = excluded.occupancy;'''
-    execute_values(cursor, str_sql, cabins)
+def get_rates(availability):
+    # availability
+    url = 'http://www.destinationbigbear.com/Property_detail_v.aspx/SearchQuote'
+    try:
+        if availability[3] == 'AVAILABLE': #status
+            date_from = datetime.strptime(availability[1], '%Y-%m-%d').strftime('%m/%d/%Y')
+            date_to = datetime.strptime(availability[2], '%Y-%m-%d').strftime('%m/%d/%Y')
+            object_request = json.dumps({
+                "from": date_from, #check_in
+                "id": availability[0][3:], #id
+                "to": date_to #check_out
+            })
+            header_content = {'Content-type': 'application/json'} 
+            resp_hell = rq.post(url, data = object_request, headers = header_content)
+            resp_json = resp_hell.json()
+            availability[4] = float(resp_json['TotalRates'][1:].replace(',', ''))
+    except:
+        pass
+    finally:
+        return availability
 
-    # Update amenities
-    str_sql = 'INSERT INTO db.features (id, amenity) VALUES %s ON CONFLICT (id, amenity) DO NOTHING'
-    execute_values(cursor, str_sql, amenities)
+def get_rates_multi(availabilities, N=4):
+    with mp.Pool(N) as p:
+        yield from p.imap_unordered(get_rates, availabilities)
 
-    # Update vrm ncabins and last_scrape
-    cursor.execute('UPDATE db.vrm SET ncabins=' + str(len(cabins)) + ', last_scrape=CURRENT_TIMESTAMP WHERE idvrm = \'DBB\'')
+def update_database(cabins, amenities, availabilities):
+    connection = psycopg2.connect(os.getenv('DATABASE_URL'))
+    with connection:
+        with connection.cursor() as cursor:
+            # Update cabins
+            cursor.execute('DELETE FROM db.cabin WHERE idvrm=\'DBB\'')
+            str_sql = '''INSERT INTO db.cabin (idvrm, id, name, website, description, bedrooms, 
+                occupancy) VALUES %s ON CONFLICT (id) DO UPDATE SET name = 
+                excluded.name, website = excluded.website, description = excluded.description, bedrooms = 
+                excluded.bedrooms, occupancy = excluded.occupancy;'''
+            execute_values(cursor, str_sql, cabins)
+
+            # Update amenities
+            str_sql = 'INSERT INTO db.features (id, amenity) VALUES %s ON CONFLICT (id, amenity) DO NOTHING'
+            execute_values(cursor, str_sql, amenities)
+
+            # Update availabilities
+            str_sql = '''INSERT INTO db.availability (id, check_in, check_out, status, rate, name) VALUES %s ON CONFLICT (id, check_in, check_out, name) DO UPDATE SET rate = excluded.rate;'''
+            execute_values(cursor, str_sql, availabilities)
+
+            # Update vrm ncabins and last_scrape
+            cursor.execute('UPDATE db.vrm SET ncabins=' + str(len(cabins)) + ', last_scrape=CURRENT_TIMESTAMP WHERE idvrm = \'DBB\'')
+    cursor.close()
+    connection.close()
+
 
 def main():
 
@@ -226,8 +612,9 @@ def main():
         ncabins = 0
         amenities = []
         cabins = []
+        availabilities = []
         for r in crawl_cabins(links):
-            if r["site_id"] is None: continue
+            if r is None: continue
             results.append(r)
             index += 1
             ncabins +=1
@@ -235,6 +622,9 @@ def main():
 
             for amenity in r.get('amenities') :
                 amenities.append(amenity)
+
+            for availability in r.get('availabilities') :
+                availabilities.append(availability)
 
             cabinInsert = (
                 'DBB', 
@@ -246,8 +636,15 @@ def main():
                 r.get('properties').get('Occupancy')
             )
             cabins.append(cabinInsert)
-            if index == 10:
-                break
+
+        new_availabilities = []
+        total = len(availabilities)
+        index = 0
+        for gr in get_rates_multi(availabilities):
+            index += 1
+            new_availabilities.append(gr)
+            print(f'Availability {index}/{total}')
+
 
     except KeyboardInterrupt: pass
     finally: 
@@ -255,9 +652,8 @@ def main():
         name = dump_from(filename, results)
         print('Dumped', name)
 
-        update_database(cursor, cabins, amenities)
+        update_database(cabins, amenities, new_availabilities)
         print('Database updated')
-        connection.commit()
         cursor.close()
         connection.close()
 
