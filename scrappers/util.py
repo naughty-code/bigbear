@@ -1,6 +1,5 @@
-#!/usr/bin/env python3
-
 import datetime as dt
+from datetime import timedelta
 import pandas as pd
 import functools
 import json
@@ -77,3 +76,5 @@ def get_holidays(filename='./holidays.csv'):
     df = pd.read_csv(filename)
     return set(zip(df.PL, df.PR))
 
+def add_one_week(day):
+  return day + timedelta(days=7)
