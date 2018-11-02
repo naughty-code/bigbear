@@ -3,23 +3,29 @@ $.fn.dataTable.ext.search.push(
     function( settings, data, dataIndex ) {
 		var idvrm_filter = $('#idvrm').val();
 		var id_filter = $('#id_search').val();
-		// var name_filter = $('#name').val();
-		// var checkin_filter = $('#checkin').val();
-		// var checkout_filter = $('#checkout').val();
-		// var status_filter = $('#status').val();
-		// var days_filter = $('#days').val();
+		var name_filter = $('#name_search').val();
+		var checkin_filter = $('#checkin').val();
+		var checkout_filter = $('#checkout').val();
+		var status_filter = $('#status').val();
+		var days_filter = $('#days').val();
 
         var idvrm_table = data[0];
 		var id_table = data[1];
-		// var name_table = data[2];
-		// var checkin_table = data[4];
-		// var checkout_table = data[5];
-		// var status_table = data[6];
-		// var days_table = data[8];
+		var name_table = data[2];
+		var checkin_table = data[4];
+		var checkout_table = data[5];
+		var status_table = data[6];
+		var days_table = data[8];
  
-		if ( (id_table != '' && idvrm_table != '') &
+		if ( (id_table != '' && idvrm_table != '' && name_table != '' && checkin_table != '' && checkout_table != '' && status_table != '' && days_table != '') &&
 			id_table.search(id_filter) != -1
-			&& idvrm_table.search(idvrm_filter) != -1)
+			&& idvrm_table.search(idvrm_filter) != -1
+			&& name_table.search(name_filter) != -1
+			&& checkin_table.search(checkin_filter) != -1
+			&& checkout_table.search(checkout_filter) != -1
+			&& status_table.search(status_filter) != -1
+			&& days_table.search(days_filter) != -1
+		)
 			return true;
 
         return false;
@@ -72,7 +78,7 @@ $(document).ready(function() {
 						{ title: "NAME" }
 					]
 				});
-				$('#idvrm, #id_search, #name, #checkin, #checkout, #status, days').keyup( function() {
+				$('#idvrm, #id_search, #name_search, #checkin, #checkout, #status, #days').keyup( function() {
 					table2.draw();
 				} );
 			})
