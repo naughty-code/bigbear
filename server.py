@@ -3,13 +3,17 @@ import psycopg2
 from flask_cors import CORS
 from flask import jsonify
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
-DATABASE_URL = os.environ['DATABASE_URL']
+DATABASE_URI = os.environ['DATABASE_URI']
 
 app = Flask(__name__, static_url_path='')
+
 CORS(app)
 
-connection = psycopg2.connect(DATABASE_URL)
+
+connection = psycopg2.connect(DATABASE_URI)
 cursor = connection.cursor()
 
 @app.route('/api/cabins')
