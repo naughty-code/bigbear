@@ -31,7 +31,7 @@ def vrm():
 
 @app.route('/api/features')
 def features():
-    cursor.execute('SELECT * FROM db.features')
+    cursor.execute('select cabin.idvrm, features.id, amenity, cabin.name, website from db.features inner join db.cabin on cabin.id = features.id')
     data = cursor.fetchall()
     return jsonify(data)
 
@@ -39,8 +39,35 @@ def features():
 def availability():
     cursor.execute('SELECT * FROM db.availability')
     data = cursor.fetchall()
-    # return json.dumps(data)
     return jsonify(data)
+
+@app.route('/api/report')
+def report():
+    cursor.execute('SELECT idvrm FROM db.vrm')
+    vrms = cursor.fetchall()
+    result = []
+    result_json = {}
+    for vrm in vrms:
+        row = []
+        cursor.execute('select ncabins from db.vrm where idvrm = %s', vrm)
+        total_units = cursor.fetchall()
+        cursor.execute('select count(availability.id) from db.availability inner join db.cabin on cabin.id = availability.id where idvrm = %s and availability.status = \'BOOKED\'', vrm)
+        booked = cursor.fetchall()
+        cursor.execute('select count(availability.id) from db.availability inner join db.cabin on cabin.id = availability.id where idvrm = %s and availability.status = \'AVAILABLE\'', vrm)
+        available = cursor.fetchall()
+        row.append(vrm[0])
+        row.append(total_units[0][0])
+        row.append(booked[0][0])
+        row.append(available[0][0])
+        result.append(row)
+    
+    result_json['table1'] = result
+
+    cursor.execute('select cabin.idvrm, cabin.id, cabin.name, cabin.website, check_in, check_out, availability.status, availability.rate, availability.name from db.availability inner join db.cabin on cabin.id = availability.id order  by check_in asc')
+    table2 = cursor.fetchall()
+    result_json['table2'] = table2
+
+    return jsonify(result_json)
 
 @app.route('/')
 def root():
@@ -61,3 +88,7 @@ def features_html():
 @app.route('/availability')
 def availability_html():
     return app.send_static_file('availability.html')
+
+@app.route('/report')
+def report_html():
+    return app.send_static_file('report.html')

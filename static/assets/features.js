@@ -11,8 +11,11 @@ $(document).ready(function() {
 				$('#features').DataTable({
 					data: data,
 					columns: [
+						{ title: "IDVRM" },
 						{ title: "ID" },
-						{ title: "FEATURE" }
+						{ title: "AMENITY" },
+						{ title: "NAME" },
+						{ title: "WEBSITE" }
 					]
 				});
 			})
