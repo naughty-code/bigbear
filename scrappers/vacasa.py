@@ -9,7 +9,10 @@ import multiprocessing as mp
 import datetime as dt
 import os
 import time
-import util
+import itertools
+import psycopg2
+from scrappers import util
+from scrappers import settings
 
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
@@ -24,6 +27,7 @@ HEADERS = { 'accept-language': 'en', 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_
 
 DATE_FORMAT = '%Y/%m/%d'
 OUTPUT_FILE = 'vacasa.json'
+DATABASE_URI = os.getenv('DATABASE_URI')
 
 def default_value(func):
     def wrapper(*args, **kwargs):
@@ -33,6 +37,11 @@ def default_value(func):
             # print(func)
             # print(e)
     return wrapper
+
+def read_json(filename):
+    with open(filename, encoding='utf8') as f:
+        data = json.load(f)
+    return data
 
 def read_csv_cabins(filename):
     # Extract cabins website from csv
@@ -135,7 +144,7 @@ def fetch_cost(id_, start, end):
 def extract_costs():
 
     cabins = []
-    with open('vacasa.json') as f:
+    with open('./scrappers/vacasa.json') as f:
         cabins = json.load(f)
 
     ids = []
@@ -200,14 +209,59 @@ def fix_booked():
         booked = [ d['date'] for d in dates if not d['is_available'] ]
         yield { 'id': id_, 'url': url, 'booked': booked }
 
-def main():
+def load_rates():
+    with open('./scrappers/vacasa_quote_results.json', encoding='utf8') as f:
+        rates = json.load(f)
+    return rates
 
-    if len(sys.argv) != 2:
-        print('Usage: ./vacasa.py [FILENAME]')
-        return
+def insert_rates():
+    rates = load_rates()
+    flat_rates = list(itertools.chain(*rates))
+    holidays = util.get_holidays_as_dict()
+    tuples = []
+    for rate in flat_rates:
+        start = rate['startDate']
+        end = rate['endDate']
+        name = holidays.get((start, end), 'weekend')
+        if rate['quote']['raw'].get('Error'):
+            booked = 'BOOKED'
+            q = 0
+        else:
+            booked = 'AVAILABLE'
+            q = rate['quote']['raw']['1']['Total']
+            id_ = 'VACASAListing #' + rate['quote']['raw']['1']['UnitID']
+        tuples.append(id_, start, end, booked, q, name)
+    connection = psycopg2.connect(DATABASE_URI)
+    with connection, connection.cursor() as c:
+        sql = """
+            INSERT INTO db.availability VALUES %s
+        """
+        psycopg2.extras.execute_values(c, sql, tuples)
 
-    filename = sys.argv[1]
-    links = read_csv_cabins(filename)
+
+def scrape_cabin_urls():
+    url = 'https://www.vacasa.com/usa/Big-Bear/'
+    base_url = 'https://www.vacasa.com/unit.php?UnitID='
+    res = rq.get(url)
+    html = res.html
+    uid_index = html.find('UnitIDs')
+    first_bracket = uid_index + html[uid_index:].find('[')
+    last_bracket = uid_index + html[uid_index:].find(']]') #array of arrays
+    l = eval(html[first_bracket: last_bracket+2]) #transform parsed array of arrays in a python list of lists
+    ids = itertools.chain(*l)
+    urls = [base_url + id for id in ids]
+    return urls
+
+def scrape_and_store_urls():
+    urls = scrape_cabin_urls()
+    with open('vacasa_cabin_urls.json', 'w', encoding='utf8') as f:
+        json.dump(urls, f, indent=2)
+
+
+
+def scrape_cabins(filename='vacasa_cabins'):
+    
+    links = read_json('./scrappers/vacasa_urls.json')
 
     total   = len(links)
     index   = 0
@@ -234,7 +288,17 @@ def main():
     finally:
         # Write finally result
         name = dump_from(filename, results)
-        print('Dumped', name)
+        print('Dumped', name)    
+    
+
+def main():
+
+    if len(sys.argv) != 2:
+        print('Usage: ./vacasa.py [FILENAME]')
+        return
+
+    filename = sys.argv[1]
+    scrape_cabins(filename)
 
 
 if __name__ == '__main__':

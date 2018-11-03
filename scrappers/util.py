@@ -5,6 +5,8 @@ import functools
 import json
 import multiprocessing as mp
 
+
+
 DATE_FORMAT = '%Y-%m-%d'
 
 def dict_from_table(soup):
@@ -33,7 +35,6 @@ def ignore_errors(func):
     return wrapper
 
 def scrape_ranges(id_, rgs, quote):
-
     results = []
     for i, start, end in rgs.itertuples():
         print(start, end)
@@ -46,7 +47,7 @@ def scrape_ranges(id_, rgs, quote):
 
 def extract_costs(ids, quote):
 
-    rg = pd.read_csv('./merged.csv',
+    rg = pd.read_csv('./scrappers/merged.csv',
             parse_dates=['PL', 'PR'])
 
     with mp.Pool(8) as p:
@@ -72,7 +73,11 @@ def read_json(filename):
 def is_holiday(holidays, start, end):
     return (start, end) in holidays
 
-def get_holidays(filename='./holidays.csv'):
+def get_holidays_as_dict(filename='./scrappers/holidays.csv'):
+    df = pd.read_csv(filename)
+    return dict(zip(zip(df.PL, df.PR), df.holiday))
+
+def get_holidays(filename='./scrappers/holidays.csv'):
     df = pd.read_csv(filename)
     return set(zip(df.PL, df.PR))
 
