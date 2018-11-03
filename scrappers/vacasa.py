@@ -249,14 +249,14 @@ def insert_cabins():
     tuples = []
     for c in cabins:
         idvrm = 'VACASA'
-        id_ = re.search('UnitID=(\d+)', c['url']).group(1)
+        id_ = re.search(r'UnitID=(\d+)', c['url']).group(1)
         name = c['name']
         website = c['url']
         description = c['description']
         address = c.get('address', '')
         location = c.get('location', '')
-        bedrooms = next((re.match('(\d+) Bedrooms', f).group(1) for f in c['features']), '')
-        occupancy = next((re.match('Max Occupancy: (\d+)', f) for f in c['features']), '')
+        bedrooms = next((re.match(r'(\d+) Bedrooms', f).group(1) for f in c['features']), '')
+        occupancy = next((re.match(r'Max Occupancy: (\d+)', f) for f in c['features']), '')
         tuples.append((idvrm, id_, name, website, description, address, location, bedrooms, occupancy))
     with connection, connection.cursor() as cursor:
         sql = """
