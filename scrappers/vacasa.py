@@ -237,13 +237,38 @@ def insert_rates():
             INSERT INTO db.availability VALUES %s
         """
         psycopg2.extras.execute_values(c, sql, tuples)
+    connection.close()
 
+def load_cabins():
+    cabins = read_json('vacasa.json')
+    return cabins
+
+def insert_cabins():
+    cabins = load_cabins()
+    connection = psycopg2.connect(DATABASE_URI)
+    tuples = []
+    for c in cabins:
+        idvrm = 'VACASA'
+        id_ = re.search('UnitID=(\d+)', c['url']).group(1)
+        name = c['name']
+        website = c['url']
+        description = c['description']
+        address = c.get('address', '')
+        location = c.get('location', '')
+        bedrooms = next((re.match('(\d+) Bedrooms', f).group(1) for f in c['features']), '')
+        occupancy = next((re.match('Max Occupancy: (\d+)', f) for f in c['features']), '')
+        tuples.append((idvrm, id_, name, website, description, address, location, bedrooms, occupancy))
+    with connection, connection.cursor() as cursor:
+        sql = """
+            INSERT INTO db.cabin (idvrm, id, name, website, description, address, location, bedrooms, occupancy) VALUES %s
+        """
+        psycopg2.extras.execute_values(cursor, sql, tuples)
 
 def scrape_cabin_urls():
     url = 'https://www.vacasa.com/usa/Big-Bear/'
     base_url = 'https://www.vacasa.com/unit.php?UnitID='
     res = rq.get(url)
-    html = res.html
+    html = res.text
     uid_index = html.find('UnitIDs')
     first_bracket = uid_index + html[uid_index:].find('[')
     last_bracket = uid_index + html[uid_index:].find(']]') #array of arrays
@@ -254,7 +279,7 @@ def scrape_cabin_urls():
 
 def scrape_and_store_urls():
     urls = scrape_cabin_urls()
-    with open('vacasa_cabin_urls.json', 'w', encoding='utf8') as f:
+    with open('vacasa_urls.json', 'w', encoding='utf8') as f:
         json.dump(urls, f, indent=2)
 
 
