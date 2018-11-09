@@ -1,0 +1,6 @@
+<h1>{{ header }}</h1>
+<div ui-grid="gridOptions" ui-grid-resize-columns class="myGrid">
+	<div class="grid-msg-overlay" ng-hide="gridOptions.data.length && !loading">
+			<md-progress-circular md-mode="indeterminate" md-diameter="100"></md-progress-circular>
+	</div>
+</div>

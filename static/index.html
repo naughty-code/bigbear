@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+  
+  <title>Dashboard</title>
+
+  <link rel="stylesheet" href="node_modules/angular-material/angular-material.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="node_modules/angular-ui-grid/ui-grid.min.css">
+  <link rel="stylesheet" href="src/app.css">
+
+  <!-- External dependencies -->
+  <script src="node_modules/angular/angular.js"></script>
+  <script src="node_modules/angular-route/angular-route.min.js"></script>
+  <script src="node_modules/angular-aria/angular-aria.js"></script>
+  <script src="node_modules/angular-animate/angular-animate.js"></script>
+  <script src="node_modules/angular-messages/angular-messages.js"></script>
+  <script src="node_modules/angular-material/angular-material.js"></script>
+  <script src="node_modules/angular-ui-grid/ui-grid.min.js"></script>
+
+  <!-- Custom componentes -->
+  <script src="src/app.module.js"></script>
+  <script src="src/app.config.js"></script>
+  <script src="src/app.controller.js"></script>
+  <!-- VRM Component -->
+  <!-- <script src="vrm/vrm.module.js"></script>
+  <script src="vrm/vrm.controller.js"></script> -->
+   <!-- Single Table module -->
+   <script src="src/single-table/single-table.module.js"></script>
+   <script src="src/single-table/single-table.controller.js"></script>
+   <!-- Two Tables module -->
+   <script src="src/two-tables/two-tables.module.js"></script>
+   <script src="src/two-tables/two-tables.controller.js"></script>
+
+</head>
+<body ng-app="app" layout="column" ng-controller="appController">
+
+      <md-toolbar layout="row" class="toolbar">
+          <md-button class="button-menu" ng-click="toggleMenu();" hide-gt-sm>
+              <md-icon class="material-icons">menu</md-icon>
+          </md-button>
+        <div>
+          <h5>Invisible Technologies</h5>
+        </div>
+      </md-toolbar>
+  
+      <div flex layout="row">
+          <md-sidenav md-is-locked-open="$mdMedia('gt-sm')" class="sidenav md-whiteframe-5dp" md-component-id="left">
+            <md-list ng-click="toggleMenu();">
+              <md-list-item ng-href="#!/vrm">
+                  <md-icon class="material-icons">terrain</md-icon>
+                  <p>VRM</p>
+              </md-list-item>
+              <md-list-item ng-href="#!/cabins">
+                  <md-icon class="material-icons">store_mall_directory</md-icon>
+                  <p>Cabins</p>
+              </md-list-item>
+              <md-list-item ng-href="#!/features">
+                  <md-icon class="material-icons">star_border</md-icon>
+                  <p>Features</p>
+              </md-list-item>
+              <md-list-item ng-href="#!/availability">
+                  <md-icon class="material-icons">event_available</md-icon>
+                  <p>Availability</p>
+              </md-list-item>
+              <md-list-item ng-href="#!/report/1">
+                  <md-icon class="material-icons">table_chart</md-icon>
+                  <p>Report</p>
+              </md-list-item>
+            </md-list>
+          </md-sidenav>
+  
+          <md-content flex layout="column" ng-view>
+          </md-content>
+      </div>
+</body>
+</html>
