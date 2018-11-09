@@ -36,7 +36,7 @@ def ignore_errors(func):
 
 def scrape_ranges(id_, rgs, quote):
     results = []
-    for i, start, end in rgs.itertuples():
+    for start, end in rgs:
         print(start, end)
         data = { 'id': id_,
             'startDate': start, 'endDate': end,
@@ -45,16 +45,26 @@ def scrape_ranges(id_, rgs, quote):
 
     return results
 
-def extract_costs(ids, quote):
-
-    df = pd.read_csv('./scrappers/merged.csv', 
-            parse_dates=['PL', 'PR'])  #merged.csv: file with holidays and weekends
-
-    rg = df[['PL', 'PR']]
+def extract_costs(ids, quote, date_ranges=None):
+    if not date_ranges:
+        start = dt.datetime.now()
+        end = start + timedelta(days=183)
+        rg = get_weekends_from_to(start, end) + get_holidays_in_range(start, end)
+    
     with mp.Pool(8) as p:
         scraper = functools.partial(
                 scrape_ranges, rgs=rg, quote=quote)
         yield from p.imap_unordered(scraper, ids)
+
+def get_weekends_from_to(start_date, end_date):
+    weekends = []
+    friday = get_closest_friday()
+    sunday = friday + timedelta(days=2)
+    while sunday <= end_date:
+        weekends.append((friday, sunday, 'weekend'))
+        friday = add_one_week(friday)
+        sunday = add_one_week(sunday)
+    return weekends
 
 def parse_dates(d):
     if isinstance(d, dt.date):
@@ -75,7 +85,7 @@ def get_closest_friday():
     today = dt.datetime.now()
     friday = today + timedelta( days=(4-today.weekday()) % 7 )
     return friday
-    
+
 def is_holiday(holidays, start, end):
     startString = start.strftime('%m-%d')
     endString = end.strftime('%m-%d')
@@ -87,7 +97,24 @@ def get_holidays_as_dict(filename='./scrappers/holidays.csv'):
 
 def get_holidays(filename='./scrappers/holidays.csv'):
     df = pd.read_csv(filename)
-    return set(zip(df.PL, df.PR))
+    return set(zip(df.PL, df.PR, df.holiday))
+
+def get_holidays_in_range(start, end, holidays_filename='./scrappers/holidays.csv'):
+    holidays_dates = []
+    holidays = get_holidays()
+    for year in range(start.year, end.year+1):
+        for start_string, end_string, holiday in holidays:
+            start_month, start_day = [int(e) for e in start_string.split('-')]
+            end_month, end_day = [int(e) for e in end_string.split('-')]
+            start_holiday = dt.datetime(year, start_month, start_day)
+            if holiday != 'christmas season' and (year+1) <= end.year:
+                end_holiday = dt.datetime(year+1, end_month, end_day)
+            else:
+                end_holiday = dt.datetime(year, end_month, end_day)
+            if (start <= start_holiday <= end) and (start <= end_holiday <=  end):
+                holidays_dates.append((start_holiday, end_holiday, holiday))
+    return holidays_dates
+        
 
 def add_one_week(day):
   return day + timedelta(days=7)
