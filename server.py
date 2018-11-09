@@ -1,5 +1,6 @@
 from flask import Flask
 import psycopg2
+from psycopg2.extras import RealDictCursor
 from flask_cors import CORS
 from flask import jsonify
 import os
@@ -10,11 +11,12 @@ load_dotenv()
 DATABASE_URI = os.environ['DATABASE_URL']
 
 app = Flask(__name__, static_url_path='')
+app.config['JSON_SORT_KEYS'] = False
 
 CORS(app)
 
 
-connection = psycopg2.connect(DATABASE_URI)
+connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)
 cursor = connection.cursor()
 
 @app.route('/api/cabins')
@@ -47,18 +49,19 @@ def report():
     vrms = cursor.fetchall()
     result = []
     result_json = {}
+
     for vrm in vrms:
-        row = []
-        cursor.execute('select ncabins from db.vrm where idvrm = %s', vrm)
+        row = {}
+        cursor.execute('select ncabins from db.vrm where idvrm = %s', (vrm['idvrm'], ))
         total_units = cursor.fetchall()
-        cursor.execute('select count(availability.id) from db.availability inner join db.cabin on cabin.id = availability.id where idvrm = %s and availability.status = \'BOOKED\'', vrm)
+        cursor.execute('select count(availability.id) as booked from db.availability inner join db.cabin on cabin.id = availability.id where idvrm = %s and availability.status = \'BOOKED\'', (vrm['idvrm'], ))
         booked = cursor.fetchall()
-        cursor.execute('select count(availability.id) from db.availability inner join db.cabin on cabin.id = availability.id where idvrm = %s and availability.status = \'AVAILABLE\'', vrm)
+        cursor.execute('select count(availability.id) as available from db.availability inner join db.cabin on cabin.id = availability.id where idvrm = %s and availability.status = \'AVAILABLE\'', (vrm['idvrm'], ))
         available = cursor.fetchall()
-        row.append(vrm[0])
-        row.append(total_units[0][0])
-        row.append(booked[0][0])
-        row.append(available[0][0])
+        row['idvrm'] = vrm['idvrm']
+        row['ncabins'] = total_units[0]['ncabins']
+        row['booked'] = booked[0]['booked']
+        row['available'] = available[0]['available']
         result.append(row)
     
     result_json['table1'] = result
@@ -71,24 +74,4 @@ def report():
 
 @app.route('/')
 def root():
-    return app.send_static_file('vrm.html')
-
-@app.route('/vrm')
-def vrm_html():
-    return app.send_static_file('vrm.html')
-
-@app.route('/cabins')
-def cabins_html():
-    return app.send_static_file('cabins.html')
-
-@app.route('/features')
-def features_html():
-    return app.send_static_file('features.html')
-
-@app.route('/availability')
-def availability_html():
-    return app.send_static_file('availability.html')
-
-@app.route('/report')
-def report_html():
-    return app.send_static_file('report.html')
+    return app.send_static_file('index.html')

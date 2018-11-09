@@ -1,0 +1,70 @@
+.text-left {
+	text-align: left
+}
+.text-right {
+	text-align: right
+}
+.toolbar {
+	min-height: 0px;
+	height: 48px;
+}
+.toolbar > div {
+    width: 220px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.sidenav {
+	width: 220px;
+}
+md-list {
+	padding: 0px;
+}
+md-icon {
+	margin: 5px !important;
+}
+md-content {
+  padding: 20px;
+}
+h1 {
+  margin: 0px 0px 10px;
+}
+.myGrid {
+  width: inherit;
+  height: 100%;
+}
+.myGrid2 {
+  width: inherit;
+  height: 100%;
+  margin-top: 20px;
+}
+.button-menu {
+  min-width: 0px;
+  margin: 0px;
+}
+/* test this later
+md-sidenav,
+md-sidenav.md-locked-open-add-active,
+md-sidenav.md-closed.md-locked-open-add-active,
+md-sidenav.md-locked-open {
+  width: 200px;
+  min-width: 200px;
+  max-width: 200px;
+}
+*/
+/*
+   This is the background of our overlay. We need it to be
+   absolutely positioned within the grid, and fill from
+   top to bottom, and the full width. It will also have
+   a black background with 40% opacity.
+*/
+.grid-msg-overlay {
+  display: flex;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  background: whitesmoke;
+  align-items: center;
+  justify-content: center;
+}
