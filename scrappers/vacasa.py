@@ -17,6 +17,8 @@ from scrappers import settings
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 
+import itertools
+
 # destinationbigbear -> dbb
 # bigbearcoolcabins  -> bbc
 # vacasa             -> vcs
@@ -26,7 +28,7 @@ from urllib.parse import urlparse
 HEADERS = { 'accept-language': 'en', 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36' }
 
 DATE_FORMAT = '%Y/%m/%d'
-OUTPUT_FILE = 'vacasa.json'
+OUTPUT_FILE = './scrappers/vacasa.json'
 DATABASE_URI = os.getenv('DATABASE_URI')
 
 def default_value(func):
@@ -114,6 +116,14 @@ def parse_data(html):
     rates = extract_rates(soup)
     data['rates'] = rates
 
+    occupancy = soup.find(class_='icon-people-family').next_sibling # sibling next to occupancy icon
+    data['occupancy'] = re.search(r'\d+', occupancy).group(0) # digit in "Max Occupancy: \d+"
+    
+    bedrooms = soup.find(class_='icon-door').next_sibling
+    data['bedrooms'] = re.search(r'\d+', bedrooms).group(0)
+
+    location = soup.find(class_='icon-map-location').next_sibling
+    data['location'] = location.strip()
     return data
 
 @util.ignore_errors
@@ -170,6 +180,7 @@ def scrape_cabin(url):
         # Add data from extra requests
         # ...
 
+        data['id'] = re.search(r'UnitID=(\d+)', url).group(1)
         data['url'] = url
 
         return data
@@ -190,13 +201,12 @@ def crawl_cabins(urls, N=8):
         yield from p.imap_unordered(scrape_cabin, urls)
 
 def dump_from(filename, data):
-    name = os.path.basename(filename)
-    name = os.path.splitext(name)[0]
-    name = '{}.json'.format(name)
-    with open(name, 'w', encoding='utf8') as fl:
+    #name = os.path.basename(filename)
+    #name = os.path.splitext(name)[0]
+    #name = '{}.json'.format(name)
+    with open(filename, 'w', encoding='utf8') as fl:
         json.dump(data, fl, indent=2)
-
-    return name
+    return filename
 
 def fix_booked():
 
@@ -214,14 +224,37 @@ def load_rates():
         rates = json.load(f)
     return rates
 
+def insert_features():
+    connection = psycopg2.connect(DATABASE_URI)
+    cabins = load_cabins()
+    features_tuples = []
+    for c in cabins:
+        for f in itertools.chain(c['features'], c['amenities']):
+            id_ = 'VACASA' + re.search(r'UnitID=(\d+)', c['url']).group(1)
+            features_tuples.append((id_, f))
+    with connection, connection.cursor() as c:
+        """sql = 
+                INSERT INTO db.features
+                SELECT (val.id, val.amenity) FROM (VALUES %s) val (id, amenity)
+                JOIN db.cabin USING (id)
+                ON CONFLICT DO NOTHING
+        psycopg2.extras.execute_values(c, sql, features_tuples)
+        """
+        sql = 'insert into db.features VALUES (%s, %s) on conflict do nothing'
+        for t in features_tuples:
+            c.execute(sql, t)
+    connection.close()
+    
+
 def insert_rates():
     rates = load_rates()
     flat_rates = list(itertools.chain(*rates))
     holidays = util.get_holidays_as_dict()
     tuples = []
     for rate in flat_rates:
-        start = rate['startDate']
-        end = rate['endDate']
+        id_ = 'VACASA' + rate['id']
+        start = dt.datetime.strptime(rate['startDate'], '%Y-%m-%d')
+        end =  dt.datetime.strptime(rate['endDate'], '%Y-%m-%d')
         name = holidays.get((start, end), 'weekend')
         if rate['quote']['raw'].get('Error'):
             booked = 'BOOKED'
@@ -229,18 +262,24 @@ def insert_rates():
         else:
             booked = 'AVAILABLE'
             q = rate['quote']['raw']['1']['Total']
-            id_ = 'VACASAListing #' + rate['quote']['raw']['1']['UnitID']
-        tuples.append(id_, start, end, booked, q, name)
+        tuples.append((id_, start, end, booked, q, name))
     connection = psycopg2.connect(DATABASE_URI)
     with connection, connection.cursor() as c:
-        sql = """
-            INSERT INTO db.availability VALUES %s
-        """
+        """#this doesn't work, idk why
+        sql = 
+            INSERT INTO db.availability
+            SELECT (val.id, val.check_in, val.check_out, val.status, val.rate, val.name) 
+            FROM (VALUES %s) val (id, check_in, check_out, status, rate, name)
+            JOIN db.cabin USING (id)
+            ON CONFLICT DO NOTHING
         psycopg2.extras.execute_values(c, sql, tuples)
+        """
+        for t in tuples:
+            c.execute('insert into db.availability values (%s,%s,%s,%s,%s,%s) on conflict do nothing', t)
     connection.close()
 
 def load_cabins():
-    cabins = read_json('vacasa.json')
+    cabins = read_json('./scrappers/vacasa.json')
     return cabins
 
 def insert_cabins():
@@ -249,20 +288,39 @@ def insert_cabins():
     tuples = []
     for c in cabins:
         idvrm = 'VACASA'
-        id_ = re.search(r'UnitID=(\d+)', c['url']).group(1)
+        id_ = idvrm + re.search(r'UnitID=(\d+)', c['url']).group(1)
         name = c['name']
         website = c['url']
         description = c['description']
         address = c.get('address', '')
         location = c.get('location', '')
-        bedrooms = next((re.match(r'(\d+) Bedrooms', f).group(1) for f in c['features']), '')
-        occupancy = next((re.match(r'Max Occupancy: (\d+)', f) for f in c['features']), '')
+        pattern = re.compile(r'(\d+) Bedrooms')
+        bedroom_matches = (pattern.match(f) for f in c['features'])
+        bedrooms = next((mo.group(1) for mo in bedroom_matches if mo), '0')
+        pattern = re.compile(r'Max Occupancy: (\d+)')
+        occupancy_matches = (pattern.match(f) for f in c['features'])
+        occupancy = next((mo.group(1) for mo in occupancy_matches if mo), '0')
         tuples.append((idvrm, id_, name, website, description, address, location, bedrooms, occupancy))
     with connection, connection.cursor() as cursor:
         sql = """
             INSERT INTO db.cabin (idvrm, id, name, website, description, address, location, bedrooms, occupancy) VALUES %s
+            ON CONFLICT DO NOTHING
         """
         psycopg2.extras.execute_values(cursor, sql, tuples)
+
+def insert():
+    connection = psycopg2.connect(DATABASE_URI)
+    cabins = load_cabins()
+    with connection, connection.cursor() as c:
+        c.execute("""
+            INSERT INTO db.vrm
+            VALUES (%s, %s, %s, %s, %s)
+            ON CONFLICT DO NOTHING
+        """, ('VACASA', 'vacasa', 'https://www.vacasa.com/', len(cabins), dt.datetime.now()))
+    insert_cabins()
+    insert_features()
+    insert_rates()
+    connection.close()
 
 def scrape_cabin_urls():
     url = 'https://www.vacasa.com/usa/Big-Bear/'
@@ -279,12 +337,12 @@ def scrape_cabin_urls():
 
 def scrape_and_store_urls():
     urls = scrape_cabin_urls()
-    with open('vacasa_urls.json', 'w', encoding='utf8') as f:
+    with open('./scrappers/vacasa_urls.json', 'w', encoding='utf8') as f:
         json.dump(urls, f, indent=2)
 
 
 
-def scrape_cabins(filename='vacasa_cabins'):
+def scrape_cabins(filename='./scrappers/vacasa_cabins.json'):
     
     links = read_json('./scrappers/vacasa_urls.json')
 

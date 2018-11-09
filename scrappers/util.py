@@ -47,9 +47,10 @@ def scrape_ranges(id_, rgs, quote):
 
 def extract_costs(ids, quote):
 
-    rg = pd.read_csv('./scrappers/merged.csv',
-            parse_dates=['PL', 'PR'])
+    df = pd.read_csv('./scrappers/merged.csv', 
+            parse_dates=['PL', 'PR'])  #merged.csv: file with holidays and weekends
 
+    rg = df[['PL', 'PR']]
     with mp.Pool(8) as p:
         scraper = functools.partial(
                 scrape_ranges, rgs=rg, quote=quote)
@@ -70,8 +71,15 @@ def read_json(filename):
         data = json.load(fp)
     return data
 
+def get_closest_friday():
+    today = dt.datetime.now()
+    friday = today + timedelta( days=(4-today.weekday()) % 7 )
+    return friday
+    
 def is_holiday(holidays, start, end):
-    return (start, end) in holidays
+    startString = start.strftime('%m-%d')
+    endString = end.strftime('%m-%d')
+    return (startString, endString) in holidays
 
 def get_holidays_as_dict(filename='./scrappers/holidays.csv'):
     df = pd.read_csv(filename)

@@ -8,7 +8,7 @@ import psycopg2
 import html
 import re
 import itertools
-import util
+from scrappers import util
 
 from urllib.parse import urljoin
 from datetime import date, datetime, timedelta
@@ -17,6 +17,7 @@ from bs4 import BeautifulSoup
 from psycopg2.extras import execute_values
 
 BASE_URL = 'https://www.bigbearcoolcabins.com'
+CABIN_URLS_FILE = './scrappers/bbcc_cabin_urls.json'
 
 # Read step
 def read_csv_cabins(filename):
@@ -24,14 +25,36 @@ def read_csv_cabins(filename):
     df = pd.read_csv(filename)
     return df.Link
 
+def load_cabins(filename='bbcc_cabins.json'):
+    cabins = []
+    with open(filename) as f:
+        cabins = json.load(f)
+    return cabins
+
 # Output step
 def dump_from(filename, data):
-    name = os.path.basename(filename)
-    name = os.path.splitext(name)[0]
-    name = f'{name}.json'
-    with open(name, 'w', encoding='utf8') as fl:
+    #name = os.path.basename(filename)
+    #name = os.path.splitext(name)[0]
+    #name = f'{name}.json'
+    with open(filename, 'w', encoding='utf8') as fl:
         json.dump(data, fl, indent=2)
-    return name
+    return filename
+
+def scrape_cabin_urls():
+    base_url = 'https://www.bigbearcoolcabins.com'
+    pagination_url = 'https://www.bigbearcoolcabins.com/big-bear-cabin-rentals?avail_filter%5Brcav%5D%5Bbegin%5D=&avail_filter%5Brcav%5D%5Bend%5D=&avail_filter%5Brcav%5D%5Bflex_type%5D=d&occ_total_numeric=&beds_numeric=&ldrc_location=All&sort_by=field_listing_sort_weight_value&items_per_page=50&page='
+    urls = []
+    for page_number in itertools.count():
+        res = rq.get(pagination_url + str(page_number))
+        soup = BeautifulSoup(res.text, 'html.parser')
+        urls += (base_url + a['href'] for a in soup('a', text='View Details'))
+        if soup(class_=['current last']):
+            break
+    return urls
+
+def scrape_cabin_urls_and_store():
+    urls = scrape_cabin_urls()
+    dump_from(CABIN_URLS_FILE, urls)
 
 def get_availability_weekends_friday(id, booked):
     availability = []
@@ -389,6 +412,41 @@ def get_availability_christmas(id, booked):
     availability.append(actual)
     return availability
 
+
+
+def get_quote(id_, start_date, end_date):
+    """
+        dates_and_guests format example:
+        {
+            start_date: '2018-09-24',
+            end_date: '2018-09-27',
+            guests: '2,0,0' #adults, children, pets
+        }
+    """
+    start_date_str = start_date.strftime('%m-%d-%Y') \
+        if isinstance(start_date, datetime.date) else start_date
+    end_date_str = end_date.strftime('%m-%d-%Y') \
+        if isinstance(end_date, datetime.date) else end_date
+    xhr = rq.get(
+        'https://www.bigbearcoolcabins.com/rescms/ajax/item/pricing/simple',
+        params = {                        
+            'rcav[begin]': start_date_str,  
+            'rcav[end]': end_date_str,    
+            'rcav[eid]': id_    
+        }                                 
+    )
+    soup = BeautifulSoup(xhr.json()['content'])
+    total_price_tag = soup.find(class_='rc-price')
+    if total_price_tag:
+        return total_price_tag.get_text()
+    return soup.prettify()
+
+def extract_costs():
+    cabins = load_cabins()
+    ids = [ cabin['_params']['rcav[eid]'] for cabin in cabins ]
+    return util.extract_costs(ids, get_quote)
+
+
 # Parse step
 def parse_data(html):
     soup = BeautifulSoup(html, 'html.parser')
@@ -462,20 +520,22 @@ def parse_data(html):
     
     _params = extract_form(html)
     #available
-    # Obviously this needs to be changed but not tonight fellas
-    availabilities_weekends = get_availability_weekends_friday(_params['rcav[eid]'], unavailable_dates)
-    availabilities_MLK = get_availability_MLK(_params['rcav[eid]'], unavailable_dates)
-    availabilities_president = get_availability_president(_params['rcav[eid]'], unavailable_dates)
-    availabilities_patrick = get_availability_patrick(_params['rcav[eid]'], unavailable_dates)
-    availabilities_easter = get_availability_easter(_params['rcav[eid]'], unavailable_dates)
-    availabilities_cincomayo = get_availability_cincomayo(_params['rcav[eid]'], unavailable_dates)
-    availabilities_memorial = get_availability_memorial(_params['rcav[eid]'], unavailable_dates)
-    availabilities_4july = get_availability_4july(_params['rcav[eid]'], unavailable_dates)
-    availabilities_labor = get_availability_labor(_params['rcav[eid]'], unavailable_dates)
-    availabilities_columbus = get_availability_columbus(_params['rcav[eid]'], unavailable_dates)
-    availabilities_veterans = get_availability_veterans(_params['rcav[eid]'], unavailable_dates)
-    availability_thanksgiving = get_availability_thanksgiving(_params['rcav[eid]'], unavailable_dates)
-    availabilities_christmas = get_availability_christmas(_params['rcav[eid]'], unavailable_dates)
+    #(PD: rates shouldn't be scrapped alongside the cabin info scrapper)
+    #Obviously this needs to be changed but not tonight fellas 
+    #availabilities_weekends = get_availability_weekends_friday(_params['rcav[eid]'], unavailable_dates)
+    #availabilities_MLK = get_availability_MLK(_params['rcav[eid]'], unavailable_dates)
+    #availabilities_president = get_availability_president(_params['rcav[eid]'], unavailable_dates)
+    #availabilities_patrick = get_availability_patrick(_params['rcav[eid]'], unavailable_dates)
+    #availabilities_easter = get_availability_easter(_params['rcav[eid]'], unavailable_dates)
+    #availabilities_cincomayo = get_availability_cincomayo(_params['rcav[eid]'], unavailable_dates)
+    #availabilities_memorial = get_availability_memorial(_params['rcav[eid]'], unavailable_dates)
+    #availabilities_4july = get_availability_4july(_params['rcav[eid]'], unavailable_dates)
+    #availabilities_labor = get_availability_labor(_params['rcav[eid]'], unavailable_dates)
+    #availabilities_columbus = get_availability_columbus(_params['rcav[eid]'], unavailable_dates)
+    #availabilities_veterans = get_availability_veterans(_params['rcav[eid]'], unavailable_dates)
+    #availability_thanksgiving = get_availability_thanksgiving(_params['rcav[eid]'], unavailable_dates)
+    #availabilities_christmas = get_availability_christmas(_params['rcav[eid]'], unavailable_dates)
+
 
     return {
         'name': page_title,
@@ -488,7 +548,7 @@ def parse_data(html):
         'unavailable_dates': unavailable_dates,
         'half_dates': half_dates,
         '_params': _params,
-        'availabilities' :availabilities_weekends + availabilities_MLK + availabilities_president + availabilities_patrick + availabilities_easter + availabilities_cincomayo + availabilities_memorial + availabilities_4july + availabilities_labor + availabilities_columbus + availabilities_veterans + availability_thanksgiving + availabilities_christmas
+        #'availabilities': availabilities_weekends + availabilities_MLK + availabilities_president + availabilities_patrick + availabilities_easter + availabilities_cincomayo + availabilities_memorial + availabilities_4july + availabilities_labor + availabilities_columbus + availabilities_veterans + availability_thanksgiving + availabilities_christmas
     }
 
     #raise NotImplementedError('Oops! He did it again...')
@@ -578,10 +638,21 @@ def scrape_cabin(url):
 
 # Nothing to do here...
 # Parallel step
-def crawl_cabins(urls, N=4):
+def crawl_cabins(urls, N=8):
 
     with mp.Pool(N) as p:
         yield from p.imap_unordered(scrape_cabin, urls)
+
+def insert_availabilities(availabilities):
+    connection = psycopg2.connect(os.getenv('DATABASE_URL'))
+    insertAvailabilities = []
+    for availability in availabilities:
+        insertAvailabilities.append(availability)
+    with connection:
+        with connection.cursor() as cursor:
+            str_sql = '''INSERT INTO db.availability (id, check_in, check_out, status, rate, name) VALUES %s ON CONFLICT (id, check_in, check_out, name) DO UPDATE SET rate = excluded.rate;'''
+            execute_values(cursor, str_sql, insertAvailabilities)
+    connection.close()
 
 def insert_amenities(cabins):
     connection = psycopg2.connect(os.getenv('DATABASE_URL'))
@@ -633,16 +704,7 @@ def insert_cabins(cabins):
             execute_values(cursor, str_sql, insertCabins)
     connection.close()
 
-def insert_availabilities(availabilities):
-    connection = psycopg2.connect(os.getenv('DATABASE_URL'))
-    insertAvailabilities = []
-    for availability in availabilities:
-        insertAvailabilities.append(availability)
-    with connection:
-        with connection.cursor() as cursor:
-            str_sql = '''INSERT INTO db.availability (id, check_in, check_out, status, rate, name) VALUES %s ON CONFLICT (id, check_in, check_out, name) DO UPDATE SET rate = excluded.rate;'''
-            execute_values(cursor, str_sql, insertAvailabilities)
-    connection.close()
+
 
 def get_rates(availability):
     # availability
@@ -664,7 +726,7 @@ def get_rates(availability):
     finally:
         return availability
 
-def get_rates_multi(availabilities, N=4):
+def get_rates_multi(availabilities, N=8):
     with mp.Pool(N) as p:
         yield from p.imap_unordered(get_rates, availabilities)
 
@@ -673,20 +735,15 @@ def upload_to_database():
         cabins = json.load(f)
     insert_cabins(cabins)
 
-def main():
-
-    if len(sys.argv) != 2:
-        print('Usage: ./bigbearcoolcabins.py [FILENAME]')
-        return
-
-    filename = sys.argv[1]
-    links = read_csv_cabins(filename)
+def scrape_cabins(filename='./scrappers/bbcc_cabins.js'):
+    with open(CABIN_URLS_FILE) as f:
+        links = json.load(f)
 
     total   = len(links)
     index   = 0
     results = []
 
-    availabilities = []
+    #availabilities = []
 
     try:
         for r in crawl_cabins(links):
@@ -694,22 +751,30 @@ def main():
             results.append(r)
             index += 1
             print(f'Scraped! {r["name"]} {index}/{total}')
-            for availability in r.get('availabilities') :
-                availabilities.append(availability)
-        new_availabilities = []
-        total = len(availabilities)
-        for gr in get_rates_multi(availabilities):
-            index += 1
-            new_availabilities.append(gr)
-            print(f'Availability {index}/{total}')
+        #    for availability in r.get('availabilities') :
+        #        availabilities.append(availability)
+        #new_availabilities = []
+        #total = len(availabilities)
+        #for gr in get_rates_multi(availabilities):
+        #    index += 1
+        #    new_availabilities.append(gr)
+        #    print(f'Availability {index}/{total}')
 
     except KeyboardInterrupt: pass
     finally: 
         # Write finally result
         name = dump_from(filename, results)
         print('Dumped', name)
-        upload_to_database()
-        insert_availabilities(new_availabilities)
+        #upload_to_database()
+        #insert_availabilities(new_availabilities)
+
+
+def main():
+    if len(sys.argv) != 2:
+        print('Usage: ./bigbearcoolcabins.py [FILENAME]')
+        return
+    filename = sys.argv[1]
+    scrape_cabins(filename)
 
 if __name__ == '__main__':
     main()

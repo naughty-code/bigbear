@@ -3,7 +3,7 @@
 import requests as rq 
 import json
 import datetime
-import util
+from scrappers import util
 import re
 import os
 import psycopg2
@@ -14,7 +14,7 @@ OUTPUT_FILE = 'bigbearlakefrontcabins.json'
 DATABASE_URL = os.environ['DATABASE_URL']
 connection = psycopg2.connect(DATABASE_URL, sslmode='require')
 cursor = connection.cursor()
-
+DATE_FORMAT = '%Y-%m-%d'
 
 def get_params(form):
     dic = {}
@@ -78,8 +78,8 @@ def format_rate(cabin):
     hds = util.get_holidays()
 
     for x in cabin:
-        startDate = x['startDate']
-        endDate   = x['endDate']
+        startDate = datetime.datetime.strptime(x['startDate'], DATE_FORMAT)
+        endDate   = datetime.datetime.strptime(x['endDate'], DATE_FORMAT)
         if not util.is_holiday(hds, startDate, endDate):
             continue
 

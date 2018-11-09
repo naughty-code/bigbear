@@ -8,7 +8,7 @@ import datetime as dt
 import os
 import psycopg2
 import html
-import util
+from scrappers import util
 from psycopg2.extras import execute_values
 from datetime import datetime
 from datetime import timedelta
