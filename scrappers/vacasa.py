@@ -339,6 +339,7 @@ def scrape_and_store_urls():
     urls = scrape_cabin_urls()
     with open('./scrappers/vacasa_urls.json', 'w', encoding='utf8') as f:
         json.dump(urls, f, indent=2)
+    return urls
 
 
 
@@ -372,6 +373,7 @@ def scrape_cabins(filename='./scrappers/vacasa_cabins.json'):
         # Write finally result
         name = dump_from(filename, results)
         print('Dumped', name)    
+    return results
     
 
 def main():

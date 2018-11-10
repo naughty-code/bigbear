@@ -36,24 +36,26 @@ def ignore_errors(func):
 
 def scrape_ranges(id_, rgs, quote):
     results = []
-    for start, end in rgs:
+    for start, end, holiday_or_weekend in rgs:
         print(start, end)
         data = { 'id': id_,
             'startDate': start, 'endDate': end,
-            'quote': quote(id_, start, end) }
+            'quote': quote(id_, start, end),
+            'holiday': holiday_or_weekend
+            }
         results.append(data)
 
     return results
 
-def extract_costs(ids, quote, date_ranges=None):
-    if not date_ranges:
+def extract_costs(ids, quote, date_ranges_=None):
+    if not date_ranges_:
         start = dt.datetime.now()
-        end = start + timedelta(days=183)
-        rg = get_weekends_from_to(start, end) + get_holidays_in_range(start, end)
+        end = start + timedelta(days=30)
+        range_ = get_weekends_from_to(start, end) + get_holidays_in_range(start, end)
     
     with mp.Pool(8) as p:
         scraper = functools.partial(
-                scrape_ranges, rgs=rg, quote=quote)
+                scrape_ranges, rgs=range_, quote=quote)
         yield from p.imap_unordered(scraper, ids)
 
 def get_weekends_from_to(start_date, end_date):
