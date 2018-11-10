@@ -661,20 +661,22 @@ def load_rates():
     return list(itertools.chain(*rates));
 
 def rate_to_tuple(rate):
-    id_ = rate['id']
+    id_ = 'BBCC' + rate['id']
     start = rate['startDate']
     end = rate['endDate']
-    status = 'BOOKED' if rate['quote']['error'] else 'AVAILABLE'
-    rate = 0 if rate['quote']['error'] else rate['quote']['raw']['TotalRate']
+    pattern = re.compile(r'$(\d*\.\d+|\d+)')
+    mo = pattern.match(rate['quote'])
+    status = 'BOOKED' if not mo else 'AVAILABLE'
+    rate_value = 0 if not mo else mo.group(1)
     name = rate['holiday']
-    return (id_, start, end, status, rate, name)
+    return (id_, start, end, status, rate_value, name)
 
 def insert_rates():
-    connection = psycopg2.connect(os.getenv('DATABASE_URL'))
+    connection = psycopg2.connect(os.getenv('DATABASE_URI'))
     rates = load_rates()
     tupled_rates = [rate_to_tuple(r) for r in rates]
     with connection, connection.cursor() as cursor:
-        str_sql = '''INSERT INTO db.availability (id, check_in, check_out, status, rate, name) VALUES %s ON CONFLICT (id, check_in, check_out, name) DO UPDATE SET rate = excluded.rate;'''
+        str_sql = '''INSERT INTO db.availability (id, check_in, check_out, status, rate, name) VALUES %s ON CONFLICT DO NOTHING'''
         execute_values(cursor, str_sql, tupled_rates)
     connection.close()
 
