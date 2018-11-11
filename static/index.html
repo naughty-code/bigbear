@@ -46,6 +46,9 @@
         <div>
           <h5>Invisible Technologies</h5>
         </div>
+        <md-button class="button-menu" ng-click="update();" ng-disabled="disableButton">
+            <md-icon class="material-icons" ng-class="{update: disableButton}">cached</md-icon>
+        </md-button>
       </md-toolbar>
   
       <div flex layout="row">

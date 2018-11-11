@@ -1,6 +1,9 @@
 angular.module('app').controller('appController', function ($scope, $mdSidenav) {
-	console.log('test');
+	$scope.disableButton = false;
 	$scope.toggleMenu = function() {
 		$mdSidenav('left').toggle();
+	}
+	$scope.update = function() {
+		$scope.disableButton = true;
 	}
 })
