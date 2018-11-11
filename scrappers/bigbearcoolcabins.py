@@ -25,7 +25,7 @@ def read_csv_cabins(filename):
     df = pd.read_csv(filename)
     return df.Link
 
-def load_cabins(filename='bbcc_cabins.json'):
+def load_cabins(filename='./scrappers/bbcc_cabins.json'):
     cabins = []
     with open(filename) as f:
         cabins = json.load(f)
@@ -424,9 +424,9 @@ def get_quote(id_, start_date, end_date):
         }
     """
     start_date_str = start_date.strftime('%m-%d-%Y') \
-        if isinstance(start_date, datetime.date) else start_date
+        if isinstance(start_date, datetime) else start_date
     end_date_str = end_date.strftime('%m-%d-%Y') \
-        if isinstance(end_date, datetime.date) else end_date
+        if isinstance(end_date, datetime) else end_date
     xhr = rq.get(
         'https://www.bigbearcoolcabins.com/rescms/ajax/item/pricing/simple',
         params = {                        
@@ -644,7 +644,7 @@ def crawl_cabins(urls, N=8):
         yield from p.imap_unordered(scrape_cabin, urls)
 
 def insert_availabilities(availabilities):
-    connection = psycopg2.connect(os.getenv('DATABASE_URL'))
+    connection = psycopg2.connect(os.getenv('DATABASE_URI'))
     insertAvailabilities = []
     for availability in availabilities:
         insertAvailabilities.append(availability)
@@ -654,8 +654,34 @@ def insert_availabilities(availabilities):
             execute_values(cursor, str_sql, insertAvailabilities)
     connection.close()
 
+def load_rates():
+    rates = []
+    with open('scrappers/bbcc_quote_results.json', encoding='utf8') as f:
+        rates = json.load(f)
+    return list(itertools.chain(*rates));
+
+def rate_to_tuple(rate):
+    id_ = 'BBCC' + rate['id']
+    start = rate['startDate']
+    end = rate['endDate']
+    pattern = re.compile(r'$(\d*\.\d+|\d+)')
+    mo = pattern.match(rate['quote'])
+    status = 'BOOKED' if not mo else 'AVAILABLE'
+    rate_value = 0 if not mo else mo.group(1)
+    name = rate['holiday']
+    return (id_, start, end, status, rate_value, name)
+
+def insert_rates():
+    connection = psycopg2.connect(os.getenv('DATABASE_URI'))
+    rates = load_rates()
+    tupled_rates = [rate_to_tuple(r) for r in rates]
+    with connection, connection.cursor() as cursor:
+        str_sql = '''INSERT INTO db.availability (id, check_in, check_out, status, rate, name) VALUES %s ON CONFLICT DO NOTHING'''
+        execute_values(cursor, str_sql, tupled_rates)
+    connection.close()
+
 def insert_amenities(cabins):
-    connection = psycopg2.connect(os.getenv('DATABASE_URL'))
+    connection = psycopg2.connect(os.getenv('DATABASE_URI'))
     insertAmenities = []
     for cabin in cabins:
         id = cabin['_params']['rcav[eid]']
@@ -675,7 +701,7 @@ def insert_amenities(cabins):
     connection.close()
 
 def insert_cabins(cabins):
-    connection = psycopg2.connect(os.getenv('DATABASE_URL'))
+    connection = psycopg2.connect(os.getenv('DATABASE_URI'))
     insertCabins = []
     for cabin in cabins:
         id = 'BBCC' + cabin['_params']['rcav[eid]']
@@ -731,9 +757,23 @@ def get_rates_multi(availabilities, N=8):
         yield from p.imap_unordered(get_rates, availabilities)
 
 def upload_to_database():
-    with open('bbcc_cabin_urls.json') as f:
+    with open('./scrappers/bbcc_cabin_urls.json') as f:
         cabins = json.load(f)
     insert_cabins(cabins)
+
+def insert():
+    connection = psycopg2.connect(os.getenv('DATABASE_URI'))
+    cabins = load_cabins()
+    with connection, connection.cursor() as c:
+        c.execute("""
+            INSERT INTO db.vrm
+            VALUES (%s, %s, %s, %s, %s)
+            ON CONFLICT (idvrm) DO UPDATE SET name = excluded.name, website = excluded.website, ncabins = excluded.ncabins, last_scrape = excluded.last_scrape;
+        """, ('BBCC', 'big bear cool cabins', 'https://www.bigbearcoolcabins.com', len(cabins), datetime.now()))
+    connection.close()
+    insert_cabins(cabins)
+    insert_amenities(cabins)
+    insert_rates()
 
 def scrape_cabins(filename='./scrappers/bbcc_cabins.js'):
     with open(CABIN_URLS_FILE) as f:
@@ -767,6 +807,7 @@ def scrape_cabins(filename='./scrappers/bbcc_cabins.js'):
         print('Dumped', name)
         #upload_to_database()
         #insert_availabilities(new_availabilities)
+    return results
 
 
 def main():
