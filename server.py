@@ -43,6 +43,35 @@ def availability():
     data = cursor.fetchall()
     return jsonify(data)
 
+@app.route('/api/advance-report')
+def report2():
+    sql = '''select a.check_in as "Date IN", a.check_out as "Date OUT", a.name as Note, c.idvrm as VRM,
+count(a.id) as Units, count(a.id) filter (where a.status = 'AVAILABLE') as Vacant,
+count(a.id) filter (where a.status = 'BOOKED') as Booked,
+count(a.id) filter (where a.status = 'BOOKED') - (select count(a2.id) filter (where a2.status = 'BOOKED') 
+from db.availability as a2
+join db.cabin as c2 on c2.id = a2.id
+where a2.check_in = a.check_in - interval '1 WEEK'
+and c2.idvrm = c.idvrm) as "Change from LW",
+(count(a.id) filter (where a.status = 'BOOKED')) * 100 / count(a.id) as occupancy,
+(select count(a2.id) filter (where a2.status = 'BOOKED') 
+from db.availability as a2
+join db.cabin as c2 on c2.id = a2.id
+where a2.check_in = a.check_in - interval '1 YEAR'
+and c2.idvrm = c.idvrm) as "Booked LY",
+count(a.id) filter (where a.status = 'BOOKED') - (select count(a2.id) filter (where a2.status = 'BOOKED') 
+from db.availability as a2
+join db.cabin as c2 on c2.id = a2.id
+where a2.check_in = a.check_in - interval '1 YEAR'
+and c2.idvrm = c.idvrm) as "Change from LY"
+from db.availability as a
+join db.cabin as c on c.id = a.id
+where DATE_PART('YEAR',a.check_in) = DATE_PART('YEAR',now())
+group by c.idvrm, a.check_in, a.check_out, a.name;'''
+    cursor.execute(sql)
+    data = cursor.fetchall()
+    return jsonify(data)
+
 @app.route('/api/report')
 def report():
     cursor.execute('SELECT idvrm FROM db.vrm')

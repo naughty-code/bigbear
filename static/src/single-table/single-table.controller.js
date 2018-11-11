@@ -6,7 +6,8 @@ function singleTableController($scope, $http, $routeParams) {
 		"cabins" : "Cabins",
 		"features": "Features",
 		"availability": "Availability",
-		"report": "Report"
+		"report": "Report",
+		"advance-report": "Advance Report"
 	}
 	var view = 'vrm';
 	if ($routeParams.view)
