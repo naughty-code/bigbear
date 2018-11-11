@@ -54,6 +54,7 @@ join db.cabin as c2 on c2.id = a2.id
 where a2.check_in = a.check_in - interval '1 WEEK'
 and c2.idvrm = c.idvrm) as "Change from LW",
 (count(a.id) filter (where a.status = 'BOOKED')) * 100 / count(a.id) as occupancy,
+0 as "% of Bookings",
 (select count(a2.id) filter (where a2.status = 'BOOKED') 
 from db.availability as a2
 join db.cabin as c2 on c2.id = a2.id
