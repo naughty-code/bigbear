@@ -23,7 +23,7 @@ cursor = connection.cursor()
 
 @app.route('/api/cabins')
 def cabins():
-    cursor.execute('SELECT * FROM db.cabin')
+    cursor.execute('SELECT cabin.*, vrm.last_scrape FROM db.cabin as cabin join db.vrm as vrm on cabin.idvrm = vrm.idvrm')
     data = cursor.fetchall()
     return jsonify(data)
 
@@ -134,6 +134,7 @@ def report():
 @app.route('/api/update')
 def update():
     # here we execute the scrappers and update database
+<<<<<<< HEAD
     cursor.execute('select status from db.status_update where id=1')
     result = cursor.fetchall()
     if result != 'Updating':
@@ -141,6 +142,12 @@ def update():
             cursor.execute("UPDATE db.status_update SET status='Updating'")
         scrapper_process = Process(target=scrapper.update)
         scrapper_process.start()
+=======
+    scrapper_process = Process(target=scrapper.update)
+    with connection:
+        cursor.execute("UPDATE db.status_update SET status='Updating'")
+    scrapper_process.start()
+>>>>>>> 4cce136a7dd52a40f781510a89430a631efbbc5a
     return 'true'
 
 @app.route('/api/check')
