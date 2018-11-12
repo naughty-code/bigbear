@@ -45,32 +45,59 @@ def availability():
 
 @app.route('/api/advance-report')
 def report2():
-    sql = '''select a.check_in as "Date IN", a.check_out as "Date OUT", a.name as Note, c.idvrm as VRM,
-count(a.id) as Units, count(a.id) filter (where a.status = 'AVAILABLE') as Vacant,
-count(a.id) filter (where a.status = 'BOOKED') as Booked,
+    sql = '''select a.check_in as date_in, a.check_out as date_out, a.name as note, c.idvrm as VRM,
+count(a.id) as units, count(a.id) filter (where a.status = 'AVAILABLE') as vacant,
+count(a.id) filter (where a.status = 'BOOKED') as booked,
 count(a.id) filter (where a.status = 'BOOKED') - (select count(a2.id) filter (where a2.status = 'BOOKED') 
 from db.availability as a2
 join db.cabin as c2 on c2.id = a2.id
 where a2.check_in = a.check_in - interval '1 WEEK'
-and c2.idvrm = c.idvrm) as "Change from LW",
+and c2.idvrm = c.idvrm) as "change from LW",
 (count(a.id) filter (where a.status = 'BOOKED')) * 100 / count(a.id) as occupancy,
-0 as "% of Bookings",
+0 as "% of bookings",
 (select count(a2.id) filter (where a2.status = 'BOOKED') 
 from db.availability as a2
 join db.cabin as c2 on c2.id = a2.id
 where a2.check_in = a.check_in - interval '1 YEAR'
-and c2.idvrm = c.idvrm) as "Booked LY",
+and c2.idvrm = c.idvrm) as "booked LY",
 count(a.id) filter (where a.status = 'BOOKED') - (select count(a2.id) filter (where a2.status = 'BOOKED') 
 from db.availability as a2
 join db.cabin as c2 on c2.id = a2.id
 where a2.check_in = a.check_in - interval '1 YEAR'
-and c2.idvrm = c.idvrm) as "Change from LY"
+and c2.idvrm = c.idvrm) as "change from LY"
 from db.availability as a
 join db.cabin as c on c.id = a.id
 where DATE_PART('YEAR',a.check_in) = DATE_PART('YEAR',now())
 group by c.idvrm, a.check_in, a.check_out, a.name;'''
     cursor.execute(sql)
     data = cursor.fetchall()
+    aux = []
+    aux_bool = False
+    for d in data:
+        if len(aux) > 0:
+            for a in aux:
+                if d['date_in'] == a['date_in'] and d['date_out'] == a['date_out']:
+                    a['total'] += d['booked']
+                    aux_bool = True
+                    break
+            if aux_bool is False:
+                aux.append({
+                'date_in': d['date_in'],
+                'date_out': d['date_out'],
+                'total': d['booked']
+                })
+            aux_bool = False
+        else:
+            aux.append({
+                'date_in': d['date_in'],
+                'date_out': d['date_out'],
+                'total': d['booked']
+            })
+    for d in data:
+        for a in aux:
+            if d['date_in'] == a['date_in'] and d['date_out'] == a['date_out']:
+                if a['total'] > 0:
+                    d['% of bookings'] = format(d['booked'] * 100 / a['total'], '.2f')
     return jsonify(data)
 
 @app.route('/api/report')
@@ -101,6 +128,20 @@ def report():
     result_json['table2'] = table2
 
     return jsonify(result_json)
+
+@app.route('/api/update')
+def update():
+    # here we execute the scrappers and update database
+    cursor.execute("UPDATE db.status_update SET status='Updating'")
+    connection.commit()
+    return 'true'
+
+@app.route('/api/check')
+def check():
+    cursor.execute('select status from db.status_update where id=1')
+    result = cursor.fetchall()
+    print(result)
+    return jsonify(result)
 
 @app.route('/')
 def root():

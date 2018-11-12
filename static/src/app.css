@@ -6,7 +6,8 @@
 }
 .toolbar {
 	min-height: 0px;
-	height: 48px;
+  height: 48px;
+  justify-content: space-between;
 }
 .toolbar > div {
     width: 220px;
@@ -67,4 +68,19 @@ md-sidenav.md-locked-open {
   background: whitesmoke;
   align-items: center;
   justify-content: center;
+}
+
+.update {
+  -webkit-animation: update 2s infinite linear;
+  animation: update 2s infinite linear;
+}
+@-webkit-keyframes update {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
 }
