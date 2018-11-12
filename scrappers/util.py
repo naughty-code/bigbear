@@ -50,7 +50,7 @@ def scrape_ranges(id_, rgs, quote):
 def extract_costs(ids, quote, date_ranges_=None):
     if not date_ranges_:
         start = dt.datetime.now()
-        end = start + timedelta(days=30)
+        end = start + timedelta(days=450)
         range_ = get_weekends_from_to(start, end) + get_holidays_in_range(start, end)
     
     with mp.Pool(8) as p:
