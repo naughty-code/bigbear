@@ -1,4 +1,4 @@
-angular.module('app').controller('appController', function ($scope, $mdSidenav, $http, $interval) {
+angular.module('app').controller('appController', function ($scope, $mdSidenav, $http, $interval, $route) {
 	$scope.toggleMenu = function() {
 		$mdSidenav('left').toggle();
 	}
@@ -10,14 +10,22 @@ angular.module('app').controller('appController', function ($scope, $mdSidenav, 
 		$http.get('http://localhost:5000/api/update');
 	}
 
+	var before = ["Updating", ""];
 	$interval(function () {
 		$http.get('http://localhost:5000/api/check')
 			.then(function(response) {
-				console.log(response.data[0].status);
-				if (response.data[0].status == "Updated")
+				if (response.data[0].status == "Updated") {
 					$scope.disableButton = false;
-				else
+					if (before[0] == 'Updating' && before[1] == 'Updating')
+						$route.reload();
+					before[1] = before[0];
+					before[0] = 'Updated';
+				}
+				else {
 					$scope.disableButton = true;
+					before[1] = before[0];
+					before[0] = 'Updating';
+				}
 			}, function(response) {
 				var data = response.data || 'Request failed';
 				var status = response.status;
