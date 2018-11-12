@@ -129,6 +129,20 @@ def report():
 
     return jsonify(result_json)
 
+@app.route('/api/update')
+def update():
+    # here we execute the scrappers and update database
+    cursor.execute("UPDATE db.status_update SET status='Updating'")
+    connection.commit()
+    return 'true'
+
+@app.route('/api/check')
+def check():
+    cursor.execute('select status from db.status_update where id=1')
+    result = cursor.fetchall()
+    print(result)
+    return jsonify(result)
+
 @app.route('/')
 def root():
     return app.send_static_file('index.html')
