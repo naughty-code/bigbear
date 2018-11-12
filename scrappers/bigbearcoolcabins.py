@@ -55,6 +55,7 @@ def scrape_cabin_urls():
 def scrape_cabin_urls_and_store():
     urls = scrape_cabin_urls()
     dump_from(CABIN_URLS_FILE, urls)
+    return urls
 
 def get_availability_weekends_friday(id, booked):
     availability = []
@@ -757,8 +758,7 @@ def get_rates_multi(availabilities, N=8):
         yield from p.imap_unordered(get_rates, availabilities)
 
 def upload_to_database():
-    with open('./scrappers/bbcc_cabin_urls.json') as f:
-        cabins = json.load(f)
+    cabins = load_cabins()
     insert_cabins(cabins)
 
 def insert():

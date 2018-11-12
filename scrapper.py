@@ -1,7 +1,9 @@
 from scrappers import vacasa, bigbearcoolcabins
+import itertools
 
 def update_cabin_urls():
     vacasa_cabin_urls = vacasa.scrape_and_store_urls()
+    bbcc_cabin_urls = bigbearcoolcabins.scrape_cabin_urls_and_store()
 
 def scrape_cabins():
     vacasa_cabins = vacasa.scrape_cabins()
@@ -21,6 +23,9 @@ def update():
     scrape_cabins()
     scrape_rates()
     update_database()
+
+if __name__ == "__main__":
+    update()
 
 
 
