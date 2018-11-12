@@ -4,7 +4,7 @@ import requests as rq
 import pandas as pd
 import json
 import datetime
-import util
+from scrappers import util
 
 from bs4 import BeautifulSoup
 from collections import OrderedDict

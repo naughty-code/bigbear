@@ -48,10 +48,12 @@ def scrape_ranges(id_, rgs, quote):
     return results
 
 def extract_costs(ids, quote, date_ranges_=None):
-    if not date_ranges_:
-        start = dt.datetime.now()
-        end = start + timedelta(days=30)
-        range_ = get_weekends_from_to(start, end) + get_holidays_in_range(start, end)
+    #if not date_ranges_:
+    #    start = dt.datetime.now()
+    #    end = start + timedelta(days=450)
+    #    range_ = get_weekends_from_to(start, end) + get_holidays_in_range(start, end)
+    df = pd.read_csv('scrappers/merged.csv', parse_dates=['PL', 'PR'])
+    range_ = [(pl, pr, h) for i,pl,pr,h in df.itertuples()]
     
     with mp.Pool(8) as p:
         scraper = functools.partial(
