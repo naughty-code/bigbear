@@ -52,7 +52,7 @@ def extract_costs(ids, quote, date_ranges_=None):
     #    start = dt.datetime.now()
     #    end = start + timedelta(days=450)
     #    range_ = get_weekends_from_to(start, end) + get_holidays_in_range(start, end)
-    df = pd.read_csv('scrappers/merged.csv', parse_dates=['PL', 'PR'])
+    df = pd.read_csv('scrappers/CEK_DB_-_Dates_CSV.csv', parse_dates=['PL', 'PR'])
     range_ = [(pl, pr, h) for i,pl,pr,h in df.itertuples()]
     
     with mp.Pool(8) as p:

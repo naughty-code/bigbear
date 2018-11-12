@@ -18,7 +18,6 @@ app.config['JSON_SORT_KEYS'] = False
 
 CORS(app)
 
-
 connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)
 cursor = connection.cursor()
 
@@ -135,12 +134,13 @@ def report():
 @app.route('/api/update')
 def update():
     # here we execute the scrappers and update database
-    scrapper_process = Process(target=scrapper.update)
-    with connection:
-        cursor.execute("UPDATE db.status_update SET status='Updating'")
-    scrapper_process.start()
-    with connection:
-        cursor.execute("UPDATE db.status_update SET status = 'Updated' WHERE id=1;")
+    cursor.execute('select status from db.status_update where id=1')
+    result = cursor.fetchall()
+    if result != 'Updating':
+        with connection:
+            cursor.execute("UPDATE db.status_update SET status='Updating'")
+        scrapper_process = Process(target=scrapper.update)
+        scrapper_process.start()
     return 'true'
 
 @app.route('/api/check')
