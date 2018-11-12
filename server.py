@@ -139,8 +139,6 @@ def update():
     with connection:
         cursor.execute("UPDATE db.status_update SET status='Updating'")
     scrapper_process.start()
-    with connection:
-        cursor.execute("UPDATE db.status_update SET status = 'Updated' WHERE id=1;")
     return 'true'
 
 @app.route('/api/check')

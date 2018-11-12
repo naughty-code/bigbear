@@ -1,5 +1,10 @@
-from scrappers import vacasa, bigbearcoolcabins
+import os
 import itertools
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from scrappers import vacasa, bigbearcoolcabins
+
+DATABASE_URI = os.environ['DATABASE_URL']
 
 def update_cabin_urls():
     vacasa_cabin_urls = vacasa.scrape_and_store_urls()
@@ -23,6 +28,11 @@ def update():
     scrape_cabins()
     scrape_rates()
     update_database()
+
+    connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)
+    cursor = connection.cursor()
+    with connection:
+        cursor.execute("UPDATE db.status_update SET status = 'Updated' WHERE id=1;")
 
 if __name__ == "__main__":
     update()
