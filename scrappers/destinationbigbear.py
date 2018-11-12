@@ -14,8 +14,9 @@ from datetime import datetime
 from datetime import timedelta
 from bs4 import BeautifulSoup
 
-DATABASE_URL = os.environ['DATABASE_URL']
-connection = psycopg2.connect(DATABASE_URL)
+CABIN_URLS_FILE = './scrappers/dbb_cabin_urls.json'
+DATABASE_URI = os.environ['DATABASE_URI']
+connection = psycopg2.connect(DATABASE_URI)
 cursor = connection.cursor()
 
 # destinationbigbear -> dbb
@@ -23,6 +24,12 @@ cursor = connection.cursor()
 # vacasa             -> vcs
 # bigbearvacations   -> bbv
 # Don't forget to handle exceptions
+
+def load_cabins():
+    cabins = []
+    with open('./scrappers/dbb.json', encoding='utf8') as f:
+        cabins = json.load(f)
+    return cabins
 
 def default_value(func):
     def wrapper(*args, **kwargs):
@@ -37,6 +44,27 @@ def read_csv_cabins(filename):
     # Extract cabins website from csv
     df = pd.read_csv(filename)
     return df.Link
+
+def scrape_cabin_urls():
+    base_url = 'https://www.destinationbigbear.com/'
+    res = rq.get('https://www.destinationbigbear.com/AllCabinList.aspx')
+    soup = BeautifulSoup(res.text, 'html.parser')
+    urls = [base_url + a['href'] for a in soup('a', href=lambda href: 'Property_detail' in href)]
+    return urls
+
+def get_quote(id, start_date, end_date):
+    pass
+
+def extract_costs():
+    cabins = load_cabins()
+    pattern = re.compile(r'propid=(\d+)')
+    ids = [ re.search(pattern, cabin['url']).group(1) for cabin in cabins ]
+    return util.extract_costs(ids, get_quote)
+
+def scrape_and_store_cabin_urls():
+    urls = scrape_cabin_urls()
+    with open(CABIN_URLS_FILE, 'w', encoding='utf8') as f:
+        json.dump(urls, f, indent=2)
 
 @default_value
 def extract_name(soup):
@@ -495,21 +523,21 @@ def parse_data(html):
     booked = extract_calendar(soup)
     data['booked'] = parse_dates(booked)
     # Obviously this needs to be changed but not tonight fellas
-    availabilities_weekends = get_availability_weekends_friday(id_, data['booked'])
-    availabilities_MLK = get_availability_MLK(id_, data['booked'])
-    availabilities_president = get_availability_president(id_, data['booked'])
-    availabilities_patrick = get_availability_patrick(id_, data['booked'])
-    availabilities_easter = get_availability_easter(id_, data['booked'])
-    availabilities_cincomayo = get_availability_cincomayo(id_, data['booked'])
-    availabilities_memorial = get_availability_memorial(id_, data['booked'])
-    availabilities_4july = get_availability_4july(id_, data['booked'])
-    availabilities_labor = get_availability_labor(id_, data['booked'])
-    availabilities_columbus = get_availability_columbus(id_, data['booked'])
-    availabilities_veterans = get_availability_veterans(id_, data['booked'])
-    availability_thanksgiving = get_availability_thanksgiving(id_, data['booked'])
-    availabilities_christmas = get_availability_christmas(id_, data['booked'])
+    #availabilities_weekends = get_availability_weekends_friday(id_, data['booked'])
+    #availabilities_MLK = get_availability_MLK(id_, data['booked'])
+    #availabilities_president = get_availability_president(id_, data['booked'])
+    #availabilities_patrick = get_availability_patrick(id_, data['booked'])
+    #availabilities_easter = get_availability_easter(id_, data['booked'])
+    #availabilities_cincomayo = get_availability_cincomayo(id_, data['booked'])
+    #availabilities_memorial = get_availability_memorial(id_, data['booked'])
+    #availabilities_4july = get_availability_4july(id_, data['booked'])
+    #availabilities_labor = get_availability_labor(id_, data['booked'])
+    #availabilities_columbus = get_availability_columbus(id_, data['booked'])
+    #availabilities_veterans = get_availability_veterans(id_, data['booked'])
+    #availability_thanksgiving = get_availability_thanksgiving(id_, data['booked'])
+    #availabilities_christmas = get_availability_christmas(id_, data['booked'])
 
-    data['availabilities'] = availabilities_weekends + availabilities_MLK + availabilities_president + availabilities_patrick + availabilities_easter + availabilities_cincomayo + availabilities_memorial + availabilities_4july + availabilities_labor + availabilities_columbus + availabilities_veterans + availability_thanksgiving + availabilities_christmas
+    #data['availabilities'] = availabilities_weekends + availabilities_MLK + availabilities_president + availabilities_patrick + availabilities_easter + availabilities_cincomayo + availabilities_memorial + availabilities_4july + availabilities_labor + availabilities_columbus + availabilities_veterans + availability_thanksgiving + availabilities_christmas
 
     return data
 
@@ -569,7 +597,7 @@ def get_rates_multi(availabilities, N=4):
     with mp.Pool(N) as p:
         yield from p.imap_unordered(get_rates, availabilities)
 
-def update_database(cabins, amenities, availabilities):
+def update_database(cabins, amenities, availabilities=None):
     connection = psycopg2.connect(os.getenv('DATABASE_URL'))
     with connection:
         with connection.cursor() as cursor:
@@ -591,7 +619,6 @@ def update_database(cabins, amenities, availabilities):
 
             # Update vrm ncabins and last_scrape
             cursor.execute('UPDATE db.vrm SET ncabins=' + str(len(cabins)) + ', last_scrape=CURRENT_TIMESTAMP WHERE idvrm = \'DBB\'')
-    cursor.close()
     connection.close()
 
 
@@ -623,8 +650,8 @@ def main():
             for amenity in r.get('amenities') :
                 amenities.append(amenity)
 
-            for availability in r.get('availabilities') :
-                availabilities.append(availability)
+           # for availability in r.get('availabilities') :
+           #     availabilities.append(availability)
 
             cabinInsert = (
                 'DBB', 
@@ -637,13 +664,13 @@ def main():
             )
             cabins.append(cabinInsert)
 
-        new_availabilities = []
-        total = len(availabilities)
-        index = 0
-        for gr in get_rates_multi(availabilities):
-            index += 1
-            new_availabilities.append(gr)
-            print(f'Availability {index}/{total}')
+        #new_availabilities = []
+        #total = len(availabilities)
+        #index = 0
+        #for gr in get_rates_multi(availabilities):
+        #    index += 1
+        #    new_availabilities.append(gr)
+        #    print(f'Availability {index}/{total}')
 
 
     except KeyboardInterrupt: pass
@@ -652,7 +679,7 @@ def main():
         name = dump_from(filename, results)
         print('Dumped', name)
 
-        update_database(cabins, amenities, new_availabilities)
+        update_database(cabins, amenities)#, new_availabilities)
         print('Database updated')
         cursor.close()
         connection.close()

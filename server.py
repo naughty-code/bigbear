@@ -5,6 +5,8 @@ from flask_cors import CORS
 from flask import jsonify
 import os
 import json
+import scrapper
+
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -132,8 +134,11 @@ def report():
 @app.route('/api/update')
 def update():
     # here we execute the scrappers and update database
-    cursor.execute("UPDATE db.status_update SET status='Updating'")
-    connection.commit()
+    with connection:
+        cursor.execute("UPDATE db.status_update SET status='Updating'")
+    scrapper.update()
+    with connection:
+        cursor.execute("UPDATE db.status_update SET status = 'Updated' WHERE id=1;")
     return 'true'
 
 @app.route('/api/check')
