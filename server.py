@@ -24,7 +24,7 @@ cursor = connection.cursor()
 
 @app.route('/api/cabins')
 def cabins():
-    cursor.execute('SELECT * FROM db.cabin')
+    cursor.execute('SELECT cabin.*, vrm.last_scrape FROM db.cabin as cabin join db.vrm as vrm on cabin.idvrm = vrm.idvrm')
     data = cursor.fetchall()
     return jsonify(data)
 
