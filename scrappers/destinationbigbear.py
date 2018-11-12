@@ -14,6 +14,7 @@ from datetime import datetime
 from datetime import timedelta
 from bs4 import BeautifulSoup
 
+
 CABIN_URLS_FILE = './scrappers/dbb_cabin_urls.json'
 DATABASE_URI = os.environ['DATABASE_URI']
 connection = psycopg2.connect(DATABASE_URI)

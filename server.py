@@ -6,6 +6,7 @@ from flask import jsonify
 import os
 import json
 import scrapper
+from multiprocessing import Process
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -134,9 +135,10 @@ def report():
 @app.route('/api/update')
 def update():
     # here we execute the scrappers and update database
+    scrapper_process = Process(target=scrapper.update)
     with connection:
         cursor.execute("UPDATE db.status_update SET status='Updating'")
-    scrapper.update()
+    scrapper_process.start()
     with connection:
         cursor.execute("UPDATE db.status_update SET status = 'Updated' WHERE id=1;")
     return 'true'
