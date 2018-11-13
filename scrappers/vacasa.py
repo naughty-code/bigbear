@@ -28,7 +28,7 @@ import itertools
 HEADERS = { 'accept-language': 'en', 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36' }
 
 DATE_FORMAT = '%Y/%m/%d'
-OUTPUT_FILE = './scrappers/vacasa.json'
+OUTPUT_FILE = './scrappers/vacasa_cabins.json'
 DATABASE_URI = os.getenv('DATABASE_URI')
 
 def default_value(func):
@@ -282,7 +282,7 @@ def insert_rates(*args):
     connection.close()
 
 def load_cabins():
-    cabins = read_json('./scrappers/vacasa.json')
+    cabins = read_json('./scrappers/vacasa_cabins.json')
     return cabins
 
 def insert_cabins():
