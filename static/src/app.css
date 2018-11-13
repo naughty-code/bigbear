@@ -74,6 +74,16 @@ md-sidenav.md-locked-open {
   -webkit-animation: update 2s infinite linear;
   animation: update 2s infinite linear;
 }
+@keyframes update {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
 @-webkit-keyframes update {
   0% {
     -webkit-transform: rotate(0deg);
@@ -83,4 +93,23 @@ md-sidenav.md-locked-open {
     -webkit-transform: rotate(359deg);
     transform: rotate(359deg);
   }
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.margin-bottom {
+  margin-bottom: 40px;
+}
+
+.font-12 {
+  font-size: 12px;
 }

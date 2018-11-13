@@ -9,6 +9,9 @@ angular.module('app')
 				controller: "singleTableController",
 				templateUrl: "src/single-table/single-table.template.html"
 			}).
+			when('/metrics', {
+				template: "<metric-table1></metric-table1><metric-table2></metric-table2>"
+			}).
 			when('/:view', {
 				controller: "singleTableController",
 				templateUrl: "src/single-table/single-table.template.html"

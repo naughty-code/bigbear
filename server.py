@@ -1,4 +1,5 @@
 from flask import Flask
+from flask import request
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from flask_cors import CORS
@@ -147,7 +148,45 @@ def update():
 def check():
     cursor.execute('select status from db.status_update where id=1')
     result = cursor.fetchall()
-    print(result)
+    return jsonify(result)
+
+@app.route('/api/metrics1')
+def metrics1():
+    result = []
+    cursor.execute('''select count(id), name from db.availability where "name" <> 'Weekend' and status = 'BOOKED' group by "name" order by count(id) desc''')
+    result.append(cursor.fetchall())
+    cursor.execute('''select MIN(rate), name from db.availability where "name" <> 'Weekend' and status = 'AVAILABLE' group by "name" order by min(rate) asc limit 1''')
+    result.append(cursor.fetchall())
+    cursor.execute('''select MAX(rate), name from db.availability where "name" <> 'Weekend' and status = 'AVAILABLE' group by "name" order by max(rate) desc limit 1''')
+    result.append(cursor.fetchall())
+    cursor.execute('''select count(id), check_in, check_out from db.availability where "name" = 'Weekend' and status = 'BOOKED' group by check_in, check_out order by count(id) desc
+''')
+    result.append(cursor.fetchall())
+    cursor.execute('''select MIN(rate), check_in, check_out from db.availability where "name" = 'Weekend' and status = 'AVAILABLE' group by check_in, check_out order by min(rate) asc limit 1
+''')
+    result.append(cursor.fetchall())
+    cursor.execute('''select MAX(rate), check_in, check_out from db.availability where "name" = 'Weekend' and status = 'AVAILABLE' group by check_in, check_out order by MAX(rate) desc limit 1''')
+    result.append(cursor.fetchall())
+    return jsonify(result)
+
+@app.route('/api/metrics2')
+def metrics2():
+    result = []
+    year = request.args.get('year')
+    day = request.args.get('day')
+
+    with connection, connection.cursor() as c:
+        sql = "select COUNT(status) as bookings from db.availability where status = 'BOOKED' and name=%s and DATE_PART('YEAR', check_in) = %s"
+        c.execute(sql, [day, year])
+        res1 = c.fetchall()
+        print(res1)
+        result.append(res1[0])
+        sql = "select COUNT(status) as vacants from db.availability where status = 'AVAILABLE' and name=%s and DATE_PART('YEAR', check_in) = %s"
+        print(sql)
+        c.execute(sql, [day, year])
+        res2 = c.fetchall()
+        print(res2)
+        result.append(res2[0])
     return jsonify(result)
 
 @app.route('/')
