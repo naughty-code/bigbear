@@ -257,7 +257,7 @@ def insert_rates(*args):
         start = rate['startDate'].to_pydatetime()
         end =  rate['endDate'].to_pydatetime()
         name = rate['holiday']
-        if rate['quote']['raw'].get('Error'):
+        if rate.get('quote') and rate['quote'].get('raw') and  rate['quote']['raw'].get('Error') or not rate['quote'].get('raw'):
             booked = 'BOOKED'
             q = 0
         else:
