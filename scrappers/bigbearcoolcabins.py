@@ -8,6 +8,7 @@ import psycopg2
 import html
 import re
 import itertools
+from decimal import Decimal
 from scrappers import util
 
 from urllib.parse import urljoin
@@ -796,6 +797,36 @@ def insert():
     insert_amenities(cabins)
     insert_rates()
 
+def get_cabins_from_db():
+    connection = psycopg2.connect(os.getenv('DATABASE_URI'))
+    with connection, connection.cursor() as cursor:
+        cursor.execute("SELECT id, name FROM db.cabin WHERE idvrm='BBCC'")
+        data = cursor.fetchall()
+    return data
+
+def extract_costs_faster(start, end):
+    url = 'https://www.bigbearcoolcabins.com/big-bear-cabin-rentals'
+    params = {
+        'avail_filter[rcav][begin]': start.strftime('%m/%d/%Y'),
+        'avail_filter[rcav][end]': end.strftime('%m/%d/%Y'),
+        'avail_filter[rcav][flex_type]': 'd',
+        'ldrc_location': 'All',
+        'items_per_page': 50
+    }
+    for page in itertools.count(1):
+        params['page'] = page
+        res = rq.get(url, params=params)
+        soup = BeautifulSoup(res.text, 'lxml')
+        for name_tag, price_tag in zip(soup(class_='rc-core-item-name'), soup(class_='rc-price')):
+            name = name_tag.get_text()
+            price = Decimal(re.sub(r'[^\d.]', '', price_tag.get_text()))
+            yield {
+                'name': name,
+                'price': price
+            }
+        if soup(class_='current last'):
+            break
+    
 def scrape_cabins(filename='./scrappers/bbcc_cabins.js'):
     with open(CABIN_URLS_FILE) as f:
         links = json.load(f)
