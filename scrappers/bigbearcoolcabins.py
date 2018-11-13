@@ -804,7 +804,12 @@ def get_cabins_from_db():
         data = cursor.fetchall()
     return data
 
-def extract_costs_faster(start, end):
+def extract_costs_faster():
+    return util.extract_costs_faster(extract_costs_faster_function)
+
+def extract_costs_faster_function(range_tuple):
+    (start, end, holiday) = range_tuple
+    results = []
     url = 'https://www.bigbearcoolcabins.com/big-bear-cabin-rentals'
     params = {
         'avail_filter[rcav][begin]': start.strftime('%m/%d/%Y'),
@@ -820,12 +825,16 @@ def extract_costs_faster(start, end):
         for name_tag, price_tag in zip(soup(class_='rc-core-item-name'), soup(class_='rc-price')):
             name = name_tag.get_text()
             price = Decimal(re.sub(r'[^\d.]', '', price_tag.get_text()))
-            yield {
+            results.append({
+                'start': start,
+                'end': end,
                 'name': name,
-                'price': price
-            }
+                'price': price,
+                'holiday': holiday
+            })
         if soup(class_='current last'):
             break
+    return results
     
 def scrape_cabins(filename='./scrappers/bbcc_cabins.js'):
     with open(CABIN_URLS_FILE) as f:

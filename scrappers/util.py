@@ -70,11 +70,8 @@ def extract_costs_faster(quote, date_ranges_=None):
     #    range_ = get_weekends_from_to(start, end) + get_holidays_in_range(start, end)
     df = pd.read_csv('scrappers/CEK_DB_-_Dates_CSV.csv', parse_dates=['PL', 'PR'])
     range_ = [(pl, pr, h) for i,pl,pr,h in df.itertuples()]
-    
     with mp.Pool(8) as p:
-        scraper = functools.partial(
-                scrape_ranges, rgs=range_, quote=quote)
-        yield from p.imap_unordered(scraper, ids)
+        yield from p.imap_unordered(quote, range_)
 
 def get_weekends_from_to(start_date, end_date):
     weekends = []
