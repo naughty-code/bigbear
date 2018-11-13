@@ -707,7 +707,9 @@ def insert_amenities(cabins):
             execute_values(cursor, str_sql, insertAmenities)
     connection.close()
 
-def insert_cabins(cabins):
+def insert_cabins(cabins=None):
+    if not cabins:
+        cabins = load_cabins()
     connection = psycopg2.connect(os.getenv('DATABASE_URI'))
     insertCabins = []
     for cabin in cabins:
