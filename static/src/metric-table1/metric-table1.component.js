@@ -16,14 +16,14 @@ function metricTable1Controller($http, $filter) {
 		.then(function(response) {
 			var result = response.data;
 			
-			ctrl.rows[0] = result[0][0].name;
-			ctrl.rows[1] = result[0][result[0].length-1].name;
+			ctrl.rows[0] = result[0][0].name + " - " + result[0][0].count;
+			ctrl.rows[1] = result[0][result[0].length-1].name + " - " + result[0][result[0].length-1].count;
 			ctrl.rows[2] = result[1][0].name;
 			ctrl.rows[3] = result[2][0].name;
-			ctrl.rows[4] = $filter('date')(new Date(result[3][0].check_in), 'mediumDate', 'GMT') + ' - ' + $filter('date')(new Date(result[3][0].check_out), 'mediumDate', 'GMT');
-			ctrl.rows[5] = $filter('date')(new Date(result[3][result[3].length-1].check_in), 'mediumDate', 'GMT') + ' - ' + $filter('date')(new Date(result[3][result[3].length-1].check_out), 'mediumDate', 'GMT');
-			ctrl.rows[6] = $filter('date')(new Date(result[4][0].check_in), 'mediumDate', 'GMT') + ' - ' + $filter('date')(new Date(result[4][0].check_out), 'mediumDate', 'GMT');
-			ctrl.rows[7] = $filter('date')(new Date(result[5][result[5].length-1].check_in), 'mediumDate', 'GMT') + ' - ' + $filter('date')(new Date(result[5][result[5].length-1].check_out), 'mediumDate', 'GMT');
+			ctrl.rows[4] = result[3][0].name + ': ' + $filter('date')(new Date(result[3][0].check_in), 'mediumDate', 'GMT') + ' - ' + $filter('date')(new Date(result[3][0].check_out), 'mediumDate', 'GMT');
+			ctrl.rows[5] = result[3][result[3].length-1].name + ': ' + $filter('date')(new Date(result[3][result[3].length-1].check_in), 'mediumDate', 'GMT') + ' - ' + $filter('date')(new Date(result[3][result[3].length-1].check_out), 'mediumDate', 'GMT');
+			ctrl.rows[6] = result[4][0].name + ': ' + $filter('date')(new Date(result[4][0].check_in), 'mediumDate', 'GMT') + ' - ' + $filter('date')(new Date(result[4][0].check_out), 'mediumDate', 'GMT');
+			ctrl.rows[7] = result[5][result[5].length-1].name + ': ' + $filter('date')(new Date(result[5][result[5].length-1].check_in), 'mediumDate', 'GMT') + ' - ' + $filter('date')(new Date(result[5][result[5].length-1].check_out), 'mediumDate', 'GMT');
 		}, function(response) {
 			var data = response.data || 'Request failed';
 			var status = response.status;

@@ -24,9 +24,9 @@ function metricTable2Controller($http) {
 		"Bookings",
 		"Vacants",
 		"Most Popular VRM",
-		"Most Popular Bookings",
+		"Most Popular VRM Bookings",
 		"Less Popular VRM",
-		"Less Popular Booking",
+		"Less Popular VRM Booking",
 		"Our Bookings",
 		"Our Vacants"
 	]
@@ -47,6 +47,7 @@ function metricTable2Controller($http) {
 		"Less Popular Ocupancy"
 	]
 	ctrl.rows1 = []
+	ctrl.rows2 = []
 	ctrl.consult = function () {
 		$http.get('http://localhost:5000/api/metrics2', {
 			params: { 
@@ -55,12 +56,30 @@ function metricTable2Controller($http) {
 			}
 		})
 			.then(function (response) {
-				var data = response.data[0];
-				console.log(data);
+				var data = response.data;
+
+				ctrl.rows1[0] = data[0][0].bookings
+				ctrl.rows1[1] = data[1][0].vacants
+				ctrl.rows1[2] = data[2][0].idvrm
+				ctrl.rows1[3] = data[2][0].count
+				ctrl.rows1[4] = data[2][1].idvrm
+				ctrl.rows1[5] = data[2][1].count
 				
-				ctrl.rows1[0] = (data.bookings)
-				// ctrl.rows1[1] = (data[1].vacants)
-				
+				ctrl.rows2[0] = data[3][0].avg
+				ctrl.rows2[1] = data[4][data[4].length-1].idvrm + ' - ' + data[4][data[4].length-1].avg
+				ctrl.rows2[2] = data[4][0].idvrm + ' - ' + data[4][0].avg
+				ctrl.rows2[3] = "UNCLASSIFIED";
+				ctrl.rows2[4] = 0;
+				ctrl.rows2[5] = 0;
+				if (data[5].length > 0) {
+					ctrl.rows2[6] = data[5][data[5].length-1].id + ' - ' + data[5][data[5].length-1].rate
+					ctrl.rows2[7] = data[5][0].id + ' - ' + data[5][0].rate
+				}
+				else {
+					ctrl.rows2[6] = 0
+					ctrl.rows2[7] = 0
+				}
+
 			}, function (response) {
 				var data = response.data || 'Request failed';
 				var status = response.status;

@@ -153,20 +153,20 @@ def check():
 @app.route('/api/metrics1')
 def metrics1():
     result = []
-    cursor.execute('''select count(id), name from db.availability where "name" <> 'Weekend' and status = 'BOOKED' group by "name" order by count(id) desc''')
-    result.append(cursor.fetchall())
-    cursor.execute('''select MIN(rate), name from db.availability where "name" <> 'Weekend' and status = 'AVAILABLE' group by "name" order by min(rate) asc limit 1''')
-    result.append(cursor.fetchall())
-    cursor.execute('''select MAX(rate), name from db.availability where "name" <> 'Weekend' and status = 'AVAILABLE' group by "name" order by max(rate) desc limit 1''')
-    result.append(cursor.fetchall())
-    cursor.execute('''select count(id), check_in, check_out from db.availability where "name" = 'Weekend' and status = 'BOOKED' group by check_in, check_out order by count(id) desc
-''')
-    result.append(cursor.fetchall())
-    cursor.execute('''select MIN(rate), check_in, check_out from db.availability where "name" = 'Weekend' and status = 'AVAILABLE' group by check_in, check_out order by min(rate) asc limit 1
-''')
-    result.append(cursor.fetchall())
-    cursor.execute('''select MAX(rate), check_in, check_out from db.availability where "name" = 'Weekend' and status = 'AVAILABLE' group by check_in, check_out order by MAX(rate) desc limit 1''')
-    result.append(cursor.fetchall())
+    with connection, connection.cursor() as c:
+        c.execute('''select count(id), name from db.availability where "name" <> 'Weekend' and status = 'BOOKED' group by "name" order by count(id) desc''')
+        result.append(c.fetchall())
+        c.execute('''select MIN(rate), name from db.availability where "name" <> 'Weekend' and status = 'AVAILABLE' group by "name" order by min(rate) asc limit 1''')
+        result.append(c.fetchall())
+        c.execute('''select MAX(rate), name from db.availability where "name" <> 'Weekend' and status = 'AVAILABLE' group by "name" order by max(rate) desc limit 1''')
+        result.append(c.fetchall())
+        c.execute('''select count(id), check_in, check_out, name from db.availability where status = 'BOOKED' group by check_in, check_out, name order by count(id) desc
+    ''')
+        result.append(c.fetchall())
+        c.execute('''select MIN(rate), check_in, check_out, name from db.availability where status = 'AVAILABLE' group by check_in, check_out, name order by min(rate) asc limit 1''')
+        result.append(c.fetchall())
+        c.execute('''select MAX(rate), check_in, check_out, name from db.availability where status = 'AVAILABLE' group by check_in, check_out, name order by MAX(rate) desc limit 1''')
+        result.append(c.fetchall())
     return jsonify(result)
 
 @app.route('/api/metrics2')
@@ -178,15 +178,49 @@ def metrics2():
     with connection, connection.cursor() as c:
         sql = "select COUNT(status) as bookings from db.availability where status = 'BOOKED' and name=%s and DATE_PART('YEAR', check_in) = %s"
         c.execute(sql, [day, year])
-        res1 = c.fetchall()
-        print(res1)
-        result.append(res1[0])
+        result.append(c.fetchall())
+
         sql = "select COUNT(status) as vacants from db.availability where status = 'AVAILABLE' and name=%s and DATE_PART('YEAR', check_in) = %s"
-        print(sql)
         c.execute(sql, [day, year])
-        res2 = c.fetchall()
-        print(res2)
-        result.append(res2[0])
+        result.append(c.fetchall())
+
+        sql = '''select c.idvrm, count(a.id) from db.availability as a 
+            join db.cabin as c on a.id = c.id 
+            where a.status = 'BOOKED'
+            and a.name=%s 
+            and DATE_PART('YEAR', a.check_in) = %s
+            group by c.idvrm 
+            order by count(a.id) desc'''
+        c.execute(sql, [day, year])
+        result.append(c.fetchall())
+
+        sql = '''select COALESCE(avg(rate), 0) AS avg from db.availability as a
+        where a.status = 'AVAILABLE'
+        and a.name=%s
+        and DATE_PART('YEAR', a.check_in) = %s'''
+        c.execute(sql, [day, year])
+        result.append(c.fetchall())
+
+        sql = '''select v.idvrm, coalesce((
+            select avg(a.rate) 
+            from db.availability as a
+            where a."name" = %s 
+            and a.id like v.idvrm || '%%'
+            and DATE_PART('YEAR', a.check_in) = %s
+            and a.status = 'AVAILABLE'
+        ), 0) as avg from db.vrm as v order by avg desc;'''
+        c.execute(sql, [day, year])
+        result.append(c.fetchall())
+
+        sql = '''select a.id, a.rate from db.availability as a 
+            where a.status = 'AVAILABLE'
+            and a.name=%s
+            and DATE_PART('YEAR', a.check_in) = %s
+            order by a.rate desc;'''
+        c.execute(sql, [day, year])
+        result.append(c.fetchall())
+
+
     return jsonify(result)
 
 @app.route('/')

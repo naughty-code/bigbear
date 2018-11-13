@@ -16,7 +16,7 @@
 			<th ng-repeat="h in $ctrl.header1">{{ h }}</th>
 		</tr>
 		<tr>
-			<td ng-repeat="r in $ctrl.rows1">{{ r }}</td>
+			<td ng-repeat="r in $ctrl.rows1 track by $index">{{ r }}</td>
 		</tr>
 	</table>
 	<table class="margin-bottom">
@@ -24,7 +24,7 @@
 			<th ng-repeat="h in $ctrl.header2">{{ h }}</th>
 		</tr>
 		<tr>
-			<td ng-repeat="v in $ctrl.header2">{{ v }}</td>
+			<td ng-repeat="r in $ctrl.rows2 track by $index">{{ r }}</td>
 		</tr>
 	</table>
 	<table class="margin-bottom">
@@ -32,7 +32,7 @@
 			<th ng-repeat="h in $ctrl.header3">{{ h }}</th>
 		</tr>
 		<tr>
-			<td ng-repeat="v in $ctrl.header3">{{ v }}</td>
+			<td ng-repeat="v in $ctrl.header3 track by $index">{{ v }}</td>
 		</tr>
 	</table>
 </div>
