@@ -246,16 +246,19 @@ def insert_features():
     connection.close()
     
 
-def insert_rates():
-    rates = load_rates()
-    flat_rates = list(itertools.chain(*rates))
+def insert_rates(*args):
+    rates = []
+    if len(args) == 0:
+        rates = load_rates()
+    elif len(args) == 1:
+        rates = args[0]
     holidays = util.get_holidays_as_dict()
     tuples = []
-    for rate in flat_rates:
+    for rate in rates:
         id_ = 'VACASA' + rate['id']
-        start = dt.datetime.strptime(rate['startDate'], '%Y-%m-%d')
-        end =  dt.datetime.strptime(rate['endDate'], '%Y-%m-%d')
-        name = holidays.get((start, end), 'weekend')
+        start = rate['startDate'].to_pydatetime()
+        end =  rate['endDate'].to_pydatetime()
+        name = rate['holiday']
         if rate['quote']['raw'].get('Error'):
             booked = 'BOOKED'
             q = 0

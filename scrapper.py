@@ -4,21 +4,25 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 from scrappers import vacasa, bigbearcoolcabins
 
-DATABASE_URI = os.environ['DATABASE_URL']
+DATABASE_URI = os.environ.get('DATABASE_URL', None) or os.getenv('DATABASE_URI')
 
 def update_cabin_urls():
     vacasa_cabin_urls = vacasa.scrape_and_store_urls()
     bbcc_cabin_urls = bigbearcoolcabins.scrape_cabin_urls_and_store()
 
+def scrape_rates():
+    for rate in vacasa.extract_costs():
+        print('----------checkpoint------------')
+        vacasa.insert_rates(rate)
+    for rate in bigbearcoolcabins.extract_costs():
+        print('----------checkpoint------------')
+        bigbearcoolcabins.insert_rates(rate)
+
+
 def scrape_cabins():
     vacasa_cabins = vacasa.scrape_cabins()
     bbcc_cabins = bigbearcoolcabins.scrape_cabins()
     return vacasa_cabins + bbcc_cabins
-
-def scrape_rates():
-    vacasa_rates = [c for c in vacasa.extract_costs()]
-    bbcc_rates = [c for c in bigbearcoolcabins.extract_costs()]
-    return vacasa_rates + bbcc_rates
 
 def update_database():
     bigbearcoolcabins.insert()

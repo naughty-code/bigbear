@@ -672,9 +672,15 @@ def rate_to_tuple(rate):
     name = rate['holiday']
     return (id_, start, end, status, rate_value, name)
 
-def insert_rates():
+
+
+def insert_rates(*args):
+    rates = []
     connection = psycopg2.connect(os.getenv('DATABASE_URI'))
-    rates = load_rates()
+    if len(args) == 0:
+        rates = load_rates()
+    elif len(args) == 1:
+        rates = args[0]
     tupled_rates = [rate_to_tuple(r) for r in rates]
     with connection, connection.cursor() as cursor:
         str_sql = '''INSERT INTO db.availability (id, check_in, check_out, status, rate, name) VALUES %s ON CONFLICT DO NOTHING'''

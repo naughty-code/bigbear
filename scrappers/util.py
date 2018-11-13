@@ -37,14 +37,17 @@ def ignore_errors(func):
 def scrape_ranges(id_, rgs, quote):
     results = []
     for start, end, holiday_or_weekend in rgs:
-        print(start, end)
-        data = { 'id': id_,
-            'startDate': start, 'endDate': end,
-            'quote': quote(id_, start, end),
-            'holiday': holiday_or_weekend
-            }
-        results.append(data)
-
+        print(start, end, holiday_or_weekend)
+        try:
+            data = { 'id': id_,
+                'startDate': start, 'endDate': end,
+                'quote': quote(id_, start, end),
+                'holiday': holiday_or_weekend
+                }
+            results.append(data)
+        except Exception as e:
+            print(e)
+            print('quote(cabin id): ', id_, start, end, holiday_or_weekend)
     return results
 
 def extract_costs(ids, quote, date_ranges_=None):
