@@ -220,6 +220,24 @@ def metrics2():
         c.execute(sql, [day, year])
         result.append(c.fetchall())
 
+        sql = '''select count(c.id), c.location from db.availability as a
+            join db.cabin as c on a.id = c.id 
+            where a.status = 'BOOKED'
+            and a.name=%s
+            and DATE_PART('YEAR', a.check_in) = %s
+            group by c.location order by count(c.id) desc;'''
+        c.execute(sql, [day, year])
+        result.append(c.fetchall())
+
+        sql = '''SELECT count(c.idvrm), occupancy from db.availability as a 
+            join db.cabin as c on c.id = a.id 
+            where a.status = 'BOOKED'
+            and a.name=%s
+            and DATE_PART('YEAR', a.check_in) = %s
+            group by c.occupancy 
+            order by count(c.idvrm) desc;'''
+        c.execute(sql, [day, year])
+        result.append(c.fetchall())
 
     return jsonify(result)
 
