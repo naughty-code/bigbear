@@ -663,17 +663,28 @@ def load_rates():
     return list(itertools.chain(*rates));
 
 def rate_to_tuple(rate):
-    id_ = 'BBCC' + rate['id']
+    id_ = 'BBCC' + rate['id'] if 'BBCC' not in rate['id'] else rate['id']
     start = rate['startDate']
     end = rate['endDate']
-    pattern = re.compile(r'$(\d*\.\d+|\d+)')
-    mo = pattern.match(rate['quote'])
+    pattern = re.compile(r'\$(\d+,\d+|\d+)')
+    mo = pattern.match(rate['quote']) 
     status = 'BOOKED' if not mo else 'AVAILABLE'
-    rate_value = 0 if not mo else mo.group(1)
+    pattern = re.compile(r'[^\d.]')
+    rate_value = 0 if not mo else pattern.sub('', rate['quote'])
     name = rate['holiday']
     return (id_, start, end, status, rate_value, name)
 
 
+def insert_rates_faster(rates):
+    tupled_rates = [(r['id'], r['startDate'], r['endDate'], r['status'], r['quote'], r['holiday']) for r in rates]
+    connection = psycopg2.connect(os.getenv('DATABASE_URI'))
+    with connection, connection.cursor() as cursor:
+        str_sql = '''INSERT INTO db.availability (id, check_in, check_out, status, rate, name) 
+                     VALUES %s 
+                     ON CONFLICT (id, check_in, check_out) DO UPDATE
+                     SET id = EXCLUDED.id, check_in = EXCLUDED.check_in, check_out = EXCLUDED.check_out, status = EXCLUDED.status, rate = EXCLUDED.rate, name = EXCLUDED.name'''
+        execute_values(cursor, str_sql, tupled_rates)
+    connection.close()
 
 def insert_rates(*args):
     rates = []
@@ -684,7 +695,10 @@ def insert_rates(*args):
         rates = args[0]
     tupled_rates = [rate_to_tuple(r) for r in rates]
     with connection, connection.cursor() as cursor:
-        str_sql = '''INSERT INTO db.availability (id, check_in, check_out, status, rate, name) VALUES %s ON CONFLICT DO NOTHING'''
+        str_sql = '''INSERT INTO db.availability (id, check_in, check_out, status, rate, name) 
+                     VALUES %s 
+                     ON CONFLICT DO UPDATE
+                     SET id = EXCLUDED.id, check_in = EXCLUDED.check_in, check_out = EXCLUDED.check_out, status = EXCLUDED.status, rate = EXCLUDED.rate, name = EXCLUDED.name'''
         execute_values(cursor, str_sql, tupled_rates)
     connection.close()
 
@@ -797,15 +811,25 @@ def insert():
     insert_amenities(cabins)
     insert_rates()
 
-def get_cabins_from_db():
+def get_cabins_from_db(): #returns a dict with name of cabin as key and id as value
+    data = {}
     connection = psycopg2.connect(os.getenv('DATABASE_URI'))
     with connection, connection.cursor() as cursor:
         cursor.execute("SELECT id, name FROM db.cabin WHERE idvrm='BBCC'")
-        data = cursor.fetchall()
+        for id, name in  cursor.fetchall():
+            data[name] = id
     return data
 
 def extract_costs_faster():
     return util.extract_costs_faster(extract_costs_faster_function)
+
+def extract_costs_and_insert():
+    cabin_name_to_id = get_cabins_from_db()
+    filename = 'bbcc_rates.json'
+    costs_with_ids = []
+    for costs in extract_costs_faster():
+        costs_with_ids = [{'id': cabin_name_to_id[c['name']], **c} for c in costs if cabin_name_to_id.get(c['name'])]
+        insert_rates_faster(costs_with_ids)
 
 def extract_costs_faster_function(range_tuple):
     (start, end, holiday) = range_tuple
@@ -826,11 +850,12 @@ def extract_costs_faster_function(range_tuple):
             name = name_tag.get_text()
             price = Decimal(re.sub(r'[^\d.]', '', price_tag.get_text()))
             results.append({
-                'start': start,
-                'end': end,
+                'startDate': start,
+                'endDate': end,
                 'name': name,
-                'price': price,
-                'holiday': holiday
+                'quote': price,
+                'holiday': holiday,
+                'status': 'AVAILABLE'
             })
         if soup(class_='current last'):
             break
