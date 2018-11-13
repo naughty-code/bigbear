@@ -216,7 +216,7 @@ def metrics2():
             where a.status = 'AVAILABLE'
             and a.name=%s
             and DATE_PART('YEAR', a.check_in) = %s
-            order by a.rate asc;'''
+            order by a.rate desc;'''
         c.execute(sql, [day, year])
         result.append(c.fetchall())
 
