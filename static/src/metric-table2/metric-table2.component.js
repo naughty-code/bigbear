@@ -24,9 +24,9 @@ function metricTable2Controller($http) {
 		"Bookings",
 		"Vacants",
 		"Most Popular VRM",
-		"Most Popular Bookings",
+		"Most Popular VRM Bookings",
 		"Less Popular VRM",
-		"Less Popular Booking",
+		"Less Popular VRM Booking",
 		"Our Bookings",
 		"Our Vacants"
 	]
@@ -55,11 +55,14 @@ function metricTable2Controller($http) {
 			}
 		})
 			.then(function (response) {
-				var data = response.data[0];
-				console.log(data);
-				
-				ctrl.rows1[0] = (data.bookings)
-				// ctrl.rows1[1] = (data[1].vacants)
+				var data = response.data;
+
+				ctrl.rows1[0] = data[0][0].bookings
+				ctrl.rows1[1] = data[1][0].vacants
+				ctrl.rows1[2] = data[2][0].idvrm
+				ctrl.rows1[3] = data[2][0].count
+				ctrl.rows1[4] = data[2][1].idvrm
+				ctrl.rows1[5] = data[2][1].count
 				
 			}, function (response) {
 				var data = response.data || 'Request failed';
