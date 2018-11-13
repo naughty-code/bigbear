@@ -153,9 +153,7 @@ def fetch_cost(id_, start, end):
 
 def extract_costs():
 
-    cabins = []
-    with open('./scrappers/vacasa.json') as f:
-        cabins = json.load(f)
+    cabins = load_cabins()
 
     ids = []
     for cabin in cabins:
