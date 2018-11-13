@@ -40,6 +40,7 @@ def update():
     insert_cabins()
     scrape_rates()
     bigbearcoolcabins.update_last_scrape()
+    vacasa.update_last_scrape()
     #update_database()
 
     connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)
