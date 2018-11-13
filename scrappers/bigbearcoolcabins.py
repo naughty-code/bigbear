@@ -825,9 +825,9 @@ def extract_costs_faster():
 
 def extract_costs_and_insert():
     cabin_name_to_id = get_cabins_from_db()
-    filename = 'bbcc_rates.json'
     costs_with_ids = []
     for costs in extract_costs_faster():
+        print(f'scraping rate: start:{costs[0]["startDate"]}, end: {costs[0]["endDate"]}, {costs[0]["holiday"]}')
         costs_with_ids = [{'id': cabin_name_to_id[c['name']], **c} for c in costs if cabin_name_to_id.get(c['name'])]
         insert_rates_faster(costs_with_ids)
 

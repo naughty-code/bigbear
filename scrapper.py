@@ -11,12 +11,10 @@ def update_cabin_urls():
     bbcc_cabin_urls = bigbearcoolcabins.scrape_cabin_urls_and_store()
 
 def scrape_rates():
+    bigbearcoolcabins.extract_costs_and_insert()
     for rate in vacasa.extract_costs():
         print('----------checkpoint------------')
         vacasa.insert_rates(rate)
-    for rate in bigbearcoolcabins.extract_costs():
-        print('----------checkpoint------------')
-        bigbearcoolcabins.insert_rates(rate)
 
 
 def scrape_cabins():
