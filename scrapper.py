@@ -39,6 +39,7 @@ def update():
     scrape_cabins()
     insert_cabins()
     scrape_rates()
+    bigbearcoolcabins.update_last_scrape()
     #update_database()
 
     connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)
