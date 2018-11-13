@@ -1,0 +1,38 @@
+<div layout="row" layout-margin layout-align="center" class="margin-bottom font-12">
+	<md-select ng-model="$ctrl.selectedYear" ng-change="$ctrl.consult()">
+		<md-option ng-repeat="year in $ctrl.years" ng-value="year">
+		{{year}}
+		</md-option>
+	</md-select>
+	<md-select ng-model="$ctrl.selectedDay" ng-change="$ctrl.consult()">
+		<md-option ng-repeat="day in $ctrl.holidays" ng-value="day">
+		{{day}}
+		</md-option>
+	</md-select>
+</div>
+<div layout="column" class="margin-bottom font-12">
+	<table class="margin-bottom">
+		<tr>
+			<th ng-repeat="h in $ctrl.header1">{{ h }}</th>
+		</tr>
+		<tr>
+			<td ng-repeat="r in $ctrl.rows1">{{ r }}</td>
+		</tr>
+	</table>
+	<table class="margin-bottom">
+		<tr>
+			<th ng-repeat="h in $ctrl.header2">{{ h }}</th>
+		</tr>
+		<tr>
+			<td ng-repeat="v in $ctrl.header2">{{ v }}</td>
+		</tr>
+	</table>
+	<table class="margin-bottom">
+		<tr>
+			<th ng-repeat="h in $ctrl.header3">{{ h }}</th>
+		</tr>
+		<tr>
+			<td ng-repeat="v in $ctrl.header3">{{ v }}</td>
+		</tr>
+	</table>
+</div>

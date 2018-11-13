@@ -1,0 +1,8 @@
+<table class="margin-bottom font-12">
+	<tr>
+	  <th ng-repeat="h in $ctrl.header">{{ h }}</th>
+	</tr>
+	<tr>
+		<td ng-repeat="r in $ctrl.rows track by $index">{{ r }}</td>
+	</tr>
+</table>
