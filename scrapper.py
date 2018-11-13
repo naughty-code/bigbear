@@ -32,6 +32,10 @@ def insert_cabins():
     vacasa.insert_cabins()
     bigbearcoolcabins.insert_cabins()
 
+def insert_amenities():
+    bigbearcoolcabins.insert_amenities()
+    vacasa.insert_features()
+
 
 def update():
     scrape_cabins()

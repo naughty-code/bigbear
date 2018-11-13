@@ -687,7 +687,9 @@ def insert_rates(*args):
         execute_values(cursor, str_sql, tupled_rates)
     connection.close()
 
-def insert_amenities(cabins):
+def insert_amenities(cabins=None):
+    if not cabins:
+        cabins = load_cabins()
     connection = psycopg2.connect(os.getenv('DATABASE_URI'))
     insertAmenities = []
     for cabin in cabins:
@@ -768,6 +770,17 @@ def get_rates_multi(availabilities, N=8):
 def upload_to_database():
     cabins = load_cabins()
     insert_cabins(cabins)
+
+def update_last_scrape():
+    connection = psycopg2.connect(os.getenv('DATABASE_URI'))
+    cabins = load_cabins()
+    with connection, connection.cursor() as c:
+        c.execute("""
+            INSERT INTO db.vrm
+            VALUES (%s, %s, %s, %s, %s)
+            ON CONFLICT (idvrm) DO UPDATE SET name = excluded.name, website = excluded.website, ncabins = excluded.ncabins, last_scrape = excluded.last_scrape;
+        """, ('BBCC', 'big bear cool cabins', 'https://www.bigbearcoolcabins.com', len(cabins), datetime.now()))
+    connection.close()
 
 def insert():
     connection = psycopg2.connect(os.getenv('DATABASE_URI'))
