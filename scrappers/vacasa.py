@@ -122,8 +122,8 @@ def parse_data(html):
     bedrooms = soup.find(class_='icon-door').next_sibling
     data['bedrooms'] = re.search(r'\d+', bedrooms).group(0)
 
-    location = soup.find(class_='icon-map-location').next_sibling
-    data['location'] = location.strip()
+    address = soup.find(class_='icon-map-location').next_sibling
+    data['address'] = address.strip()
     return data
 
 @util.ignore_errors
