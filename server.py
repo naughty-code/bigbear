@@ -181,7 +181,6 @@ def metrics2():
         result.append(c.fetchall())
 
         sql = "select COUNT(status) as vacants from db.availability where status = 'AVAILABLE' and name=%s and DATE_PART('YEAR', check_in) = %s"
-        print(sql)
         c.execute(sql, [day, year])
         result.append(c.fetchall())
 
@@ -192,20 +191,34 @@ def metrics2():
             and DATE_PART('YEAR', a.check_in) = %s
             group by c.idvrm 
             order by count(a.id) desc'''
-        print(sql)
         c.execute(sql, [day, year])
         result.append(c.fetchall())
 
-        # sql = '''select c.idvrm, count(a.id) from db.availability as a 
-        #     join db.cabin as c on a.id = c.id 
-        #     where a.status = 'BOOKED'
-        #     and a.name=%s 
-        #     and DATE_PART('YEAR', a.check_in) = %s
-        #     group by c.idvrm 
-        #     order by count(a.id) desc'''
-        # print(sql)
-        # c.execute(sql, [day, year])
-        # result.append(c.fetchall())
+        sql = '''select COALESCE(avg(rate), 0) AS avg from db.availability as a
+        where a.status = 'AVAILABLE'
+        and a.name=%s
+        and DATE_PART('YEAR', a.check_in) = %s'''
+        c.execute(sql, [day, year])
+        result.append(c.fetchall())
+
+        sql = '''select v.idvrm, coalesce((
+            select avg(a.rate) 
+            from db.availability as a
+            where a."name" = %s 
+            and a.id like v.idvrm || '%%'
+            and DATE_PART('YEAR', a.check_in) = %s
+            and a.status = 'AVAILABLE'
+        ), 0) as avg from db.vrm as v order by avg desc;'''
+        c.execute(sql, [day, year])
+        result.append(c.fetchall())
+
+        sql = '''select a.id, a.rate from db.availability as a 
+            where a.status = 'AVAILABLE'
+            and a.name=%s
+            and DATE_PART('YEAR', a.check_in) = %s
+            order by a.rate asc;'''
+        c.execute(sql, [day, year])
+        result.append(c.fetchall())
 
 
     return jsonify(result)
