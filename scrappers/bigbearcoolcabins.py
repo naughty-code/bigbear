@@ -845,7 +845,7 @@ def extract_costs_faster_function(range_tuple):
     for page in itertools.count(1):
         params['page'] = page
         res = rq.get(url, params=params)
-        soup = BeautifulSoup(res.text, 'lxml')
+        soup = BeautifulSoup(res.text, 'html.parser')
         for name_tag, price_tag in zip(soup(class_='rc-core-item-name'), soup(class_='rc-price')):
             name = name_tag.get_text()
             price = Decimal(re.sub(r'[^\d.]', '', price_tag.get_text()))
