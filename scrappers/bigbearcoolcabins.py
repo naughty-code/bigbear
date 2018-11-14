@@ -825,9 +825,9 @@ def extract_costs_faster():
 
 def extract_costs_and_insert():
     cabin_name_to_id = get_cabins_from_db()
-    filename = 'bbcc_rates.json'
     costs_with_ids = []
     for costs in extract_costs_faster():
+        print(f'scraping rate: start:{costs[0]["startDate"]}, end: {costs[0]["endDate"]}, {costs[0]["holiday"]}')
         costs_with_ids = [{'id': cabin_name_to_id[c['name']], **c} for c in costs if cabin_name_to_id.get(c['name'])]
         insert_rates_faster(costs_with_ids)
 
@@ -845,7 +845,7 @@ def extract_costs_faster_function(range_tuple):
     for page in itertools.count(1):
         params['page'] = page
         res = rq.get(url, params=params)
-        soup = BeautifulSoup(res.text, 'lxml')
+        soup = BeautifulSoup(res.text, 'html.parser')
         for name_tag, price_tag in zip(soup(class_='rc-core-item-name'), soup(class_='rc-price')):
             name = name_tag.get_text()
             price = Decimal(re.sub(r'[^\d.]', '', price_tag.get_text()))

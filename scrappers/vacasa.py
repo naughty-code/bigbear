@@ -309,6 +309,17 @@ def insert_cabins():
         """
         psycopg2.extras.execute_values(cursor, sql, tuples)
 
+def update_last_scrape():
+    connection = psycopg2.connect(DATABASE_URI)
+    cabins = load_cabins()
+    with connection, connection.cursor() as c:
+        c.execute("""
+            INSERT INTO db.vrm
+            VALUES (%s, %s, %s, %s, %s)
+            ON CONFLICT DO NOTHING
+        """, ('VACASA', 'vacasa', 'https://www.vacasa.com/', len(cabins), dt.datetime.now()))
+    connection.close()    
+
 def insert():
     connection = psycopg2.connect(DATABASE_URI)
     cabins = load_cabins()
