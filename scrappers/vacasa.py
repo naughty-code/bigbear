@@ -200,7 +200,8 @@ def extract_costs_faster_function(range_tuple):
             cabin_tags = soup(class_='unit-result-list')
             for c in cabin_tags:
                 id_ = c['data-unit-id']
-                price = c.find('a', text=re.compile(r'\$\d+')).get_text()
+                pattern = re.compile(r'\$(\d+)')
+                price = pattern.match(c.find('a', text=pattern).get_text()).group(1)
                 cabins.append({
                     'id': id_, 
                     'quote': price, 
