@@ -27,7 +27,7 @@ import itertools
 # bigbearvacations   -> bbv
 # Don't forget to handle exceptions
 
-executable_path = {'executable_path':'/usr/bin/chromedriver'}
+executable_path = {'executable_path': os.getenv('CHROME_DRIVER_EXECUTABLE_PATH')}
 
 HEADERS = { 'accept-language': 'en', 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36' }
 
@@ -187,12 +187,14 @@ def extract_cabin_urls_splinter():
         while True:
             soup = BeautifulSoup(b.html, 'html.parser')
             urls += [base_url + a['href'] for a in soup('a', class_='unit-listing-title')]
+            while b.is_element_present_by_css('.loader.d-block'):
+                pass
             next_button = b.find_link_by_text('next')
             if next_button:
                 next_button[0].click()
             else:
                 break
-    with open('vacasa_cabin_urls.json', 'w', encoding='utf8') as f:
+    with open('scrappers/vacasa_cabin_urls.json', 'w', encoding='utf8') as f:
         json.dump(urls, f, indent=2)
 
 def extract_costs_faster_function(range_tuple):
@@ -200,7 +202,7 @@ def extract_costs_faster_function(range_tuple):
     cabins = []
     start_string = start.strftime("%m/%d/%Y").replace('/', '%2F')
     end_string = end.strftime("%m/%d/%Y").replace('/', '%2F')
-    with Browser('chrome', headless=True, **executable_path) as b:
+    with Browser('chrome', headless=False, **executable_path) as b:
         b.visit(f'https://www.vacasa.com/usa/Big-Bear/?arrival={start_string}&departure={end_string}')
         while True:
             soup = BeautifulSoup(b.html, 'html.parser')
@@ -217,6 +219,8 @@ def extract_costs_faster_function(range_tuple):
                     'holiday': holiday,
                     'status': 'BOOKED' if c.find('a', text='BOOKED') else 'AVAILABLE'
                     })
+            while b.is_element_present_by_css('.loader.d-block'):
+                pass
             next_button = b.find_link_by_text('next')
             if next_button:
                 next_button[0].click()
@@ -441,7 +445,7 @@ def scrape_and_store_urls():
 
 def scrape_cabins(filename='./scrappers/vacasa_cabins.json'):
     
-    links = read_json('./scrappers/vacasa_urls.json')
+    links = read_json('./scrappers/vacasa_cabin_urls.json')
 
     total   = len(links)
     index   = 0
