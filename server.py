@@ -19,45 +19,55 @@ app.config['JSON_SORT_KEYS'] = False
 
 CORS(app)
 
-connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)
-cursor = connection.cursor()
 
 @app.route('/api/cabins')
 def cabins():
+    connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)
     with connection:
-        cursor.execute('''SELECT cabin.idvrm as "IDVRM", cabin.id as "ID", 
-            cabin.name as "Name", cabin.website as "Website", cabin.description as "Description",
-            cabin.address as "Address", cabin.location as "Location", cabin.bedrooms as "Bedrooms",
-            cabin.occupancy as "Occupancy", cabin.tier as "Tier", cabin.status as "Status",
-            vrm.last_scrape as "Last scrape" FROM db.cabin as cabin join db.vrm as vrm on 
-            cabin.idvrm = vrm.idvrm''')
-        data = cursor.fetchall()
+        with connection.cursor() as cursor:
+            cursor.execute('''SELECT cabin.idvrm as "IDVRM", cabin.id as "ID", 
+                cabin.name as "Name", cabin.website as "Website", cabin.description as "Description",
+                cabin.address as "Address", cabin.location as "Location", cabin.bedrooms as "Bedrooms",
+                cabin.occupancy as "Occupancy", cabin.tier as "Tier", cabin.status as "Status",
+                vrm.last_scrape as "Last scrape" FROM db.cabin as cabin join db.vrm as vrm on 
+                cabin.idvrm = vrm.idvrm''')
+            data = cursor.fetchall()
+    connection.close()
     return jsonify(data)
 
 @app.route('/api/vrm')
 def vrm():
+    connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)
     with connection:
-        cursor.execute('''SELECT idvrm as "IDVRM", name as "Name", website as "Website",
-            ncabins as "Cabins", last_scrape as "Last scrape" FROM db.vrm''')
-        data = cursor.fetchall()
+        with connection.cursor() as cursor:
+            cursor.execute('''SELECT idvrm as "IDVRM", name as "Name", website as "Website",
+                ncabins as "Cabins", last_scrape as "Last scrape" FROM db.vrm''')
+            data = cursor.fetchall()
+    connection.close()
     return jsonify(data)
 
 @app.route('/api/features')
 def features():
+    connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)
     with connection:
-        cursor.execute('''select cabin.idvrm as "IDVRM", features.id as "ID", amenity as "Amenity",
-            cabin.name as "Name", website as "Website" from db.features inner join db.cabin on 
-            cabin.id = features.id''')
-        data = cursor.fetchall()
+        with connection.cursor() as cursor:
+            cursor.execute('''select cabin.idvrm as "IDVRM", features.id as "ID", amenity as 
+                "Amenity", cabin.name as "Name", website as "Website" from db.features inner join 
+                db.cabin on cabin.id = features.id''')
+            data = cursor.fetchall()
+    connection.close()
     return jsonify(data)
 
 @app.route('/api/availability')
 def availability():
+    connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)
     with connection:
-        cursor.execute('''SELECT id as "ID", check_in as "Date IN", check_out as "Date OUT", 
-            status as "Status", '$' || rate as "Rate", name as "Name" FROM db.availability order 
-            by name asc''')
-        data = cursor.fetchall()
+        with connection.cursor() as cursor:
+            cursor.execute('''SELECT id as "ID", check_in as "Date IN", check_out as "Date OUT", 
+                status as "Status", '$' || rate as "Rate", name as "Name" FROM db.availability 
+                order by name asc''')
+            data = cursor.fetchall()
+    connection.close()
     return jsonify(data)
 
 @app.route('/api/advance-report')
@@ -85,9 +95,12 @@ and c2.idvrm = c.idvrm) as "Change from LY"
 from db.availability as a
 join db.cabin as c on c.id = a.id
 group by c.idvrm, a.check_in, a.check_out, a.name;'''
+    connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)
     with connection:
-        cursor.execute(sql)
-        data = cursor.fetchall()
+        with connection.cursor() as cursor:
+            cursor.execute(sql)
+            data = cursor.fetchall()
+    connection.close()
     aux = []
     aux_bool = False
     for d in data:
@@ -119,56 +132,65 @@ group by c.idvrm, a.check_in, a.check_out, a.name;'''
 
 @app.route('/api/report')
 def report():
+    connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)
     with connection:
-        cursor.execute('SELECT idvrm FROM db.vrm')
-        vrms = cursor.fetchall()
-        result = []
-        result_json = {}
+        with connection.cursor() as cursor:
+            cursor.execute('SELECT idvrm FROM db.vrm')
+            vrms = cursor.fetchall()
+            result = []
+            result_json = {}
 
-        for vrm in vrms:
-            row = {}
-            cursor.execute('select ncabins from db.vrm where idvrm = %s', (vrm['idvrm'], ))
-            total_units = cursor.fetchall()
-            cursor.execute('select count(availability.id) as booked from db.availability inner join db.cabin on cabin.id = availability.id where idvrm = %s and availability.status = \'BOOKED\'', (vrm['idvrm'], ))
-            booked = cursor.fetchall()
-            cursor.execute('select count(availability.id) as available from db.availability inner join db.cabin on cabin.id = availability.id where idvrm = %s and availability.status = \'AVAILABLE\'', (vrm['idvrm'], ))
-            available = cursor.fetchall()
-            row['idvrm'] = vrm['idvrm']
-            row['ncabins'] = total_units[0]['ncabins']
-            row['booked'] = booked[0]['booked']
-            row['available'] = available[0]['available']
-            result.append(row)
-        
-        result_json['table1'] = result
+            for vrm in vrms:
+                row = {}
+                cursor.execute('select ncabins from db.vrm where idvrm = %s', (vrm['idvrm'], ))
+                total_units = cursor.fetchall()
+                cursor.execute('select count(availability.id) as booked from db.availability inner join db.cabin on cabin.id = availability.id where idvrm = %s and availability.status = \'BOOKED\'', (vrm['idvrm'], ))
+                booked = cursor.fetchall()
+                cursor.execute('select count(availability.id) as available from db.availability inner join db.cabin on cabin.id = availability.id where idvrm = %s and availability.status = \'AVAILABLE\'', (vrm['idvrm'], ))
+                available = cursor.fetchall()
+                row['idvrm'] = vrm['idvrm']
+                row['ncabins'] = total_units[0]['ncabins']
+                row['booked'] = booked[0]['booked']
+                row['available'] = available[0]['available']
+                result.append(row)
+            
+            result_json['table1'] = result
 
-        cursor.execute('''select cabin.idvrm, cabin.id, cabin.name, cabin.website, check_in, check_out, availability.status, '$' || availability.rate, availability.name from db.availability inner join db.cabin on cabin.id = availability.id order  by check_in asc''')
-        table2 = cursor.fetchall()
+            cursor.execute('''select cabin.idvrm, cabin.id, cabin.name, cabin.website, check_in, check_out, availability.status, '$' || availability.rate, availability.name from db.availability inner join db.cabin on cabin.id = availability.id order  by check_in asc''')
+            table2 = cursor.fetchall()
+    connection.close()
     result_json['table2'] = table2
 
     return jsonify(result_json)
 
 @app.route('/api/update')
 def update():
-    # here we execute the scrappers and update database
+    connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)
     with connection:
-        cursor.execute('select status from db.status_update where id=1')
-        result = cursor.fetchall()
-        if result != 'Updating':
-            cursor.execute("UPDATE db.status_update SET status='Updating'")
-            scrapper_process = Process(target=scrapper.update)
-            scrapper_process.start()
+        with connection.cursor() as cursor:
+            cursor.execute('select status from db.status_update where id=1')
+            result = cursor.fetchall()
+            if result != 'Updating':
+                cursor.execute("UPDATE db.status_update SET status='Updating'")
+                scrapper_process = Process(target=scrapper.update)
+                scrapper_process.start()
+    connection.close()
     return 'true'
 
 @app.route('/api/check')
 def check():
+    connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)
     with connection:
-        cursor.execute('select status from db.status_update where id=1')
-        result = cursor.fetchall()
+        with connection.cursor() as cursor:
+            cursor.execute('select status from db.status_update where id=1')
+            result = cursor.fetchall()
+    connection.close()
     return jsonify(result)
 
 @app.route('/api/metrics1')
 def metrics1():
     result = []
+    connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)
     with connection, connection.cursor() as c:
         c.execute('''select count(id), name from db.availability where "name" <> 'Weekend' and status = 'BOOKED' group by "name" order by count(id) desc''')
         result.append(c.fetchall())
@@ -183,6 +205,7 @@ def metrics1():
         result.append(c.fetchall())
         c.execute('''select '$' || MAX(rate), check_in, check_out, name from db.availability where status = 'AVAILABLE' group by check_in, check_out, name order by MAX(rate) desc limit 1''')
         result.append(c.fetchall())
+    connection.close()
     return jsonify(result)
 
 @app.route('/api/metrics2')
@@ -191,6 +214,7 @@ def metrics2():
     year = request.args.get('year')
     day = request.args.get('day')
 
+    connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)
     with connection, connection.cursor() as c:
         sql = "select COUNT(status) as bookings from db.availability where status = 'BOOKED' and name=%s and DATE_PART('YEAR', check_in) = %s"
         c.execute(sql, [day, year])
@@ -254,7 +278,7 @@ def metrics2():
             order by count(c.idvrm) desc;'''
         c.execute(sql, [day, year])
         result.append(c.fetchall())
-
+    connection.close()
     return jsonify(result)
 
 @app.route('/')
