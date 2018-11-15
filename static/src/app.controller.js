@@ -4,6 +4,7 @@ angular.module('app').controller('appController', function ($scope, $mdSidenav, 
 	}
 
 	$scope.disableButton = true;
+	$scope.textUpdate = 'Updating'
 	
 	$scope.update = function() {
 		$scope.disableButton = true;
@@ -18,6 +19,7 @@ angular.module('app').controller('appController', function ($scope, $mdSidenav, 
 			.then(function(response) {
 				if (response.data[0].status == "Updated") {
 					$scope.disableButton = false;
+					$scope.textUpdate = 'Update now'
 					if (before[0] == 'Updating' && before[1] == 'Updating')
 						$route.reload();
 					before[1] = before[0];

@@ -1,14 +1,10 @@
 function twoTablesController($scope, $http, $routeParams) {
 	var ctrl = $scope;
 	$scope.loading = true;
-	var masterView = {
-		"report": "Report"
-	}
 	var view = 'report';
 	if ($routeParams.view)
 		view = $routeParams.view;
 
-	ctrl.header = masterView[view];
 	ctrl.gridOptions = {
 		enableSorting: true,
 		enableFiltering: true,

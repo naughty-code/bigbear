@@ -1,19 +1,10 @@
 function singleTableController($scope, $http, $routeParams) {
 	var ctrl = $scope;
 	$scope.loading = true;
-	var masterView = {
-		"vrm": "VRM",
-		"cabins" : "Cabins",
-		"features": "Features",
-		"availability": "Availability",
-		"report": "Report",
-		"advance-report": "Advance Report"
-	}
 	var view = 'vrm';
 	if ($routeParams.view)
 		view = $routeParams.view;
 
-	ctrl.header = masterView[view];
 	ctrl.gridOptions = {
 		enableSorting: true,
 		enableFiltering: true,
@@ -26,7 +17,8 @@ function singleTableController($scope, $http, $routeParams) {
 				if (response.data[0].hasOwnProperty(key)) {
 					ctrl.gridOptions.columnDefs.push({
 						field: key,
-						cellTooltip: true
+						cellTooltip: true,
+						displayName: key
 					})
 				}
 			}
