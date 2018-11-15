@@ -26,6 +26,8 @@ import itertools
 # bigbearvacations   -> bbv
 # Don't forget to handle exceptions
 
+executable_path = {'executable_path':'/usr/bin/chromedriver'}
+
 HEADERS = { 'accept-language': 'en', 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36' }
 
 DATE_FORMAT = '%Y/%m/%d'
@@ -175,7 +177,7 @@ def extract_cabin_urls_splinter():
     url = 'https://www.vacasa.com/usa/Big-Bear/'
     base_url = 'https://www.vacasa.com'
     urls = []
-    with Browser('chrome') as b:
+    with Browser('chrome', **executable_path) as b:
         b.visit(url)
         while True:
             soup = BeautifulSoup(b.html, 'html.parser')
@@ -193,7 +195,7 @@ def extract_costs_faster_function(range_tuple):
     cabins = []
     start_string = start.strftime("%m/%d/%Y").replace('/', '%2F')
     end_string = end.strftime("%m/%d/%Y").replace('/', '%2F')
-    with Browser('chrome') as b:
+    with Browser('chrome', **executable_path) as b:
         b.visit(f'https://www.vacasa.com/usa/Big-Bear/?arrival={start_string}&departure={end_string}')
         while True:
             soup = BeautifulSoup(b.html, 'html.parser')
