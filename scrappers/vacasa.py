@@ -14,6 +14,7 @@ import psycopg2
 from splinter import Browser
 from scrappers import util
 from scrappers import settings
+from selenium import webdriver
 
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
@@ -166,6 +167,10 @@ def extract_costs():
 
 def scrape_and_insert_rates():
     for costs in extract_costs_faster():
+        start_date = costs[0]['startDate']
+        end_date = costs[0]['endDate']
+        holiday = costs[0]['holiday']
+        print(f'Scrapped range: {start_date} - {end_date} : {holiday}')
         insert_rates_faster(costs)
 
 def extract_costs_faster():
@@ -175,7 +180,9 @@ def extract_cabin_urls_splinter():
     url = 'https://www.vacasa.com/usa/Big-Bear/'
     base_url = 'https://www.vacasa.com'
     urls = []
-    with Browser('chrome') as b:
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument('headless')
+    with Browser('chrome', options=chrome_options) as b:
         b.visit(url)
         while True:
             soup = BeautifulSoup(b.html, 'html.parser')

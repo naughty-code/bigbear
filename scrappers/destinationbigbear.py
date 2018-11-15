@@ -13,12 +13,13 @@ from psycopg2.extras import execute_values
 from datetime import datetime
 from datetime import timedelta
 from bs4 import BeautifulSoup
+from selenium import webdriver
 
 
 CABIN_URLS_FILE = './scrappers/dbb_cabin_urls.json'
 DATABASE_URI = os.environ['DATABASE_URI']
-connection = psycopg2.connect(DATABASE_URI)
-cursor = connection.cursor()
+#connection = psycopg2.connect(DATABASE_URI)
+#cursor = connection.cursor()
 
 # destinationbigbear -> dbb
 # bigbearcoolcabins  -> bbc
@@ -55,6 +56,18 @@ def scrape_cabin_urls():
 
 def get_quote(id, start_date, end_date):
     pass
+
+def get_quote_faster(start_date, end_date):
+    url = 'https://www.destinationbigbear.com/FindCabin.aspx'
+    params = {
+        'firstnight': start_date.strftime('%m/%d/%Y'),
+        'lastnight': end_date.strftime('%m/%d/%Y')
+    }
+    res = rq.get(url, params)
+    soup = BeautifulSoup(res.text, 'html.parser')
+    incepsoup = BeautifulSoup(soup.find(id='red-contents').input['value'], 'html.parser')
+
+
 
 def extract_costs():
     cabins = load_cabins()
@@ -682,8 +695,8 @@ def main():
 
         update_database(cabins, amenities)#, new_availabilities)
         print('Database updated')
-        cursor.close()
-        connection.close()
+        #cursor.close()
+        #connection.close()
 
 if __name__ == '__main__':
     main()
