@@ -681,7 +681,7 @@ def insert_rates_faster(rates):
     with connection, connection.cursor() as cursor:
         str_sql = '''INSERT INTO db.availability (id, check_in, check_out, status, rate, name) 
                      VALUES %s 
-                     ON CONFLICT (id, check_in, check_out) DO UPDATE
+                     ON CONFLICT (id, check_in, check_out, name) DO UPDATE
                      SET id = EXCLUDED.id, check_in = EXCLUDED.check_in, check_out = EXCLUDED.check_out, status = EXCLUDED.status, rate = EXCLUDED.rate, name = EXCLUDED.name'''
         execute_values(cursor, str_sql, tupled_rates)
     connection.close()
@@ -825,10 +825,29 @@ def extract_costs_faster():
 
 def extract_costs_and_insert():
     cabin_name_to_id = get_cabins_from_db()
+    cabin_ids = set(cabin_name_to_id.values())
     costs_with_ids = []
     for costs in extract_costs_faster():
-        print(f'scraping rate: start:{costs[0]["startDate"]}, end: {costs[0]["endDate"]}, {costs[0]["holiday"]}')
-        costs_with_ids = [{'id': cabin_name_to_id[c['name']], **c} for c in costs if cabin_name_to_id.get(c['name'])]
+        start_date = costs[0]['startDate']
+        end_date = costs[0]['endDate']
+        holiday = costs[0]['holiday']
+        print(f'scraping rate: start:{start_date}, end: {end_date}, holiday: {holiday}')
+        for cost in costs: #inserting costs of found cabins
+            cabin_id = cabin_name_to_id.get(cost['name'])
+            if cabin_id:    
+                costs_with_ids.append({'id': cabin_id, **cost})
+        #inserting not found cabins
+        ids_found = set(cabin_name_to_id[c['name']] for c in costs if cabin_name_to_id.get(c['name']))
+        ids_not_found = cabin_ids - ids_found
+        for id_ in ids_not_found:
+            costs_with_ids.append({
+                'id': id_,
+                'startDate': start_date,
+                'endDate': end_date,
+                'quote': 0,
+                'status': 'BOOKED',
+                'name': holiday
+            })
         insert_rates_faster(costs_with_ids)
 
 def extract_costs_faster_function(range_tuple):

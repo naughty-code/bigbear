@@ -11,6 +11,7 @@ import os
 import time
 import itertools
 import psycopg2
+from splinter import Browser
 from scrappers import util
 from scrappers import settings
 
@@ -163,6 +164,59 @@ def extract_costs():
 
     return util.extract_costs(ids, fetch_cost)
 
+def scrape_and_insert_rates():
+    for costs in extract_costs_faster():
+        insert_rates_faster(costs)
+
+def extract_costs_faster():
+    return util.extract_costs_faster(extract_costs_faster_function)
+
+def extract_cabin_urls_splinter():
+    url = 'https://www.vacasa.com/usa/Big-Bear/'
+    base_url = 'https://www.vacasa.com'
+    urls = []
+    with Browser('chrome') as b:
+        b.visit(url)
+        while True:
+            soup = BeautifulSoup(b.html, 'html.parser')
+            urls += [base_url + a['href'] for a in soup('a', class_='unit-listing-title')]
+            next_button = b.find_link_by_text('next')
+            if next_button:
+                next_button[0].click()
+            else:
+                break
+    with open('vacasa_cabin_urls.json', 'w', encoding='utf8') as f:
+        json.dump(urls, f, indent=2)
+
+def extract_costs_faster_function(range_tuple):
+    (start, end, holiday) = range_tuple
+    cabins = []
+    start_string = start.strftime("%m/%d/%Y").replace('/', '%2F')
+    end_string = end.strftime("%m/%d/%Y").replace('/', '%2F')
+    with Browser('chrome') as b:
+        b.visit(f'https://www.vacasa.com/usa/Big-Bear/?arrival={start_string}&departure={end_string}')
+        while True:
+            soup = BeautifulSoup(b.html, 'html.parser')
+            cabin_tags = soup(class_='unit-result-list')
+            for c in cabin_tags:
+                id_ = c['data-unit-id']
+                price = c.find('a', text=re.compile(r'\$\d+')).get_text()
+                cabins.append({
+                    'id': id_, 
+                    'quote': price, 
+                    'startDate': start, 
+                    'endDate': end, 
+                    'holiday': holiday,
+                    'status': 'BOOKED' if c.find('a', text='BOOKED') else 'AVAILABLE'
+                    })
+            next_button = b.find_link_by_text('next')
+            if next_button:
+                next_button[0].click()
+            else:
+                break
+    return cabins
+        
+
 def scrape_cabin(url):
 
     try:
@@ -243,6 +297,28 @@ def insert_features():
             c.execute(sql, t)
     connection.close()
     
+
+def insert_rates_faster(rates):
+    tuples = []
+    for rate in rates:
+        id_ = 'VACASA' + rate['id']
+        start = rate['startDate']
+        end =  rate['endDate']
+        tuples.append((id_, start, end, rate['status'], rate['quote'], rate['holiday']))
+    connection = psycopg2.connect(DATABASE_URI)
+    with connection, connection.cursor() as c:
+        """#this doesn't work, idk why
+        sql = 
+            INSERT INTO db.availability
+            SELECT (val.id, val.check_in, val.check_out, val.status, val.rate, val.name) 
+            FROM (VALUES %s) val (id, check_in, check_out, status, rate, name)
+            JOIN db.cabin USING (id)
+            ON CONFLICT DO NOTHING
+        psycopg2.extras.execute_values(c, sql, tuples)
+        """
+        for t in tuples:
+            c.execute('insert into db.availability values (%s,%s,%s,%s,%s,%s) on conflict do nothing', t)
+    connection.close()
 
 def insert_rates(*args):
     rates = []
