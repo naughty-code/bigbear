@@ -24,26 +24,30 @@ cursor = connection.cursor()
 
 @app.route('/api/cabins')
 def cabins():
-    cursor.execute('SELECT cabin.*, vrm.last_scrape FROM db.cabin as cabin join db.vrm as vrm on cabin.idvrm = vrm.idvrm')
-    data = cursor.fetchall()
+    with connection:
+        cursor.execute('SELECT cabin.*, vrm.last_scrape FROM db.cabin as cabin join db.vrm as vrm on cabin.idvrm = vrm.idvrm')
+        data = cursor.fetchall()
     return jsonify(data)
 
 @app.route('/api/vrm')
 def vrm():
-    cursor.execute('SELECT * FROM db.vrm')
-    data = cursor.fetchall()
+    with connection:
+        cursor.execute('SELECT * FROM db.vrm')
+        data = cursor.fetchall()
     return jsonify(data)
 
 @app.route('/api/features')
 def features():
-    cursor.execute('select cabin.idvrm, features.id, amenity, cabin.name, website from db.features inner join db.cabin on cabin.id = features.id')
-    data = cursor.fetchall()
+    with connection:
+        cursor.execute('select cabin.idvrm, features.id, amenity, cabin.name, website from db.features inner join db.cabin on cabin.id = features.id')
+        data = cursor.fetchall()
     return jsonify(data)
 
 @app.route('/api/availability')
 def availability():
-    cursor.execute('SELECT * FROM db.availability')
-    data = cursor.fetchall()
+    with connection:
+        cursor.execute('SELECT * FROM db.availability')
+        data = cursor.fetchall()
     return jsonify(data)
 
 @app.route('/api/advance-report')
@@ -72,8 +76,9 @@ from db.availability as a
 join db.cabin as c on c.id = a.id
 where DATE_PART('YEAR',a.check_in) = DATE_PART('YEAR',now())
 group by c.idvrm, a.check_in, a.check_out, a.name;'''
-    cursor.execute(sql)
-    data = cursor.fetchall()
+    with connection:
+        cursor.execute(sql)
+        data = cursor.fetchall()
     aux = []
     aux_bool = False
     for d in data:
@@ -105,29 +110,30 @@ group by c.idvrm, a.check_in, a.check_out, a.name;'''
 
 @app.route('/api/report')
 def report():
-    cursor.execute('SELECT idvrm FROM db.vrm')
-    vrms = cursor.fetchall()
-    result = []
-    result_json = {}
+    with connection:
+        cursor.execute('SELECT idvrm FROM db.vrm')
+        vrms = cursor.fetchall()
+        result = []
+        result_json = {}
 
-    for vrm in vrms:
-        row = {}
-        cursor.execute('select ncabins from db.vrm where idvrm = %s', (vrm['idvrm'], ))
-        total_units = cursor.fetchall()
-        cursor.execute('select count(availability.id) as booked from db.availability inner join db.cabin on cabin.id = availability.id where idvrm = %s and availability.status = \'BOOKED\'', (vrm['idvrm'], ))
-        booked = cursor.fetchall()
-        cursor.execute('select count(availability.id) as available from db.availability inner join db.cabin on cabin.id = availability.id where idvrm = %s and availability.status = \'AVAILABLE\'', (vrm['idvrm'], ))
-        available = cursor.fetchall()
-        row['idvrm'] = vrm['idvrm']
-        row['ncabins'] = total_units[0]['ncabins']
-        row['booked'] = booked[0]['booked']
-        row['available'] = available[0]['available']
-        result.append(row)
-    
-    result_json['table1'] = result
+        for vrm in vrms:
+            row = {}
+            cursor.execute('select ncabins from db.vrm where idvrm = %s', (vrm['idvrm'], ))
+            total_units = cursor.fetchall()
+            cursor.execute('select count(availability.id) as booked from db.availability inner join db.cabin on cabin.id = availability.id where idvrm = %s and availability.status = \'BOOKED\'', (vrm['idvrm'], ))
+            booked = cursor.fetchall()
+            cursor.execute('select count(availability.id) as available from db.availability inner join db.cabin on cabin.id = availability.id where idvrm = %s and availability.status = \'AVAILABLE\'', (vrm['idvrm'], ))
+            available = cursor.fetchall()
+            row['idvrm'] = vrm['idvrm']
+            row['ncabins'] = total_units[0]['ncabins']
+            row['booked'] = booked[0]['booked']
+            row['available'] = available[0]['available']
+            result.append(row)
+        
+        result_json['table1'] = result
 
-    cursor.execute('select cabin.idvrm, cabin.id, cabin.name, cabin.website, check_in, check_out, availability.status, availability.rate, availability.name from db.availability inner join db.cabin on cabin.id = availability.id order  by check_in asc')
-    table2 = cursor.fetchall()
+        cursor.execute('select cabin.idvrm, cabin.id, cabin.name, cabin.website, check_in, check_out, availability.status, availability.rate, availability.name from db.availability inner join db.cabin on cabin.id = availability.id order  by check_in asc')
+        table2 = cursor.fetchall()
     result_json['table2'] = table2
 
     return jsonify(result_json)
@@ -135,19 +141,20 @@ def report():
 @app.route('/api/update')
 def update():
     # here we execute the scrappers and update database
-    cursor.execute('select status from db.status_update where id=1')
-    result = cursor.fetchall()
-    if result != 'Updating':
-        with connection:
+    with connection:
+        cursor.execute('select status from db.status_update where id=1')
+        result = cursor.fetchall()
+        if result != 'Updating':
             cursor.execute("UPDATE db.status_update SET status='Updating'")
-        scrapper_process = Process(target=scrapper.update)
-        scrapper_process.start()
+            scrapper_process = Process(target=scrapper.update)
+            scrapper_process.start()
     return 'true'
 
 @app.route('/api/check')
 def check():
-    cursor.execute('select status from db.status_update where id=1')
-    result = cursor.fetchall()
+    with connection:
+        cursor.execute('select status from db.status_update where id=1')
+        result = cursor.fetchall()
     return jsonify(result)
 
 @app.route('/api/metrics1')
