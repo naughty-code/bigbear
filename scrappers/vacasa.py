@@ -177,7 +177,7 @@ def extract_cabin_urls_splinter():
     url = 'https://www.vacasa.com/usa/Big-Bear/'
     base_url = 'https://www.vacasa.com'
     urls = []
-    with Browser('chrome', **executable_path) as b:
+    with Browser('chrome', headless=True, **executable_path) as b:
         b.visit(url)
         while True:
             soup = BeautifulSoup(b.html, 'html.parser')
@@ -195,7 +195,7 @@ def extract_costs_faster_function(range_tuple):
     cabins = []
     start_string = start.strftime("%m/%d/%Y").replace('/', '%2F')
     end_string = end.strftime("%m/%d/%Y").replace('/', '%2F')
-    with Browser('chrome', **executable_path) as b:
+    with Browser('chrome', headless=True, **executable_path) as b:
         b.visit(f'https://www.vacasa.com/usa/Big-Bear/?arrival={start_string}&departure={end_string}')
         while True:
             soup = BeautifulSoup(b.html, 'html.parser')
