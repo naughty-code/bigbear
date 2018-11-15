@@ -34,6 +34,9 @@ h1 {
   width: inherit;
   height: 100%;
 }
+.myGrid .ui-grid-header-cell {
+  text-align: center;
+}
 .myGrid2 {
   width: inherit;
   height: 100%;
