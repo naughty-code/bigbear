@@ -7,13 +7,13 @@ angular.module('app').controller('appController', function ($scope, $mdSidenav, 
 	
 	$scope.update = function() {
 		$scope.disableButton = true;
-		$http.get('http://74.91.126.179:5000/api/update');
+		$http.get('http://74.91.126.179:5001/api/update');
 		// $http.get('http://localhost:5000/api/update');
 	}
 
 	var before = ["Updating", ""];
 	$interval(function () {
-		$http.get('http://74.91.126.179:5000/api/check')
+		$http.get('http://74.91.126.179:5001/api/check')
 		// $http.get('http://localhost:5000/api/check')
 			.then(function(response) {
 				if (response.data[0].status == "Updated") {
@@ -33,5 +33,5 @@ angular.module('app').controller('appController', function ($scope, $mdSidenav, 
 				var status = response.status;
 				console.log(status, data);
 			});
-	}, 10000);
+	}, 30000);
 })
