@@ -27,6 +27,7 @@ angular.module('app').controller('appController', function ($scope, $mdSidenav, 
 				}
 				else {
 					$scope.disableButton = true;
+					$scope.textUpdate = 'Updating'
 					before[1] = before[0];
 					before[0] = 'Updating';
 				}
