@@ -473,8 +473,6 @@ def scrape_cabins(filename='./scrappers/vacasa_cabins.json'):
         # Write finally result
         name = dump_from(filename, results)
         print('Dumped', name)    
-    return results
-    
 
 def main():
 

@@ -56,7 +56,6 @@ def scrape_cabin_urls():
 def scrape_cabin_urls_and_store():
     urls = scrape_cabin_urls()
     dump_from(CABIN_URLS_FILE, urls)
-    return urls
 
 def get_availability_weekends_friday(id, booked):
     availability = []
@@ -756,8 +755,6 @@ def insert_cabins(cabins=None):
             execute_values(cursor, str_sql, insertCabins)
     connection.close()
 
-
-
 def get_rates(availability):
     # availability
     url = 'https://www.bigbearcoolcabins.com/rescms/ajax/item/pricing/quote'
@@ -916,8 +913,6 @@ def scrape_cabins(filename='./scrappers/bbcc_cabins.js'):
         print('Dumped', name)
         #upload_to_database()
         #insert_availabilities(new_availabilities)
-    return results
-
 
 def main():
     if len(sys.argv) != 2:
