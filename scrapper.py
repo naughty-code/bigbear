@@ -7,14 +7,12 @@ from scrappers import vacasa, bigbearcoolcabins
 DATABASE_URI = os.environ.get('DATABASE_URL', None) or os.getenv('DATABASE_URI')
 
 def update_cabin_urls():
-    vacasa_cabin_urls = vacasa.scrape_and_store_urls()
-    bbcc_cabin_urls = bigbearcoolcabins.scrape_cabin_urls_and_store()
+    vacasa.extract_cabin_urls_splinter()
+    bigbearcoolcabins.scrape_cabin_urls_and_store()
 
-def scrape_rates():
+def scrape_and_insert_rates():
     bigbearcoolcabins.extract_costs_and_insert()
-    for rate in vacasa.extract_costs():
-        print('----------checkpoint------------')
-        vacasa.insert_rates(rate)
+    vacasa.scrape_and_insert_rates()
 
 
 def scrape_cabins():
@@ -36,12 +34,13 @@ def insert_amenities():
 
 
 def update():
+    update_cabin_urls()
     scrape_cabins()
     insert_cabins()
-    scrape_rates()
+    scrape_and_insert_rates() # both scrape and insert rates
+    insert_amenities()
     bigbearcoolcabins.update_last_scrape()
     vacasa.update_last_scrape()
-    insert_amenities()
     #update_database()
 
     connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)
