@@ -239,8 +239,8 @@ def rate_scrapper_single_threaded():
                     next_button[0].click()
                 else:
                     break
-    return cabins
-        
+    insert_rates_faster(cabins)
+
 
 def extract_costs_faster_function(range_tuple):
     (start, end, holiday) = range_tuple
