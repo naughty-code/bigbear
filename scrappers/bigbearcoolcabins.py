@@ -876,7 +876,7 @@ def extract_costs_faster_function(range_tuple):
                 'holiday': holiday,
                 'status': 'AVAILABLE'
             })
-        if soup(class_='current last'):
+        if soup(class_='current last') or page >= 8:
             break
     return results
     

@@ -13,7 +13,6 @@ from psycopg2.extras import execute_values
 from datetime import datetime
 from datetime import timedelta
 from bs4 import BeautifulSoup
-from selenium import webdriver
 
 
 CABIN_URLS_FILE = './scrappers/dbb_cabin_urls.json'
