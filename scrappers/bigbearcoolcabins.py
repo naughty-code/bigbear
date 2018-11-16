@@ -865,7 +865,9 @@ def extract_costs_faster_function(range_tuple):
         params['page'] = page
         res = rq.get(url, params=params)
         soup = BeautifulSoup(res.text, 'html.parser')
-        for name_tag, price_tag in zip(soup(class_='rc-core-item-name'), soup(class_='rc-price')):
+        name_tags = soup(class_='rc-core-item-name')
+        price_tags = soup(class_='rc-price')
+        for name_tag, price_tag in zip(name_tags, price_tags):
             name = name_tag.get_text()
             price = Decimal(re.sub(r'[^\d.]', '', price_tag.get_text()))
             results.append({
@@ -876,7 +878,7 @@ def extract_costs_faster_function(range_tuple):
                 'holiday': holiday,
                 'status': 'AVAILABLE'
             })
-        if soup(class_='current last') or page >= 8:
+        if soup(class_='current last') or page >= 8 or not name_tags:
             break
     return results
     
