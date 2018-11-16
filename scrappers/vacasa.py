@@ -199,6 +199,49 @@ def extract_cabin_urls_splinter():
     with open('scrappers/vacasa_cabin_urls.json', 'w', encoding='utf8') as f:
         json.dump(urls, f, indent=2)
 
+
+def rate_scrapper_single_threaded():
+    df = pd.read_csv('scrappers/CEK_DB_-_Dates_CSV.csv', parse_dates=['PL', 'PR'])
+    range_ = [(pl, pr, h) for i,pl,pr,h in df.itertuples()]
+    cabins = []
+    with Browser('chrome', headless=True, **executable_path) as b:
+        for start, end, holiday in range_:
+            start_string = start.strftime("%m/%d/%Y").replace('/', '%2F')
+            end_string = end.strftime("%m/%d/%Y").replace('/', '%2F')
+            url = f'https://www.vacasa.com/usa/Big-Bear/?arrival={start_string}&departure={end_string}'
+            print(f'Splinter-visiting url: {url}')
+            try:
+                b.visit(url)
+            except TimeoutException as e:
+                print(e)
+                return cabins
+            while True:
+                soup = BeautifulSoup(b.html, 'html.parser')
+                cabin_tags = soup(class_='unit-result-list')
+                if not cabin_tags:
+                    break
+                for c in cabin_tags:
+                    id_ = c['data-unit-id']
+                    pattern = re.compile(r'\$(\d+)')
+                    price = pattern.match(c.find('a', text=pattern).get_text()).group(1)
+                    cabins.append({
+                        'id': id_, 
+                        'quote': price, 
+                        'startDate': start, 
+                        'endDate': end, 
+                        'holiday': holiday,
+                        'status': 'BOOKED' if c.find('a', text='BOOKED') else 'AVAILABLE'
+                        })
+                while b.is_element_present_by_css('.loader.d-block'):
+                    pass
+                next_button = b.find_link_by_text('next')
+                if next_button:
+                    next_button[0].click()
+                else:
+                    break
+    return cabins
+        
+
 def extract_costs_faster_function(range_tuple):
     (start, end, holiday) = range_tuple
     cabins = []
