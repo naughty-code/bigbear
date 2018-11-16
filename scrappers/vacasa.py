@@ -458,7 +458,7 @@ def update_last_scrape():
         c.execute("""
             INSERT INTO db.vrm
             VALUES (%s, %s, %s, %s, %s)
-            ON CONFLICT DO UPDATE SET name = excluded.name, website = excluded.website, ncabins = excluded.ncabins, last_scrape = excluded.last_scrape
+            ON CONFLICT (idvrm) DO UPDATE SET name = excluded.name, website = excluded.website, ncabins = excluded.ncabins, last_scrape = excluded.last_scrape
         """, ('VACASA', 'vacasa', 'https://www.vacasa.com/', len(cabins), dt.datetime.now()))
     connection.close()    
 
