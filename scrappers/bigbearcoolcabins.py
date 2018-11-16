@@ -828,6 +828,8 @@ def extract_costs_and_insert():
     cabin_ids = set(cabin_name_to_id.values())
     costs_with_ids = []
     for costs in extract_costs_faster():
+        if not costs:
+            continue
         start_date = costs[0]['startDate']
         end_date = costs[0]['endDate']
         holiday = costs[0]['holiday']
@@ -846,7 +848,7 @@ def extract_costs_and_insert():
                 'endDate': end_date,
                 'quote': 0,
                 'status': 'BOOKED',
-                'name': holiday
+                'holiday': holiday
             })
         insert_rates_faster(costs_with_ids)
 
@@ -865,7 +867,9 @@ def extract_costs_faster_function(range_tuple):
         params['page'] = page
         res = rq.get(url, params=params)
         soup = BeautifulSoup(res.text, 'html.parser')
-        for name_tag, price_tag in zip(soup(class_='rc-core-item-name'), soup(class_='rc-price')):
+        name_tags = soup(class_='rc-core-item-name')
+        price_tags = soup(class_='rc-price')
+        for name_tag, price_tag in zip(name_tags, price_tags):
             name = name_tag.get_text()
             price = Decimal(re.sub(r'[^\d.]', '', price_tag.get_text()))
             results.append({
@@ -876,7 +880,7 @@ def extract_costs_faster_function(range_tuple):
                 'holiday': holiday,
                 'status': 'AVAILABLE'
             })
-        if soup(class_='current last'):
+        if soup(class_='current last') or page >= 8 or not name_tags:
             break
     return results
     
