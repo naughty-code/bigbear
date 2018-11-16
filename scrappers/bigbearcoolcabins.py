@@ -679,9 +679,10 @@ def insert_rates_faster(rates):
     connection = psycopg2.connect(os.getenv('DATABASE_URI'))
     with connection, connection.cursor() as cursor:
         str_sql = '''INSERT INTO db.availability (id, check_in, check_out, status, rate, name) 
-                     VALUES %s 
-                     ON CONFLICT (id, check_in, check_out, name) DO UPDATE
-                     SET id = EXCLUDED.id, check_in = EXCLUDED.check_in, check_out = EXCLUDED.check_out, status = EXCLUDED.status, rate = EXCLUDED.rate, name = EXCLUDED.name'''
+            VALUES %s ON CONFLICT (id, check_in, check_out, name) DO UPDATE SET id = EXCLUDED.id, 
+            check_in = EXCLUDED.check_in, check_out = EXCLUDED.check_out, status = EXCLUDED.status,
+            rate = (case when excluded.status = 'AVAILABLE' then excluded.rate else 
+            db.availability.rate end) = EXCLUDED.rate END IF, name = EXCLUDED.name'''
         execute_values(cursor, str_sql, tupled_rates)
     connection.close()
 
