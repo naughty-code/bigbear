@@ -12,13 +12,12 @@ def update_cabin_urls():
 
 def scrape_and_insert_rates():
     bigbearcoolcabins.extract_costs_and_insert()
-    vacasa.scrape_and_insert_rates()
+    vacasa.rate_scrapper_single_threaded()
 
 
 def scrape_cabins():
-    vacasa_cabins = vacasa.scrape_cabins()
-    bbcc_cabins = bigbearcoolcabins.scrape_cabins()
-    return vacasa_cabins + bbcc_cabins
+    vacasa.scrape_cabins()
+    bigbearcoolcabins.scrape_cabins()
 
 def update_database():
     bigbearcoolcabins.insert()

@@ -244,8 +244,8 @@ def rate_scrapper_single_threaded():
                     next_button[0].click()
                 else:
                     break
-    return cabins
-        
+    insert_rates_faster(cabins)
+
 
 def extract_costs_faster_function(range_tuple):
     (start, end, holiday) = range_tuple
@@ -378,17 +378,14 @@ def insert_rates_faster(rates):
         tuples.append((id_, start, end, rate['status'], rate['quote'], rate['holiday']))
     connection = psycopg2.connect(DATABASE_URI)
     with connection, connection.cursor() as c:
-        """#this doesn't work, idk why
-        sql = 
-            INSERT INTO db.availability
-            SELECT (val.id, val.check_in, val.check_out, val.status, val.rate, val.name) 
-            FROM (VALUES %s) val (id, check_in, check_out, status, rate, name)
-            JOIN db.cabin USING (id)
-            ON CONFLICT DO NOTHING
-        psycopg2.extras.execute_values(c, sql, tuples)
-        """
+        sql = '''INSERT INTO db.availability (id, check_in, check_out, status, rate, name) 
+            VALUES (%s, %s, %s, %s, %s, %s) ON CONFLICT (id, check_in, check_out, name) DO UPDATE SET id = EXCLUDED.id, 
+            check_in = EXCLUDED.check_in, check_out = EXCLUDED.check_out, status = EXCLUDED.status,
+            rate = (case when excluded.status = 'AVAILABLE' then excluded.rate else 
+            db.availability.rate end), name = EXCLUDED.name'''
+        # execute_values(c, sql, tuples)
         for t in tuples:
-            c.execute('insert into db.availability values (%s,%s,%s,%s,%s,%s) on conflict do nothing', t)
+            c.execute(sql, t)
     connection.close()
 
 def insert_rates(*args):
@@ -450,10 +447,12 @@ def insert_cabins():
         occupancy = next((mo.group(1) for mo in occupancy_matches if mo), '0')
         tuples.append((idvrm, id_, name, website, description, address, location, bedrooms, occupancy))
     with connection, connection.cursor() as cursor:
-        sql = """
-            INSERT INTO db.cabin (idvrm, id, name, website, description, address, location, bedrooms, occupancy) VALUES %s
-            ON CONFLICT DO NOTHING
-        """
+        sql = '''UPDATE db.cabin SET status = 'INACTIVE' WHERE idvrm = 'VACASA' '''
+        cursor.execute(sql)
+        sql = """ INSERT INTO db.cabin (idvrm, id, name, website, description, address, location, 
+            bedrooms, occupancy) VALUES %s ON CONFLICT (id) DO UPDATE SET name = excluded.name, 
+            website = excluded.website, description = excluded.description, bedrooms = 
+            excluded.bedrooms, occupancy = excluded.occupancy, status = excluded.status;"""
         execute_values(cursor, sql, tuples)
 
 def update_last_scrape():
@@ -461,10 +460,10 @@ def update_last_scrape():
     cabins = load_cabins()
     with connection, connection.cursor() as c:
         c.execute("""
-            INSERT INTO db.vrm
-            VALUES (%s, %s, %s, %s, %s)
-            ON CONFLICT DO NOTHING
-        """, ('VACASA', 'vacasa', 'https://www.vacasa.com/', len(cabins), dt.datetime.now()))
+            INSERT INTO db.vrm (idvrm, name, website, ncabins, last_scrape)
+            VALUES (%s, %s, %s, (select count(id) from db.cabin where idvrm = 'VACASA'), now())
+            ON CONFLICT (idvrm) DO UPDATE SET name = excluded.name, website = excluded.website, ncabins = excluded.ncabins, last_scrape = excluded.last_scrape
+        """, ('VACASA', 'Vacasa', 'https://www.vacasa.com/'))
     connection.close()    
 
 def insert():
