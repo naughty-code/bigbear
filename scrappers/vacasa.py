@@ -248,6 +248,7 @@ def extract_costs_faster_function(range_tuple):
     start_string = start.strftime("%m/%d/%Y").replace('/', '%2F')
     end_string = end.strftime("%m/%d/%Y").replace('/', '%2F')
     with Browser('chrome', headless=True, **executable_path) as b:
+        b.driver.set_window_size(1200, 600)
         url = f'https://www.vacasa.com/usa/Big-Bear/?arrival={start_string}&departure={end_string}'
         print(f'Splinter-visiting url: {url}')
         try:
