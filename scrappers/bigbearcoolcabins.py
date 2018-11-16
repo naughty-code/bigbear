@@ -846,7 +846,7 @@ def extract_costs_and_insert():
                 'endDate': end_date,
                 'quote': 0,
                 'status': 'BOOKED',
-                'name': holiday
+                'holiday': holiday
             })
         insert_rates_faster(costs_with_ids)
 
