@@ -202,11 +202,13 @@ def extract_costs_faster_function(range_tuple):
     cabins = []
     start_string = start.strftime("%m/%d/%Y").replace('/', '%2F')
     end_string = end.strftime("%m/%d/%Y").replace('/', '%2F')
-    with Browser('chrome', headless=False, **executable_path) as b:
+    with Browser('chrome', headless=True, **executable_path) as b:
         b.visit(f'https://www.vacasa.com/usa/Big-Bear/?arrival={start_string}&departure={end_string}')
         while True:
             soup = BeautifulSoup(b.html, 'html.parser')
             cabin_tags = soup(class_='unit-result-list')
+            if not cabin_tags:
+                break
             for c in cabin_tags:
                 id_ = c['data-unit-id']
                 pattern = re.compile(r'\$(\d+)')
