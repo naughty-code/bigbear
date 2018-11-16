@@ -128,6 +128,8 @@ def parse_data(html):
 
     address = soup.find(class_='icon-map-location').next_sibling
     data['address'] = address.strip()
+
+    data['location'] = data['address'].split(',')[1:2]
     return data
 
 @util.ignore_errors
@@ -204,7 +206,10 @@ def rate_scrapper_single_threaded():
     df = pd.read_csv('scrappers/CEK_DB_-_Dates_CSV.csv', parse_dates=['PL', 'PR'])
     range_ = [(pl, pr, h) for i,pl,pr,h in df.itertuples()]
     cabins = []
-    with Browser('chrome', headless=True, **executable_path) as b:
+    chrome_options = webdriver.ChromeOptions()
+    prefs = {"profile.managed_default_content_settings.images": 2}
+    chrome_options.add_experimental_option("prefs", prefs)
+    with Browser('chrome', headless=True, options=chrome_options,**executable_path) as b:
         for start, end, holiday in range_:
             start_string = start.strftime("%m/%d/%Y").replace('/', '%2F')
             end_string = end.strftime("%m/%d/%Y").replace('/', '%2F')
