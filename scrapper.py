@@ -44,9 +44,9 @@ def update():
     #update_database()
 
     connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)
-    cursor = connection.cursor()
-    with connection:
-        cursor.execute("UPDATE db.status_update SET status = 'Updated' WHERE id=1;")
+    with connection, connection.cursor() as c:
+        c.execute("UPDATE db.status_update SET status = 'Updated' WHERE id=1;")
+    connection.close()
 
 if __name__ == "__main__":
     update()
