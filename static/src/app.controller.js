@@ -36,5 +36,5 @@ angular.module('app').controller('appController', function ($scope, $mdSidenav, 
 				var status = response.status;
 				console.log(status, data);
 			});
-	}, 30000);
+	}, 10000);
 })
