@@ -456,10 +456,10 @@ def update_last_scrape():
     cabins = load_cabins()
     with connection, connection.cursor() as c:
         c.execute("""
-            INSERT INTO db.vrm
-            VALUES (%s, %s, %s, %s, %s)
+            INSERT INTO db.vrm (idvrm, name, website, ncabins, last_scrape)
+            VALUES (%s, %s, %s, (select count(id) from db.cabins where idvrm = 'VACASA'), now())
             ON CONFLICT (idvrm) DO UPDATE SET name = excluded.name, website = excluded.website, ncabins = excluded.ncabins, last_scrape = excluded.last_scrape
-        """, ('VACASA', 'vacasa', 'https://www.vacasa.com/', len(cabins), dt.datetime.now()))
+        """, ('VACASA', 'Vacasa', 'https://www.vacasa.com/'))
     connection.close()    
 
 def insert():
