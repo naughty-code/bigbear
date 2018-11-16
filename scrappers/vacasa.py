@@ -377,7 +377,7 @@ def insert_rates_faster(rates):
             VALUES %s ON CONFLICT (id, check_in, check_out, name) DO UPDATE SET id = EXCLUDED.id, 
             check_in = EXCLUDED.check_in, check_out = EXCLUDED.check_out, status = EXCLUDED.status,
             rate = (case when excluded.status = 'AVAILABLE' then excluded.rate else 
-            db.availability.rate end) = EXCLUDED.rate END IF, name = EXCLUDED.name'''
+            db.availability.rate end), name = EXCLUDED.name'''
         execute_values(c, sql, tuples)
         # for t in tuples:
         #     c.execute(sql, t)
