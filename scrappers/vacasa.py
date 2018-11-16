@@ -169,6 +169,8 @@ def extract_costs():
 
 def scrape_and_insert_rates():
     for costs in extract_costs_faster():
+        if not costs:
+            continue
         start_date = costs[0]['startDate']
         end_date = costs[0]['endDate']
         holiday = costs[0]['holiday']
