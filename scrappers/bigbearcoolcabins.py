@@ -828,6 +828,8 @@ def extract_costs_and_insert():
     cabin_ids = set(cabin_name_to_id.values())
     costs_with_ids = []
     for costs in extract_costs_faster():
+        if not costs:
+            continue
         start_date = costs[0]['startDate']
         end_date = costs[0]['endDate']
         holiday = costs[0]['holiday']
