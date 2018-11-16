@@ -16,6 +16,7 @@ from splinter import Browser
 from scrappers import util
 from scrappers import settings
 from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
 
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
@@ -204,7 +205,13 @@ def extract_costs_faster_function(range_tuple):
     start_string = start.strftime("%m/%d/%Y").replace('/', '%2F')
     end_string = end.strftime("%m/%d/%Y").replace('/', '%2F')
     with Browser('chrome', headless=True, **executable_path) as b:
-        b.visit(f'https://www.vacasa.com/usa/Big-Bear/?arrival={start_string}&departure={end_string}')
+        url = f'https://www.vacasa.com/usa/Big-Bear/?arrival={start_string}&departure={end_string}'
+        print(f'Splinter-visiting url: {url}')
+        try:
+            b.visit(url)
+        except TimeoutException as e:
+            print(e.stacktrace)
+            return cabins
         while True:
             soup = BeautifulSoup(b.html, 'html.parser')
             cabin_tags = soup(class_='unit-result-list')
