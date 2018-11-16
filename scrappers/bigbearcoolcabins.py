@@ -749,9 +749,13 @@ def insert_cabins(cabins=None):
         ])
     with connection:
         with connection.cursor() as cursor:
-            str_sql = '''INSERT INTO db.cabin (id, name, website, description, location, bedrooms, occupancy,status, idvrm) VALUES %s ON CONFLICT (id) DO UPDATE SET name = 
-                excluded.name, website = excluded.website, description = excluded.description, bedrooms = 
-                excluded.bedrooms, occupancy = excluded.occupancy;'''
+            str_sql = '''UPDATE db.cabin SET status = 'INACTIVE' WHERE idvrm = 'BBCC' '''
+            cursor.execute(str_sql)
+            str_sql = '''INSERT INTO db.cabin (id, name, website, description, location, bedrooms, 
+                occupancy,status, idvrm) VALUES %s ON CONFLICT (id) DO UPDATE SET name = 
+                excluded.name, website = excluded.website, description = excluded.description, 
+                bedrooms = excluded.bedrooms, occupancy = excluded.occupancy, status = 
+                excluded.status;'''
             execute_values(cursor, str_sql, insertCabins)
     connection.close()
 

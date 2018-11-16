@@ -445,10 +445,12 @@ def insert_cabins():
         occupancy = next((mo.group(1) for mo in occupancy_matches if mo), '0')
         tuples.append((idvrm, id_, name, website, description, address, location, bedrooms, occupancy))
     with connection, connection.cursor() as cursor:
-        sql = """
-            INSERT INTO db.cabin (idvrm, id, name, website, description, address, location, bedrooms, occupancy) VALUES %s
-            ON CONFLICT DO NOTHING
-        """
+        sql = '''UPDATE db.cabin SET status = 'INACTIVE' WHERE idvrm = 'VACASA' '''
+        cursor.execute(sql)
+        sql = """ INSERT INTO db.cabin (idvrm, id, name, website, description, address, location, 
+            bedrooms, occupancy) VALUES %s ON CONFLICT (id) DO UPDATE SET name = excluded.name, 
+            website = excluded.website, description = excluded.description, bedrooms = 
+            excluded.bedrooms, occupancy = excluded.occupancy, status = excluded.status;"""
         execute_values(cursor, sql, tuples)
 
 def update_last_scrape():
