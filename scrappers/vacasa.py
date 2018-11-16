@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import pandas as pd
 import sys
 import requests as rq
@@ -205,6 +203,7 @@ def extract_costs_faster_function(range_tuple):
     start_string = start.strftime("%m/%d/%Y").replace('/', '%2F')
     end_string = end.strftime("%m/%d/%Y").replace('/', '%2F')
     with Browser('chrome', headless=True, **executable_path) as b:
+<<<<<<< HEAD
         url = f'https://www.vacasa.com/usa/Big-Bear/?arrival={start_string}&departure={end_string}'
         print(f'Splinter-visiting url: {url}')
         try:
@@ -212,6 +211,9 @@ def extract_costs_faster_function(range_tuple):
         except TimeoutException as e:
             print(e.stacktrace)
             return cabins
+=======
+        b.visit(f'https://www.vacasa.com/usa/Big-Bear/?arrival={start_string}&departure={end_string}')
+>>>>>>> 2e315c82a69463e229c4bbb76100ecea74685bfc
         while True:
             soup = BeautifulSoup(b.html, 'html.parser')
             cabin_tags = soup(class_='unit-result-list')
@@ -483,8 +485,6 @@ def scrape_cabins(filename='./scrappers/vacasa_cabins.json'):
         # Write finally result
         name = dump_from(filename, results)
         print('Dumped', name)    
-    return results
-    
 
 def main():
 
