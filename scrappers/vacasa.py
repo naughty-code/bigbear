@@ -378,9 +378,9 @@ def insert_rates_faster(rates):
             check_in = EXCLUDED.check_in, check_out = EXCLUDED.check_out, status = EXCLUDED.status,
             rate = (case when excluded.status = 'AVAILABLE' then excluded.rate else 
             db.availability.rate end), name = EXCLUDED.name'''
-        execute_values(c, sql, tuples)
-        # for t in tuples:
-        #     c.execute(sql, t)
+        # execute_values(c, sql, tuples)
+        for t in tuples:
+            c.execute(sql, t)
     connection.close()
 
 def insert_rates(*args):
