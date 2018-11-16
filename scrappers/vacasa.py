@@ -11,6 +11,7 @@ import os
 import time
 import itertools
 import psycopg2
+from psycopg2.extras import execute_values
 from splinter import Browser
 from scrappers import util
 from scrappers import settings
@@ -395,7 +396,7 @@ def insert_cabins():
             INSERT INTO db.cabin (idvrm, id, name, website, description, address, location, bedrooms, occupancy) VALUES %s
             ON CONFLICT DO NOTHING
         """
-        psycopg2.extras.execute_values(cursor, sql, tuples)
+        execute_values(cursor, sql, tuples)
 
 def update_last_scrape():
     connection = psycopg2.connect(DATABASE_URI)
