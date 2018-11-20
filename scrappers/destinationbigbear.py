@@ -16,7 +16,7 @@ from bs4 import BeautifulSoup
 
 
 CABIN_URLS_FILE = './scrappers/dbb_cabin_urls.json'
-DATABASE_URI = os.environ['DATABASE_URI']
+DATABASE_URI = os.environ.get('DATABASE_URL', None) or os.getenv('DATABASE_URI')
 #connection = psycopg2.connect(DATABASE_URI)
 #cursor = connection.cursor()
 
@@ -51,7 +51,8 @@ def scrape_cabin_urls():
     res = rq.get('https://www.destinationbigbear.com/AllCabinList.aspx')
     soup = BeautifulSoup(res.text, 'html.parser')
     urls = [base_url + a['href'] for a in soup('a', href=lambda href: 'Property_detail' in href)]
-    return urls
+    with open(CABIN_URLS_FILE, 'w', encoding='utf8') as f:
+        json.dump(urls, f, indent=2)
 
 def get_quote(id, start_date, end_date):
     pass
@@ -73,11 +74,6 @@ def extract_costs():
     pattern = re.compile(r'propid=(\d+)')
     ids = [ re.search(pattern, cabin['url']).group(1) for cabin in cabins ]
     return util.extract_costs(ids, get_quote)
-
-def scrape_and_store_cabin_urls():
-    urls = scrape_cabin_urls()
-    with open(CABIN_URLS_FILE, 'w', encoding='utf8') as f:
-        json.dump(urls, f, indent=2)
 
 @default_value
 def extract_name(soup):
@@ -634,6 +630,27 @@ def update_database(cabins, amenities, availabilities=None):
             cursor.execute('UPDATE db.vrm SET ncabins=' + str(len(cabins)) + ', last_scrape=CURRENT_TIMESTAMP WHERE idvrm = \'DBB\'')
     connection.close()
 
+def scrape_cabins():
+    filename = './scrappers/dbb.json'
+    with open(CABIN_URLS_FILE) as f:
+        links = json.load(f)
+    total   = len(links)
+    index   = 0
+    results = []
+
+    try:
+        for r in crawl_cabins(links):
+            if r is None: continue
+            results.append(r)
+            index += 1
+            print(f'Scraped! {r["name"]} {r["site_id"]} {index}/{total}')
+            if index == 3:
+                break
+    except KeyboardInterrupt: pass
+    finally: 
+        # Write finally result
+        name = dump_from(filename, results)
+        print('Dumped', name)
 
 def main():
 

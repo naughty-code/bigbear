@@ -2,11 +2,12 @@ import os
 import itertools
 import psycopg2
 from psycopg2.extras import RealDictCursor
-from scrappers import vacasa, bigbearcoolcabins
+from scrappers import destinationbigbear, vacasa, bigbearcoolcabins
 
 DATABASE_URI = os.environ.get('DATABASE_URL', None) or os.getenv('DATABASE_URI')
 
 def update_cabin_urls():
+    destinationbigbear.scrape_cabin_urls()
     vacasa.extract_cabin_urls_splinter()
     bigbearcoolcabins.scrape_cabin_urls_and_store()
 
@@ -16,6 +17,7 @@ def scrape_and_insert_rates():
 
 
 def scrape_cabins():
+    destinationbigbear.scrape_cabins()
     vacasa.scrape_cabins()
     bigbearcoolcabins.scrape_cabins()
 
