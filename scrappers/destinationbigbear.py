@@ -192,7 +192,7 @@ def extract_subtitle(soup):
 def extract_description(soup):
     elem = soup.find(id='ctl00_ContentPlaceHolder1_hdnDesc')
     desc = elem.get('value')
-    return BeautifulSoup(desc, "lxml").text
+    return BeautifulSoup(desc, "html.parser").text
 
 @default_value
 def extract_full_address(soup):
