@@ -129,7 +129,9 @@ def parse_data(html):
     address = soup.find(class_='icon-map-location').next_sibling
     data['address'] = address.strip()
 
-    data['location'] = data['address'].split(',')[1:2]
+    splitted_address = data['address'].split(',')
+
+    data['location'] = splitted_address[1] if splitted_address[1:2] else ''
     return data
 
 @util.ignore_errors
@@ -446,16 +448,18 @@ def insert_cabins():
         occupancy_matches = (pattern.match(f) for f in c['features'])
         occupancy = next((mo.group(1) for mo in occupancy_matches if mo), '0')
         tuples.append((idvrm, id_, name, website, description, address, location, bedrooms, occupancy))
-    unique_tuples = set(t for t in tuples)
+    # print(tuples)
+    # unique_tuples = set(t for t in tuples)
     with connection, connection.cursor() as cursor:
         sql = '''UPDATE db.cabin SET status = 'INACTIVE' WHERE idvrm = 'VACASA' '''
         cursor.execute(sql)
         sql = """ INSERT INTO db.cabin (idvrm, id, name, website, description, address, location, 
-            bedrooms, occupancy) VALUES %s ON CONFLICT (id) DO UPDATE SET name = excluded.name, 
+            bedrooms, occupancy) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT (id) DO UPDATE SET name = excluded.name, 
             website = excluded.website, description = excluded.description, bedrooms = 
-            excluded.bedrooms, occupancy = excluded.occupancy, status = excluded.status,
-            address = excluded.address, location = excluded.location;"""
-        execute_values(cursor, sql, unique_tuples)
+            excluded.bedrooms, occupancy = excluded.occupancy, status = excluded.status, location = excluded.location, address = excluded.address;"""
+        # execute_values(cursor, sql, unique_tuples)
+        for t in tuples:
+            cursor.execute(sql, t)
 
 def update_last_scrape():
     connection = psycopg2.connect(DATABASE_URI)
