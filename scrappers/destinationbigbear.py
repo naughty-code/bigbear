@@ -17,6 +17,7 @@ from bs4 import BeautifulSoup
 
 CABIN_URLS_FILE = './scrappers/dbb_cabin_urls.json'
 DATABASE_URI = os.environ.get('DATABASE_URL', None) or os.getenv('DATABASE_URI')
+# DATABASE_URI = os.environ['DATABASE_URL']
 #connection = psycopg2.connect(DATABASE_URI)
 #cursor = connection.cursor()
 
@@ -526,6 +527,9 @@ def parse_data(html):
     desc = extract_description(soup)
     data['description'] = desc
 
+    addr = extract_full_address(soup)
+    data['address'] = addr
+
     amenities = extract_amenities(data['site_id'], soup)
     data['amenities'] = amenities
 
@@ -649,8 +653,39 @@ def scrape_cabins():
     except KeyboardInterrupt: pass
     finally: 
         # Write finally result
-        name = dump_from(filename, results)
-        print('Dumped', name)
+        with open(filename, 'w', encoding='utf8') as fl:
+            json.dump(results, fl, indent=2)
+            print('Dumped', filename)
+
+def insert_cabins():
+    cabins = load_cabins()
+    insertCabins = []
+    for cabin in cabins:
+        cabinInsert = (
+                'DBB', 
+                cabin.get('site_id'), 
+                cabin.get('name').split(' - ')[0], 
+                cabin.get('url'), 
+                cabin.get('description'), 
+                cabin.get('properties').get('Bedrooms'), 
+                cabin.get('properties').get('Occupancy'),
+                cabin.get('address'),
+                'ACTIVE',
+                cabin.get('name').split(' - ')[1]
+            )
+        insertCabins.append(cabinInsert)
+    connection = psycopg2.connect(DATABASE_URI)
+    with connection:
+        with connection.cursor() as cursor:
+            str_sql = '''UPDATE db.cabin SET status = 'INACTIVE' WHERE idvrm = 'DBB' '''
+            cursor.execute(str_sql)
+            # Update cabins
+            str_sql = '''INSERT INTO db.cabin (idvrm, id, name, website, description, bedrooms, 
+                occupancy, address, status, location) VALUES %s ON CONFLICT (id) DO UPDATE SET 
+                name = excluded.name, website = excluded.website, description = 
+                excluded.description, bedrooms = excluded.bedrooms, occupancy = excluded.occupancy,
+                address = excluded.address, status = excluded.status, location = excluded.location;'''
+            execute_values(cursor, str_sql, insertCabins)
 
 def main():
 

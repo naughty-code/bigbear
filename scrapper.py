@@ -26,6 +26,7 @@ def update_database():
     vacasa.insert()
 
 def insert_cabins():
+    destinationbigbear.insert_cabins()
     vacasa.insert_cabins()
     bigbearcoolcabins.insert_cabins()
 
