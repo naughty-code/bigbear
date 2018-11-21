@@ -648,8 +648,6 @@ def scrape_cabins():
             results.append(r)
             index += 1
             print(f'Scraped! {r["name"]} {r["site_id"]} {index}/{total}')
-            if index == 3:
-                break
     except KeyboardInterrupt: pass
     finally: 
         # Write finally result
