@@ -454,7 +454,7 @@ def insert_cabins():
         sql = """ INSERT INTO db.cabin (idvrm, id, name, website, description, address, location, 
             bedrooms, occupancy) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT (id) DO UPDATE SET name = excluded.name, 
             website = excluded.website, description = excluded.description, bedrooms = 
-            excluded.bedrooms, occupancy = excluded.occupancy, status = excluded.status;"""
+            excluded.bedrooms, occupancy = excluded.occupancy, status = excluded.status, location = excluded.location, address = exclueded.address;"""
         # execute_values(cursor, sql, unique_tuples)
         for t in tuples:
             cursor.execute(sql, t)
