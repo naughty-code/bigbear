@@ -68,7 +68,7 @@ def scrape_rates_and_insert_faster():
     id_from_name = { name: id_ for id_, name in cabins}
     for rates in get_quote_faster(util.get_date_ranges()):
         rates_with_id = [{**rate, 'id': id_from_name[rate['name']]} for rate in rates]
-        insert_rates_faster(rates)
+        insert_rates_faster(rates_with_id)
 
 def get_quote_faster(date_ranges):
     with Browser('chrome') as b:
