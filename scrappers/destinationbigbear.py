@@ -55,10 +55,20 @@ def scrape_cabin_urls():
     with open(CABIN_URLS_FILE, 'w', encoding='utf8') as f:
         json.dump(urls, f, indent=2)
 
+def select_cabins():
+    connection = psycopg2.connect(os.getenv('DATABASE_URI'))
+    with connection, connection.cursor() as cursor:
+        cursor.execute("SELECT id, name from db.cabin WHERE cabin.idvrm='DBB'")
+        cabins = cursor.fetchall()
+    connection.close()
+    return cabins
 
 def scrape_rates_and_insert_faster():
+    cabins = select_cabins()
+    id_from_name = { name: id_ for id_, name in cabins}
     for rates in get_quote_faster(util.get_date_ranges()):
-        pass
+        rates_with_id = [{**rate, 'id': id_from_name[rate['name']]} for rate in rates]
+        insert_rates_faster(rates)
 
 def get_quote_faster(date_ranges):
     with Browser('chrome') as b:
@@ -81,6 +91,18 @@ def get_quote_faster(date_ranges):
                 else:
                     next_.click()
             yield results
+
+def insert_rates_faster(rates):
+    tupled_rates = [(r['id'], r['start'], r['end'], r['status'], r['price'], r['holiday']) for r in rates]
+    connection = psycopg2.connect(os.getenv('DATABASE_URI'))
+    with connection, connection.cursor() as cursor:
+        str_sql = '''INSERT INTO db.availability (id, check_in, check_out, status, rate, name) 
+            VALUES %s ON CONFLICT (id, check_in, check_out, name) DO UPDATE SET id = EXCLUDED.id, 
+            check_in = EXCLUDED.check_in, check_out = EXCLUDED.check_out, status = EXCLUDED.status,
+            rate = (case when excluded.status = 'AVAILABLE' then excluded.rate else 
+            db.availability.rate end), name = EXCLUDED.name'''
+        execute_values(cursor, str_sql, tupled_rates)
+    connection.close()
 
 
 
