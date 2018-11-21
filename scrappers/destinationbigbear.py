@@ -271,7 +271,11 @@ def extract_calendar(soup):
         days = month.find_all('td', style=red)
         days = [ d.get_text(strip=True) for d in days ]
         days = map(int, days)
-        yield from ( dt.date(year, i, d) for d in days )
+        try:
+            yield from ( dt.date(year, i, d) for d in days )
+        except ValueError as e:
+            print(e)
+            
 
 def parse_dates(dates):
     return [ str(d) for d in dates ]
@@ -680,6 +684,10 @@ def scrape_cabin(url):
         return data
     
     # except Exception as e: print(e)
+    except Exception as e:
+        print(f'Exception scraping url:{url}')
+        print(e)
+        return None
     except KeyboardInterrupt: pass
 
 # Nothing to do here...
