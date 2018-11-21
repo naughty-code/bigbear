@@ -13,7 +13,7 @@ from psycopg2.extras import execute_values
 from datetime import datetime
 from datetime import timedelta
 from bs4 import BeautifulSoup
-
+from splinter import Browser
 
 CABIN_URLS_FILE = './scrappers/dbb_cabin_urls.json'
 DATABASE_URI = os.environ.get('DATABASE_URL', None) or os.getenv('DATABASE_URI')
@@ -54,18 +54,32 @@ def scrape_cabin_urls():
     with open(CABIN_URLS_FILE, 'w', encoding='utf8') as f:
         json.dump(urls, f, indent=2)
 
-def get_quote(id, start_date, end_date):
-    pass
 
-def get_quote_faster(start_date, end_date):
-    url = 'https://www.destinationbigbear.com/FindCabin.aspx'
-    params = {
-        'firstnight': start_date.strftime('%m/%d/%Y'),
-        'lastnight': end_date.strftime('%m/%d/%Y')
-    }
-    res = rq.get(url, params)
-    soup = BeautifulSoup(res.text, 'html.parser')
-    incepsoup = BeautifulSoup(soup.find(id='red-contents').input['value'], 'html.parser')
+def scrape_rates_and_insert_faster():
+    for rates in get_quote_faster(util.get_date_ranges()):
+        pass
+
+def get_quote_faster(date_ranges):
+    with Browser('chrome') as b:
+        for start, end, holiday in date_ranges:
+            results = []
+            start = start_date.strftime('%m/%d/%Y')
+            end = end_date.strftime('%m/%d/%Y')
+            url = f'https://www.destinationbigbear.com/FindCabin.aspx?firstnight={start}&lastnight={end}'
+            b.visit(url)
+            while True:
+                while b.is_element_present_by_css('body.loading'):
+                    pass
+                prices_with_dollar = [e.text for e in b.find_by_css('.panel-overlay-bottom > h4') if e.text]
+                prices = [re.sub(r'[\$,]', '', price_with_dollar) for price_with_dollar in prices_with_dollar]
+                names = [e.text for e in b.find_by_css('.caption.header > h3') if e.text]
+                results+= [{'name': name, 'price':price, 'start': start, 'end':end, 'holiday': holiday} for name, price in zip(names, prices)]
+                next_ = b.find_by_css('.btn.next')
+                if next_.has_class('disabled'):
+                    break
+                else:
+                    next_.click()
+            yield results
 
 
 
