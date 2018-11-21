@@ -446,6 +446,7 @@ def insert_cabins():
         occupancy_matches = (pattern.match(f) for f in c['features'])
         occupancy = next((mo.group(1) for mo in occupancy_matches if mo), '0')
         tuples.append((idvrm, id_, name, website, description, address, location, bedrooms, occupancy))
+    tuples = set(tuples)
     with connection, connection.cursor() as cursor:
         sql = '''UPDATE db.cabin SET status = 'INACTIVE' WHERE idvrm = 'VACASA' '''
         cursor.execute(sql)
