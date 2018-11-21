@@ -252,7 +252,7 @@ def metrics2():
         c.execute(sql, [day, year])
         result.append(c.fetchall())
 
-        sql = '''select a.id, '$' || round(a.rate, 2) from db.availability as a 
+        sql = '''select a.id, '$' || round(a.rate, 2) as rate from db.availability as a 
             where a.status = 'AVAILABLE'
             and a.name=%s
             and DATE_PART('YEAR', a.check_in) = %s
