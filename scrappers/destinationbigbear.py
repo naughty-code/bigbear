@@ -19,15 +19,6 @@ from selenium import webdriver
 
 CABIN_URLS_FILE = './scrappers/dbb_cabin_urls.json'
 DATABASE_URI = os.environ.get('DATABASE_URL', None) or os.getenv('DATABASE_URI')
-# DATABASE_URI = os.environ['DATABASE_URL']
-#connection = psycopg2.connect(DATABASE_URI)
-#cursor = connection.cursor()
-
-# destinationbigbear -> dbb
-# bigbearcoolcabins  -> bbc
-# vacasa             -> vcs
-# bigbearvacations   -> bbv
-# Don't forget to handle exceptions
 
 def load_cabins():
     cabins = []
@@ -40,8 +31,6 @@ def default_value(func):
         try: return func(*args, **kwargs)
         except Exception as e: 
             pass
-            # print(func)
-            # print(e)
     return wrapper
 
 def read_csv_cabins(filename):
@@ -643,25 +632,6 @@ def parse_data(html):
 
     amenities = extract_amenities(data['site_id'], soup)
     data['amenities'] = amenities
-
-    # booked = extract_calendar(soup)
-    # data['booked'] = parse_dates(booked)
-    # Obviously this needs to be changed but not tonight fellas
-    #availabilities_weekends = get_availability_weekends_friday(id_, data['booked'])
-    #availabilities_MLK = get_availability_MLK(id_, data['booked'])
-    #availabilities_president = get_availability_president(id_, data['booked'])
-    #availabilities_patrick = get_availability_patrick(id_, data['booked'])
-    #availabilities_easter = get_availability_easter(id_, data['booked'])
-    #availabilities_cincomayo = get_availability_cincomayo(id_, data['booked'])
-    #availabilities_memorial = get_availability_memorial(id_, data['booked'])
-    #availabilities_4july = get_availability_4july(id_, data['booked'])
-    #availabilities_labor = get_availability_labor(id_, data['booked'])
-    #availabilities_columbus = get_availability_columbus(id_, data['booked'])
-    #availabilities_veterans = get_availability_veterans(id_, data['booked'])
-    #availability_thanksgiving = get_availability_thanksgiving(id_, data['booked'])
-    #availabilities_christmas = get_availability_christmas(id_, data['booked'])
-
-    #data['availabilities'] = availabilities_weekends + availabilities_MLK + availabilities_president + availabilities_patrick + availabilities_easter + availabilities_cincomayo + availabilities_memorial + availabilities_4july + availabilities_labor + availabilities_columbus + availabilities_veterans + availability_thanksgiving + availabilities_christmas
 
     return data
 
