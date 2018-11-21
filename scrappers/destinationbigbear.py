@@ -72,7 +72,7 @@ def scrape_rates_and_insert_faster():
 
 def get_quote_faster(date_ranges):
     with Browser('chrome') as b:
-        for start, end, holiday in date_ranges:
+        for start_date, end_date, holiday in date_ranges:
             results = []
             start = start_date.strftime('%m/%d/%Y')
             end = end_date.strftime('%m/%d/%Y')
