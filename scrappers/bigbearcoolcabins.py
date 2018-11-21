@@ -790,13 +790,13 @@ def upload_to_database():
 
 def update_last_scrape():
     connection = psycopg2.connect(os.getenv('DATABASE_URI'))
-    cabins = load_cabins()
     with connection, connection.cursor() as c:
-        c.execute("""
-            INSERT INTO db.vrm
-            VALUES (%s, %s, %s, %s, %s)
-            ON CONFLICT (idvrm) DO UPDATE SET name = excluded.name, website = excluded.website, ncabins = excluded.ncabins, last_scrape = excluded.last_scrape;
-        """, ('BBCC', 'big bear cool cabins', 'https://www.bigbearcoolcabins.com', len(cabins), datetime.now()))
+        c.execute("""INSERT INTO db.vrm (idvrm, name, website, ncabins, last_scrape)
+            VALUES (%s, %s, %s, (select count(id) from db.cabin where idvrm = 'DBB' and 
+            status='ACTIVE'), now()) ON CONFLICT (idvrm) DO UPDATE SET name = excluded.name, 
+            website = excluded.website, ncabins = excluded.ncabins, last_scrape = 
+            excluded.last_scrape""", ('BBCC', 'Big Bear Cool Cabins', 
+            'https://www.bigbearcoolcabins.com'))
     connection.close()
 
 def insert():

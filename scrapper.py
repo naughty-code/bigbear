@@ -42,6 +42,7 @@ def update():
     insert_cabins()
     scrape_and_insert_rates() # both scrape and insert rates
     insert_amenities()
+    destinationbigbear.update_last_scrape()
     bigbearcoolcabins.update_last_scrape()
     vacasa.update_last_scrape()
     #update_database()
