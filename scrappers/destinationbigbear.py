@@ -568,7 +568,7 @@ def scrape_cabin(url):
         data['url'] = url
         return data
     
-    except Exception as e: print(e)
+    # except Exception as e: print(e)
     except KeyboardInterrupt: pass
 
 # Nothing to do here...
