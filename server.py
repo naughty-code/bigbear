@@ -64,7 +64,7 @@ def availability():
     with connection:
         with connection.cursor() as cursor:
             cursor.execute('''SELECT id as "ID", check_in as "Date IN", check_out as "Date OUT", 
-                status as "Status", '$' || rate as "Rate", name as "Name" FROM db.availability 
+                status as "Status", '$' || round(rate, 2) as "Rate", name as "Name" FROM db.availability 
                 order by name asc''')
             data = cursor.fetchall()
     connection.close()
@@ -156,7 +156,7 @@ def report():
             
             result_json['table1'] = result
 
-            cursor.execute('''select cabin.idvrm, cabin.id, cabin.name, cabin.website, check_in, check_out, availability.status, '$' || availability.rate, availability.name from db.availability inner join db.cabin on cabin.id = availability.id order  by check_in asc''')
+            cursor.execute('''select cabin.idvrm, cabin.id, cabin.name, cabin.website, check_in, check_out, availability.status, '$' || round(availability.rate, 2), availability.name from db.availability inner join db.cabin on cabin.id = availability.id order  by check_in asc''')
             table2 = cursor.fetchall()
     connection.close()
     result_json['table2'] = table2
@@ -194,16 +194,16 @@ def metrics1():
     with connection, connection.cursor() as c:
         c.execute('''select count(id), name from db.availability where "name" <> 'Weekend' and status = 'BOOKED' group by "name" order by count(id) desc''')
         result.append(c.fetchall())
-        c.execute('''select '$' || MIN(rate), name from db.availability where "name" <> 'Weekend' and status = 'AVAILABLE' group by "name" order by min(rate) asc limit 1''')
+        c.execute('''select '$' || round(MIN(rate), 2), name from db.availability where "name" <> 'Weekend' and status = 'AVAILABLE' group by "name" order by min(rate) asc limit 1''')
         result.append(c.fetchall())
-        c.execute('''select '$' || MAX(rate), name from db.availability where "name" <> 'Weekend' and status = 'AVAILABLE' group by "name" order by max(rate) desc limit 1''')
+        c.execute('''select '$' || round(MAX(rate), 2), name from db.availability where "name" <> 'Weekend' and status = 'AVAILABLE' group by "name" order by max(rate) desc limit 1''')
         result.append(c.fetchall())
         c.execute('''select count(id), check_in, check_out, name from db.availability where status = 'BOOKED' group by check_in, check_out, name order by count(id) desc
     ''')
         result.append(c.fetchall())
-        c.execute('''select '$' || MIN(rate), check_in, check_out, name from db.availability where status = 'AVAILABLE' group by check_in, check_out, name order by min(rate) asc limit 1''')
+        c.execute('''select '$' || round(MIN(rate), 2), check_in, check_out, name from db.availability where status = 'AVAILABLE' group by check_in, check_out, name order by min(rate) asc limit 1''')
         result.append(c.fetchall())
-        c.execute('''select '$' || MAX(rate), check_in, check_out, name from db.availability where status = 'AVAILABLE' group by check_in, check_out, name order by MAX(rate) desc limit 1''')
+        c.execute('''select '$' || round(MAX(rate), 2), check_in, check_out, name from db.availability where status = 'AVAILABLE' group by check_in, check_out, name order by MAX(rate) desc limit 1''')
         result.append(c.fetchall())
     connection.close()
     return jsonify(result)
@@ -234,7 +234,7 @@ def metrics2():
         c.execute(sql, [day, year])
         result.append(c.fetchall())
 
-        sql = '''select '$' || COALESCE(avg(rate), 0) AS avg from db.availability as a
+        sql = '''select '$' || COALESCE(round(avg(rate), 2), 0) AS avg from db.availability as a
         where a.status = 'AVAILABLE'
         and a.name=%s
         and DATE_PART('YEAR', a.check_in) = %s'''
@@ -242,7 +242,7 @@ def metrics2():
         result.append(c.fetchall())
 
         sql = '''select v.idvrm, '$' || coalesce((
-            select avg(a.rate) 
+            select round(avg(a.rate), 2) 
             from db.availability as a
             where a."name" = %s 
             and a.id like v.idvrm || '%%'
@@ -252,7 +252,7 @@ def metrics2():
         c.execute(sql, [day, year])
         result.append(c.fetchall())
 
-        sql = '''select a.id, '$' || a.rate from db.availability as a 
+        sql = '''select a.id, '$' || round(a.rate, 2) from db.availability as a 
             where a.status = 'AVAILABLE'
             and a.name=%s
             and DATE_PART('YEAR', a.check_in) = %s
