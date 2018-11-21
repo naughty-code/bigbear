@@ -139,6 +139,3 @@ def get_holidays_in_range(start, end, holidays_filename='./scrappers/holidays.cs
 
 def add_one_week(day):
   return day + timedelta(days=7)
-
-def remove_tags(text):
-    return ''.join(xml.etree.ElementTree.fromstring(text).itertext())
