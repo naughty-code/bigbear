@@ -644,8 +644,8 @@ def parse_data(html):
     amenities = extract_amenities(data['site_id'], soup)
     data['amenities'] = amenities
 
-    booked = extract_calendar(soup)
-    data['booked'] = parse_dates(booked)
+    # booked = extract_calendar(soup)
+    # data['booked'] = parse_dates(booked)
     # Obviously this needs to be changed but not tonight fellas
     #availabilities_weekends = get_availability_weekends_friday(id_, data['booked'])
     #availabilities_MLK = get_availability_MLK(id_, data['booked'])
