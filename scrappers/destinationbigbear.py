@@ -14,6 +14,8 @@ from datetime import datetime
 from datetime import timedelta
 from bs4 import BeautifulSoup
 from splinter import Browser
+from scrappers import settings
+from selenium import webdriver
 
 CABIN_URLS_FILE = './scrappers/dbb_cabin_urls.json'
 DATABASE_URI = os.environ.get('DATABASE_URL', None) or os.getenv('DATABASE_URI')
@@ -66,34 +68,107 @@ def select_cabins():
 def scrape_rates_and_insert_faster():
     cabins = select_cabins()
     id_from_name = { name: id_ for id_, name in cabins}
-    for rates in get_quote_faster(util.get_date_ranges()):
-        rates_with_id = [{**rate, 'id': id_from_name[rate['name']]} for rate in rates]
+    print(id_from_name)
+    names = set(name for id_, name in cabins)
+    print(len(id_from_name.keys()))
+    for rates in get_quote_from_pool(2):
+        if not rates: continue
+        start_date = rates[0]['start']
+        end_date = rates[0]['end']
+        holiday = rates[0]['holiday']
+        print(f'scrapped rates: {start_date} {end_date} - {holiday}')
+        rates_with_id = []
+        for r in rates:
+            id_ = id_from_name.get(r['name'])
+            if id_:
+                rates_with_id.append({**r, 'id': id_})
+        #preparing not found results
+        scraped_names = set(r['name'] for r in rates)
+        not_found_names = names - scraped_names
+        for name in not_found_names:
+            rates_with_id.append({
+                'id': id_from_name[name],
+                'start': start_date,
+                'end': end_date,
+                'status': 'BOOKED',
+                'holiday': holiday,
+                'price': 0
+            })
         insert_rates_faster(rates_with_id)
 
-def get_quote_faster(date_ranges):
-    with Browser('chrome') as b:
+def initializer():
+    global b
+    prefs = {"profile.managed_default_content_settings.images":2}
+    options = webdriver.ChromeOptions()
+    options.add_experimental_option("prefs", prefs)
+    b = Browser('chrome', headless=False, options=options)
+
+def get_quote_worker(date_range):
+    start_date, end_date, holiday = date_range
+    results = []
+    start = start_date.strftime('%m/%d/%Y')
+    end = end_date.strftime('%m/%d/%Y')
+    try:
+        url = f'https://www.destinationbigbear.com/FindCabin.aspx?firstnight={start}&lastnight={end}'
+        b.visit(url)
+        while True:
+            while b.is_element_present_by_css('body.loading'):
+                pass
+            while b.is_element_not_present_by_css('.panel-overlay-bottom > h4'):
+                pass
+            prices_with_dollar = [e.text for e in b.find_by_css('.panel-overlay-bottom > h4') if e.text]
+            prices = [re.sub(r'[\$,]', '', price_with_dollar) for price_with_dollar in prices_with_dollar]
+            names = [e.text for e in b.find_by_css('.caption.header > h3') if e.text]
+            results+= [{'name': name, 'price':price, 'start': start, 'end':end, 'holiday': holiday, 'status': 'AVAILABLE'} for name, price in zip(names, prices)]
+            next_ = b.find_by_css('.btn.next')
+            if next_.has_class('disabled'):
+                break
+            else:
+                next_.click()
+        return results
+    except Exception as e:
+        print(e)
+        return []
+    
+
+def get_quote_from_pool(processes = None):
+    date_ranges = util.get_date_ranges()
+    with mp.Pool(processes, initializer=initializer) as p:
+        yield from p.imap_unordered(get_quote_worker, date_ranges)
+
+def get_quote_single_threaded():
+    date_ranges = util.get_date_ranges()
+    prefs = {"profile.managed_default_content_settings.images":2}
+    options = webdriver.ChromeOptions()
+    options.add_experimental_option("prefs",prefs)
+    with Browser('chrome', options=options) as b:
         for start_date, end_date, holiday in date_ranges:
             results = []
             start = start_date.strftime('%m/%d/%Y')
             end = end_date.strftime('%m/%d/%Y')
             url = f'https://www.destinationbigbear.com/FindCabin.aspx?firstnight={start}&lastnight={end}'
-            b.visit(url)
-            while True:
-                while b.is_element_present_by_css('body.loading'):
-                    pass
-                prices_with_dollar = [e.text for e in b.find_by_css('.panel-overlay-bottom > h4') if e.text]
-                prices = [re.sub(r'[\$,]', '', price_with_dollar) for price_with_dollar in prices_with_dollar]
-                names = [e.text for e in b.find_by_css('.caption.header > h3') if e.text]
-                results+= [{'name': name, 'price':price, 'start': start, 'end':end, 'holiday': holiday} for name, price in zip(names, prices)]
-                next_ = b.find_by_css('.btn.next')
-                if next_.has_class('disabled'):
-                    break
-                else:
-                    next_.click()
-            yield results
-
+            try:
+                b.visit(url)
+                while True:
+                    while b.is_element_present_by_css('body.loading'):
+                        pass
+                    while b.is_element_not_present_by_css('.panel-overlay-bottom > h4'):
+                        pass
+                    prices_with_dollar = [e.text for e in b.find_by_css('.panel-overlay-bottom > h4') if e.text]
+                    prices = [re.sub(r'[\$,]', '', price_with_dollar) for price_with_dollar in prices_with_dollar]
+                    names = [e.text for e in b.find_by_css('.caption.header > h3') if e.text]
+                    results+= [{'name': name, 'price':price, 'start': start, 'end':end, 'holiday': holiday, 'status': 'AVAILABLE'} for name, price in zip(names, prices)]
+                    next_ = b.find_by_css('.btn.next')
+                    if next_.has_class('disabled'):
+                        break
+                    else:
+                        next_.click()
+                yield results
+            except Exception as e:
+                print(e)
+                yield []
 def insert_rates_faster(rates):
-    tupled_rates = [(r['id'], r['start'], r['end'], r['status'], r['price'], r['holiday']) for r in rates]
+    tupled_rates = set((r['id'], r['start'], r['end'], r['status'], r['price'], r['holiday']) for r in rates)
     connection = psycopg2.connect(os.getenv('DATABASE_URI'))
     with connection, connection.cursor() as cursor:
         str_sql = '''INSERT INTO db.availability (id, check_in, check_out, status, rate, name) 
