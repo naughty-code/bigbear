@@ -661,9 +661,9 @@ def scrape_cabin(url):
     except KeyboardInterrupt: pass
 
 # Nothing to do here...
-def crawl_cabins(urls, N=4):
+def crawl_cabins(urls):
 
-    with mp.Pool(N) as p:
+    with mp.Pool() as p:
         yield from p.imap_unordered(scrape_cabin, urls)
 
 def dump_from(filename, data):
@@ -695,8 +695,8 @@ def get_rates(availability):
     finally:
         return availability
 
-def get_rates_multi(availabilities, N=4):
-    with mp.Pool(N) as p:
+def get_rates_multi(availabilities):
+    with mp.Pool() as p:
         yield from p.imap_unordered(get_rates, availabilities)
 
 def update_database(cabins, amenities, availabilities=None):
