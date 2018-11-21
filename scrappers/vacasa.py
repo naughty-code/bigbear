@@ -452,7 +452,7 @@ def insert_cabins():
         sql = '''UPDATE db.cabin SET status = 'INACTIVE' WHERE idvrm = 'VACASA' '''
         cursor.execute(sql)
         sql = """ INSERT INTO db.cabin (idvrm, id, name, website, description, address, location, 
-            bedrooms, occupancy) VALUES %s ON CONFLICT (id) DO UPDATE SET name = excluded.name, 
+            bedrooms, occupancy) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT (id) DO UPDATE SET name = excluded.name, 
             website = excluded.website, description = excluded.description, bedrooms = 
             excluded.bedrooms, occupancy = excluded.occupancy, status = excluded.status;"""
         # execute_values(cursor, sql, unique_tuples)
