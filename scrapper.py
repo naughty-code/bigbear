@@ -26,10 +26,12 @@ def update_database():
     vacasa.insert()
 
 def insert_cabins():
+    destinationbigbear.insert_cabins()
     vacasa.insert_cabins()
     bigbearcoolcabins.insert_cabins()
 
 def insert_amenities():
+    destinationbigbear.insert_amenities()
     bigbearcoolcabins.insert_amenities()
     vacasa.insert_features()
 
@@ -40,6 +42,7 @@ def update():
     insert_cabins()
     scrape_and_insert_rates() # both scrape and insert rates
     insert_amenities()
+    destinationbigbear.update_last_scrape()
     bigbearcoolcabins.update_last_scrape()
     vacasa.update_last_scrape()
     #update_database()

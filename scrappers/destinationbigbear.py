@@ -17,6 +17,7 @@ from splinter import Browser
 
 CABIN_URLS_FILE = './scrappers/dbb_cabin_urls.json'
 DATABASE_URI = os.environ.get('DATABASE_URL', None) or os.getenv('DATABASE_URI')
+# DATABASE_URI = os.environ['DATABASE_URL']
 #connection = psycopg2.connect(DATABASE_URI)
 #cursor = connection.cursor()
 
@@ -540,6 +541,9 @@ def parse_data(html):
     desc = extract_description(soup)
     data['description'] = desc
 
+    addr = extract_full_address(soup)
+    data['address'] = addr
+
     amenities = extract_amenities(data['site_id'], soup)
     data['amenities'] = amenities
 
@@ -658,13 +662,68 @@ def scrape_cabins():
             results.append(r)
             index += 1
             print(f'Scraped! {r["name"]} {r["site_id"]} {index}/{total}')
-            if index == 3:
-                break
     except KeyboardInterrupt: pass
     finally: 
         # Write finally result
-        name = dump_from(filename, results)
-        print('Dumped', name)
+        with open(filename, 'w', encoding='utf8') as fl:
+            json.dump(results, fl, indent=2)
+            print('Dumped', filename)
+
+def insert_cabins():
+    cabins = load_cabins()
+    insertCabins = []
+    for cabin in cabins:
+        cabinInsert = (
+                'DBB', 
+                cabin.get('site_id'), 
+                cabin.get('name').split(' - ')[0], 
+                cabin.get('url'), 
+                cabin.get('description'), 
+                cabin.get('properties').get('Bedrooms'), 
+                cabin.get('properties').get('Occupancy'),
+                cabin.get('address'),
+                'ACTIVE',
+                cabin.get('name').split(' - ')[1]
+            )
+        insertCabins.append(cabinInsert)
+    connection = psycopg2.connect(DATABASE_URI)
+    with connection:
+        with connection.cursor() as cursor:
+            str_sql = '''UPDATE db.cabin SET status = 'INACTIVE' WHERE idvrm = 'DBB' '''
+            cursor.execute(str_sql)
+            # Update cabins
+            str_sql = '''INSERT INTO db.cabin (idvrm, id, name, website, description, bedrooms, 
+                occupancy, address, status, location) VALUES %s ON CONFLICT (id) DO UPDATE SET 
+                name = excluded.name, website = excluded.website, description = 
+                excluded.description, bedrooms = excluded.bedrooms, occupancy = excluded.occupancy,
+                address = excluded.address, status = excluded.status, location = excluded.location;'''
+            execute_values(cursor, str_sql, insertCabins)
+    connection.close()
+
+def insert_amenities():
+    cabins = load_cabins()
+    insertAmenities = []
+    for cabin in cabins:
+        for amenity in cabin.get('amenities') :
+                insertAmenities.append(amenity)
+    # Update amenities
+    connection = psycopg2.connect(DATABASE_URI)
+    with connection:
+        with connection.cursor() as cursor:
+            str_sql = '''INSERT INTO db.features (id, amenity) VALUES %s ON CONFLICT (id, amenity) DO NOTHING'''
+            execute_values(cursor, str_sql, insertAmenities)
+    connection.close()
+
+def update_last_scrape():
+    connection = psycopg2.connect(DATABASE_URI)
+    with connection, connection.cursor() as c:
+        c.execute("""INSERT INTO db.vrm (idvrm, name, website, ncabins, last_scrape)
+            VALUES (%s, %s, %s, (select count(id) from db.cabin where idvrm = 'DBB' and 
+            status='ACTIVE'), now()) ON CONFLICT (idvrm) DO UPDATE SET name = excluded.name, 
+            website = excluded.website, ncabins = excluded.ncabins, last_scrape = 
+            excluded.last_scrape""", ('DBB', 'Destination Big Bear', 
+            'http://www.destinationbigbear.com'))
+    connection.close()
 
 def main():
 
