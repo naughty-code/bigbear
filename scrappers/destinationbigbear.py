@@ -686,6 +686,21 @@ def insert_cabins():
                 excluded.description, bedrooms = excluded.bedrooms, occupancy = excluded.occupancy,
                 address = excluded.address, status = excluded.status, location = excluded.location;'''
             execute_values(cursor, str_sql, insertCabins)
+    connection.close()
+
+def insert_amenities():
+    cabins = load_cabins()
+    insertAmenities = []
+    for cabin in cabins:
+        for amenity in cabin.get('amenities') :
+                insertAmenities.append(amenity)
+    # Update amenities
+    connection = psycopg2.connect(DATABASE_URI)
+    with connection:
+        with connection.cursor() as cursor:
+            str_sql = '''INSERT INTO db.features (id, amenity) VALUES %s ON CONFLICT (id, amenity) DO NOTHING'''
+            execute_values(cursor, str_sql, insertAmenities)
+    connection.close()
 
 def main():
 

@@ -31,6 +31,7 @@ def insert_cabins():
     bigbearcoolcabins.insert_cabins()
 
 def insert_amenities():
+    destinationbigbear.insert_amenities()
     bigbearcoolcabins.insert_amenities()
     vacasa.insert_features()
 
