@@ -129,7 +129,9 @@ def parse_data(html):
     address = soup.find(class_='icon-map-location').next_sibling
     data['address'] = address.strip()
 
-    data['location'] = data['address'].split(',')[1:2]
+    splitted_address = data['address'].split(',')
+
+    data['location'] = splitted_address[1] if splitted_address[1:2] else ''
     return data
 
 @util.ignore_errors
