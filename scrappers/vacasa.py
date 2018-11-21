@@ -446,7 +446,8 @@ def insert_cabins():
         occupancy_matches = (pattern.match(f) for f in c['features'])
         occupancy = next((mo.group(1) for mo in occupancy_matches if mo), '0')
         tuples.append((idvrm, id_, name, website, description, address, location, bedrooms, occupancy))
-    tuples = set(t for t in tuples)
+    print(tuples)
+    unique_tuples = set(t for t in tuples)
     with connection, connection.cursor() as cursor:
         sql = '''UPDATE db.cabin SET status = 'INACTIVE' WHERE idvrm = 'VACASA' '''
         cursor.execute(sql)
@@ -454,7 +455,7 @@ def insert_cabins():
             bedrooms, occupancy) VALUES %s ON CONFLICT (id) DO UPDATE SET name = excluded.name, 
             website = excluded.website, description = excluded.description, bedrooms = 
             excluded.bedrooms, occupancy = excluded.occupancy, status = excluded.status;"""
-        execute_values(cursor, sql, tuples)
+        execute_values(cursor, sql, unique_tuples)
 
 def update_last_scrape():
     connection = psycopg2.connect(DATABASE_URI)
