@@ -320,9 +320,9 @@ def scrape_cabin(url):
         pass
 
 # Nothing to do here...
-def crawl_cabins(urls, N=8):
+def crawl_cabins(urls):
 
-    with mp.Pool(N) as p:
+    with mp.Pool() as p:
         yield from p.imap_unordered(scrape_cabin, urls)
 
 def dump_from(filename, data):

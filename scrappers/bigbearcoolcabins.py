@@ -639,9 +639,9 @@ def scrape_cabin(url):
 
 # Nothing to do here...
 # Parallel step
-def crawl_cabins(urls, N=8):
+def crawl_cabins(urls):
 
-    with mp.Pool(N) as p:
+    with mp.Pool() as p:
         yield from p.imap_unordered(scrape_cabin, urls)
 
 def insert_availabilities(availabilities):
@@ -782,8 +782,8 @@ def get_rates(availability):
     finally:
         return availability
 
-def get_rates_multi(availabilities, N=8):
-    with mp.Pool(N) as p:
+def get_rates_multi(availabilities):
+    with mp.Pool() as p:
         yield from p.imap_unordered(get_rates, availabilities)
 
 def upload_to_database():
