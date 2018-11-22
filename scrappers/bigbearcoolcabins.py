@@ -639,9 +639,9 @@ def scrape_cabin(url):
 
 # Nothing to do here...
 # Parallel step
-def crawl_cabins(urls, N=8):
+def crawl_cabins(urls):
 
-    with mp.Pool(N) as p:
+    with mp.Pool() as p:
         yield from p.imap_unordered(scrape_cabin, urls)
 
 def insert_availabilities(availabilities):
@@ -679,11 +679,13 @@ def insert_rates_faster(rates):
     connection = psycopg2.connect(os.getenv('DATABASE_URI'))
     with connection, connection.cursor() as cursor:
         str_sql = '''INSERT INTO db.availability (id, check_in, check_out, status, rate, name) 
-            VALUES %s ON CONFLICT (id, check_in, check_out, name) DO UPDATE SET id = EXCLUDED.id, 
+            VALUES (%s,%s,%s,%s,%s,%s) ON CONFLICT (id, check_in, check_out, name) DO UPDATE SET id = EXCLUDED.id, 
             check_in = EXCLUDED.check_in, check_out = EXCLUDED.check_out, status = EXCLUDED.status,
             rate = (case when excluded.status = 'AVAILABLE' then excluded.rate else 
             db.availability.rate end), name = EXCLUDED.name'''
-        execute_values(cursor, str_sql, tupled_rates)
+        for t in tupled_rates:
+            cursor.execute(str_sql, t)
+        # execute_values(cursor, str_sql, tupled_rates)
     connection.close()
 
 def insert_rates(*args):
@@ -733,7 +735,7 @@ def insert_cabins(cabins=None):
         id = 'BBCC' + cabin['_params']['rcav[eid]']
         name = cabin['name']
         url = cabin['url']
-        description = html.escape(cabin['description'])
+        description = BeautifulSoup(cabin['description'], "html.parser").text
         location = cabin['amenities_section'].get('Area', '')
         bedrooms = re.match(r'\d+',cabin['bedrooms']).group()
         occupancy = re.search(r'\d+', cabin['sleeps']).group()
@@ -780,8 +782,8 @@ def get_rates(availability):
     finally:
         return availability
 
-def get_rates_multi(availabilities, N=8):
-    with mp.Pool(N) as p:
+def get_rates_multi(availabilities):
+    with mp.Pool() as p:
         yield from p.imap_unordered(get_rates, availabilities)
 
 def upload_to_database():
