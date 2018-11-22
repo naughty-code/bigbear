@@ -60,7 +60,7 @@ def scrape_rates_and_insert_faster():
     print(id_from_name)
     names = set(name for id_, name in cabins)
     print(len(id_from_name.keys()))
-    for rates in get_quote_from_pool(2):
+    for rates in get_quote_single_threaded():
         if not rates: continue
         start_date = rates[0]['start']
         end_date = rates[0]['end']
@@ -159,6 +159,7 @@ def get_quote_single_threaded():
             except Exception as e:
                 print(e)
                 yield results
+
 def insert_rates_faster(rates):
     tupled_rates = set((r['id'], r['start'], r['end'], r['status'], r['price'], r['holiday']) for r in rates)
     connection = psycopg2.connect(os.getenv('DATABASE_URI'))
