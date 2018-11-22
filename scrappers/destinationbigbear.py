@@ -141,8 +141,11 @@ def get_quote_single_threaded():
                 while True:
                     while b.is_element_present_by_css('body.loading'):
                         pass
+                    tries = 0
                     while b.is_element_not_present_by_css('.panel-overlay-bottom > h4'):
-                        pass
+                        tries += 1
+                        if tries > 10:
+                            return results
                     prices_with_dollar = [e.text for e in b.find_by_css('.panel-overlay-bottom > h4') if e.text]
                     prices = [re.sub(r'[\$,]', '', price_with_dollar) for price_with_dollar in prices_with_dollar]
                     names = [e.text for e in b.find_by_css('.caption.header > h3') if e.text]
@@ -155,7 +158,7 @@ def get_quote_single_threaded():
                 yield results
             except Exception as e:
                 print(e)
-                yield []
+                yield results
 def insert_rates_faster(rates):
     tupled_rates = set((r['id'], r['start'], r['end'], r['status'], r['price'], r['holiday']) for r in rates)
     connection = psycopg2.connect(os.getenv('DATABASE_URI'))
