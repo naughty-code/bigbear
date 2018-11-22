@@ -20,6 +20,8 @@ from selenium import webdriver
 CABIN_URLS_FILE = './scrappers/dbb_cabin_urls.json'
 DATABASE_URI = os.environ.get('DATABASE_URL', None) or os.getenv('DATABASE_URI')
 
+executable_path = {'executable_path': os.getenv('CHROME_DRIVER_EXECUTABLE_PATH')}
+
 def load_cabins():
     cabins = []
     with open('./scrappers/dbb.json', encoding='utf8') as f:
@@ -90,7 +92,7 @@ def initializer():
     prefs = {"profile.managed_default_content_settings.images":2}
     options = webdriver.ChromeOptions()
     options.add_experimental_option("prefs", prefs)
-    b = Browser('chrome', headless=False, options=options)
+    b = Browser('chrome', headless=False, options=options, **executable_path)
 
 def get_quote_worker(date_range):
     start_date, end_date, holiday = date_range
@@ -130,7 +132,7 @@ def get_quote_single_threaded():
     prefs = {"profile.managed_default_content_settings.images":2}
     options = webdriver.ChromeOptions()
     options.add_experimental_option("prefs",prefs)
-    with Browser('chrome', options=options) as b:
+    with Browser('chrome', headless=True, options=options, **executable_path) as b:
         for start_date, end_date, holiday in date_ranges:
             results = []
             start = start_date.strftime('%m/%d/%Y')
