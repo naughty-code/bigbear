@@ -281,6 +281,40 @@ def metrics2():
     connection.close()
     return jsonify(result)
 
+@app.route('/api/view1')
+def view1():
+    sql = '''with reservas as (
+		select idvrm, bedrooms, availability.name, tier, features.amenity, count(availability.status), 
+			max(availability.rate), min(availability.rate)
+		from db.cabin
+		inner join db.availability on cabin.id = availability.id
+		inner join db.features on features.id = cabin.id
+		where availability.status = 'BOOKED' 
+		group by idvrm, bedrooms, availability.name, tier, amenity),
+	vacantes as (
+		select idvrm, bedrooms, availability.name, tier, features.amenity, count(availability.status), 
+			max(availability.rate), min(availability.rate)
+		from db.cabin
+		inner join db.availability on cabin.id = availability.id
+		inner join db.features on features.id = cabin.id
+		where availability.status = 'AVAILABLE' 
+		group by idvrm, bedrooms, availability.name, tier, amenity)
+select reservas.idvrm as "IDVRM", reservas.bedrooms as "Bedrooms", reservas.name as "Date", 
+reservas.tier as "Tier", reservas.amenity as "Amenity", reservas.count as "Booked",  
+reservas.min as "Min Booked Rate", reservas.max as "Max Booked Rate", vacantes.count as "Vacants", 
+vacantes.min as "Min Vacants Rate", vacantes.max as "Max Vacants Rate"
+from reservas inner join vacantes on reservas.idvrm = vacantes.idvrm 
+and reservas.bedrooms = vacantes.bedrooms
+and reservas.name = vacantes.name
+and reservas.tier = vacantes.tier
+and reservas.amenity = vacantes.amenity;'''
+    connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)
+    with connection, connection.cursor() as c:
+        c.execute(sql)
+        result = c.fetchall()
+    connection.close()
+    return jsonify(result)
+
 @app.route('/')
 def root():
     return app.send_static_file('index.html')
