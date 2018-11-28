@@ -147,7 +147,7 @@ def get_quote_single_threaded():
                         if tries > 10:
                             return results
                     prices_with_dollar = [e.text for e in b.find_by_css('.panel-overlay-bottom > h4') if e.text]
-                    prices = [re.sub(r'[\$,]', '', price_with_dollar) for price_with_dollar in prices_with_dollar]
+                    prices = [re.sub(r'[\$,]', '', price_with_dollar).split()[0] for price_with_dollar in prices_with_dollar]
                     names = [e.text for e in b.find_by_css('.caption.header > h3') if e.text]
                     results+= [{'name': name, 'price':price, 'start': start, 'end':end, 'holiday': holiday, 'status': 'AVAILABLE'} for name, price in zip(names, prices)]
                     next_ = b.find_by_css('.btn.next')
