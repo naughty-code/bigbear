@@ -39,6 +39,11 @@ def insert_amenities():
     vacasa.insert_features()
     bigbearvacations.insert_amenities(bigbearvacations.load_cabins())
 
+def update_last_scrape():
+    destinationbigbear.update_last_scrape()
+    bigbearcoolcabins.update_last_scrape()
+    vacasa.update_last_scrape()
+    bigbearvacations.update_last_scrape()
 
 def update():
     update_cabin_urls()
@@ -46,9 +51,7 @@ def update():
     insert_cabins()
     scrape_and_insert_rates() # both scrape and insert rates
     insert_amenities()
-    destinationbigbear.update_last_scrape()
-    bigbearcoolcabins.update_last_scrape()
-    vacasa.update_last_scrape()
+    update_last_scrape()
     #update_database()
 
     connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)

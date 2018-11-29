@@ -142,3 +142,14 @@ def scrape_and_insert():
     insert_cabins(cabins)
     insert_amenities(cabins)
     scrape_and_insert_rates()
+
+def update_last_scrape():
+    connection = connect(DB_URI)
+    with connection, connection.cursor() as c:
+        c.execute("""INSERT INTO db.vrm (idvrm, name, website, ncabins, last_scrape)
+            VALUES (%s, %s, %s, (select count(id) from db.cabin where idvrm = 'DBB' and 
+            status='ACTIVE'), now()) ON CONFLICT (idvrm) DO UPDATE SET name = excluded.name, 
+            website = excluded.website, ncabins = excluded.ncabins, last_scrape = 
+            excluded.last_scrape""", ('BBV', 'Big Bear Vacations', 
+            'https://www.bigbearvacations.com/'))
+    connection.close()
