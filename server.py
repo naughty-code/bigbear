@@ -303,7 +303,7 @@ select reservas.idvrm as "IDVRM", reservas.bedrooms as "Bedrooms", reservas.name
 reservas.tier as "Tier", reservas.amenity as "Amenity", reservas.count as "Booked",  
 reservas.min as "Min Booked Rate", reservas.max as "Max Booked Rate", vacantes.count as "Vacants", 
 vacantes.min as "Min Vacants Rate", vacantes.max as "Max Vacants Rate"
-from reservas inner join vacantes on reservas.idvrm = vacantes.idvrm 
+from reservas full outer join vacantes on reservas.idvrm = vacantes.idvrm 
 and reservas.bedrooms = vacantes.bedrooms
 and reservas.name = vacantes.name
 and reservas.tier = vacantes.tier
