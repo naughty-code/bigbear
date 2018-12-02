@@ -30,7 +30,7 @@ def store_cabins(cabins):
 
 def load_cabins():
     cabins = []
-    with open('./scrappers/bbv_cabins.json', 'r', encoding='utf8') as f:
+    with open('./scrappers/bbv_cabins.json', encoding='utf8') as f:
         cabins = json.load(f)
     return cabins
 
