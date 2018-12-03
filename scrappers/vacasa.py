@@ -441,7 +441,7 @@ def insert_cabins():
         description = c['description']
         address = c.get('address', '')
         location = c.get('location', '')
-        pattern = re.compile(r'(\d+) Bedrooms')
+        pattern = re.compile(r'(\d+) Bedroom')
         bedroom_matches = (pattern.match(f) for f in c['features'])
         bedrooms = next((mo.group(1) for mo in bedroom_matches if mo), '0')
         pattern = re.compile(r'Max Occupancy: (\d+)')
