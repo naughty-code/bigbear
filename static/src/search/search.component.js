@@ -83,6 +83,8 @@ function searchController($http, $mdDialog) {
 		var comparePomises = [];
 		if (ctrl.compareSelected.length > 0)
 			comparePomises.push($http.post(`http://${host}:5001/api/search/avg`, data));
+		if (ctrl.showSelected.length > 0)
+			comparePomises.push($http.post(`http://${host}:5001/api/search/booked-available`, data))
 
 		Promise.all(comparePomises).then(function (values) {
 			ctrl.firstData = values[0].data;

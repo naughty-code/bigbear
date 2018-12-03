@@ -85,16 +85,10 @@
 				<td ng-if="$ctrl.some($ctrl.compareSelected, 'Avg Rate')">{{ vrm.average }}</td>
 				<td ng-if="$ctrl.some($ctrl.compareSelected, 'Min Rate')">{{ vrm.minimum }}</td>
 				<td ng-if="$ctrl.some($ctrl.compareSelected, 'Max Rate')">{{ vrm.maximum }}</td>
-			</tr>
-			<tr>
-				<td>VRM</td>
-				<td ng-if="$ctrl.some($ctrl.compareSelected, 'Avg Rate')">Avg</td>
-				<td ng-if="$ctrl.some($ctrl.compareSelected, 'Min Rate')">Min</td>
-				<td ng-if="$ctrl.some($ctrl.compareSelected, 'Max Rate')">Max</td>
-				<td ng-if="$ctrl.some($ctrl.showSelected, 'Booking')">Bookings</td>
-				<td ng-if="$ctrl.some($ctrl.showSelected, 'Booking')">%</td>
-				<td ng-if="$ctrl.some($ctrl.showSelected, 'Vacants')">Vacants</td>
-				<td ng-if="$ctrl.some($ctrl.showSelected, 'Vacants')">%</td>
+				<td ng-if="$ctrl.some($ctrl.showSelected, 'Booking')">{{ vrm.Bookings }}</td>
+				<td ng-if="$ctrl.some($ctrl.showSelected, 'Booking')">{{ vrm["Bookings %"] }}</td>
+				<td ng-if="$ctrl.some($ctrl.showSelected, 'Vacants')">{{ vrm.Vacants }}</td>
+				<td ng-if="$ctrl.some($ctrl.showSelected, 'Vacants')">{{ vrm["Vacants %"] }}</td>
 			</tr>
 		</table>
 	</div>
