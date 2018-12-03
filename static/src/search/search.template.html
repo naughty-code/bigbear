@@ -69,7 +69,7 @@
 		<md-progress-circular ng-disabled="!$ctrl.loading" md-diameter="96" ng-if="$ctrl.loading"></md-progress-circular>
 		<table ng-if="!$ctrl.loading && $ctrl.showTable">
 			<tr>
-				<th>Date</th>
+				<th ng-if="$ctrl.some($ctrl.daySelected, 'Weekend')">Date</th>
 				<th>VRM</th>
 				<th ng-if="$ctrl.some($ctrl.compareSelected, 'Avg Rate')">Avg</th>
 				<th ng-if="$ctrl.some($ctrl.compareSelected, 'Min Rate')">Min</th>
@@ -80,7 +80,7 @@
 				<th ng-if="$ctrl.some($ctrl.showSelected, 'Vacants')">%</th>
 			</tr>
 			<tr ng-repeat="vrm in $ctrl.firstData">
-				<td>{{ vrm.check_in | date : 'mediumDate': '+0000'}} - {{ vrm.check_out | date : 'mediumDate': '+0000'}}</td>
+				<td ng-if="$ctrl.some($ctrl.daySelected, 'Weekend')">{{ vrm.check_in | date : 'mediumDate': '+0000'}} - {{ vrm.check_out | date : 'mediumDate': '+0000'}}</td>
 				<td>{{ vrm.idvrm }}</td>
 				<td ng-if="$ctrl.some($ctrl.compareSelected, 'Avg Rate')">{{ vrm.average }}</td>
 				<td ng-if="$ctrl.some($ctrl.compareSelected, 'Min Rate')">{{ vrm.minimum }}</td>
