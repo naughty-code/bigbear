@@ -1,0 +1,107 @@
+<div layout="column" style="height: 100%">
+	<!-- First row -->
+	<div layout="column" layout-gt-sm="row" layout-align-gt-sm="space-around center" flex="none">
+		<md-input-container>
+			<label>Amenities</label>
+			<md-select ng-model="$ctrl.amenitySelected" multiple>
+				<md-option ng-value="amenity" ng-repeat="amenity in $ctrl.amenities">{{ amenity }}</md-option>
+			</md-select>
+		</md-input-container>
+		<md-input-container>
+			<label>VRMs</label>
+			<md-select ng-model="$ctrl.vrmSelected" ng-model-options="{trackBy: '$value'}" multiple>
+				<md-option ng-value="vrm" ng-repeat="vrm in $ctrl.vrms">{{ vrm }}</md-option>
+			</md-select>
+		</md-input-container>
+		<md-input-container>
+			<label>Bedrooms</label>
+			<md-select ng-model="$ctrl.bedroomSelected" multiple>
+				<md-option ng-value="bedroom" ng-repeat="bedroom in $ctrl.bedrooms">{{ bedroom }}</md-option>
+			</md-select>
+		</md-input-container>
+		<div layout="column" layout-gt-sm>
+			<md-input-container>
+				<label>Date</label>
+				<md-select ng-model="$ctrl.yearSelected" multiple>
+					<md-option ng-value="year" ng-repeat="year in $ctrl.years">{{ year }}</md-option>
+				</md-select>
+			</md-input-container>
+			<md-input-container>
+				<md-select ng-model="$ctrl.daySelected" placeholder="day" multiple>
+					<md-option ng-value="day" ng-repeat="day in $ctrl.days">{{ day }}</md-option>
+				</md-select>
+			</md-input-container>
+		</div>
+		<md-input-container>
+			<label>Tier</label>
+			<md-select ng-model="$ctrl.tierSelected" multiple>
+				<md-option ng-value="tier" ng-repeat="tier in $ctrl.tiers">{{ tier }}</md-option>
+			</md-select>
+		</md-input-container>
+	</div>
+	<!-- Second row -->
+	<div layout="column" layout-gt-sm="row" flex="none">
+		<div flex="45" layout="column" layout-gt-sm layout-align="none" layout-align-gt-sm="end center">
+			<md-input-container>
+				<label>Compare</label>
+				<md-select ng-model="$ctrl.compareSelected" multiple>
+					<md-option ng-value="compare" ng-repeat="compare in $ctrl.compares">{{ compare }}</md-option>
+				</md-select>
+			</md-input-container>
+		</div>
+		<div flex="45" flex-offset-gt-sm="10" layout="column" layout-gt-sm layout-align="none" layout-align-gt-sm="start center">
+			<md-input-container>
+				<label>Show</label>
+				<md-select ng-model="$ctrl.showSelected" multiple>
+					<md-option ng-value="show" ng-repeat="show in $ctrl.shows">{{ show }}</md-option>
+				</md-select>
+			</md-input-container>
+		</div>
+	</div>
+	<!-- Third row (Button) -->
+	<div flex="none" layout="column" layout-gt-sm layout-align="center center">
+		<md-input-container>
+			<md-button ng-click="$ctrl.search($event)">Search</md-button>
+		</md-input-container>
+	</div>
+	<!-- Fourth row (table) -->
+	<div layout layout-align="center center" flex="grow">
+		<md-progress-circular ng-disabled="!$ctrl.loading" md-diameter="96" ng-if="$ctrl.loading"></md-progress-circular>
+		<table ng-if="!$ctrl.loading && $ctrl.showTable">
+			<tr>
+				<th>Date</th>
+				<th>VRM</th>
+				<th ng-if="$ctrl.some($ctrl.compareSelected, 'Avg Rate')">Avg</th>
+				<th ng-if="$ctrl.some($ctrl.compareSelected, 'Min Rate')">Min</th>
+				<th ng-if="$ctrl.some($ctrl.compareSelected, 'Max Rate')">Max</th>
+				<th ng-if="$ctrl.some($ctrl.showSelected, 'Booking')">Bookings</th>
+				<th ng-if="$ctrl.some($ctrl.showSelected, 'Booking')">%</th>
+				<th ng-if="$ctrl.some($ctrl.showSelected, 'Vacants')">Vacants</th>
+				<th ng-if="$ctrl.some($ctrl.showSelected, 'Vacants')">%</th>
+			</tr>
+			<tr ng-repeat="vrm in $ctrl.firstData">
+				<td>{{ vrm.check_in | date : 'mediumDate'}} - {{ vrm.check_out | date : 'mediumDate'}}</td>
+				<td>{{ vrm.idvrm }}</td>
+				<td ng-if="$ctrl.some($ctrl.compareSelected, 'Avg Rate')">{{ vrm.average }}</td>
+				<td ng-if="$ctrl.some($ctrl.compareSelected, 'Min Rate')">{{ vrm.minimum }}</td>
+				<td ng-if="$ctrl.some($ctrl.compareSelected, 'Max Rate')">{{ vrm.maximum }}</td>
+			</tr>
+			<tr>
+				<td>VRM</td>
+				<td ng-if="$ctrl.some($ctrl.compareSelected, 'Avg Rate')">Avg</td>
+				<td ng-if="$ctrl.some($ctrl.compareSelected, 'Min Rate')">Min</td>
+				<td ng-if="$ctrl.some($ctrl.compareSelected, 'Max Rate')">Max</td>
+				<td ng-if="$ctrl.some($ctrl.showSelected, 'Booking')">Bookings</td>
+				<td ng-if="$ctrl.some($ctrl.showSelected, 'Booking')">%</td>
+				<td ng-if="$ctrl.some($ctrl.showSelected, 'Vacants')">Vacants</td>
+				<td ng-if="$ctrl.some($ctrl.showSelected, 'Vacants')">%</td>
+			</tr>
+		</table>
+	</div>
+</div>
+<div style="visibility: hidden">
+	<div class="md-dialog-container" id="myDialog">
+		<md-dialog layout-padding>
+		</md-dialog>
+	</div>
+</div>

@@ -5,7 +5,6 @@ angular.module('app', [
 	'single-table',
 	'two-tables',
 	'metric-table1',
-	'metric-table2'
-]).run(function($log){
-	$log.debug("starterApp + ngMaterial running...");
-  });
+	'metric-table2',
+	'search'
+]).run();
