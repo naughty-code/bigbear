@@ -380,11 +380,11 @@ def search_tiers():
 @app.route('/api/search/avg', methods = ['POST'])
 def search_avg():
     data = request.get_json()
-    sql = '''select c.idvrm, a.check_in, a.check_out, a."name", '$' || round(avg(a.rate)) as average, '$' || round(min(a.rate)) as minimum, '$' || round(max(a.rate)) as maximum from db.cabin as c join db.features as f on c.id = f.id join db.availability as a on c.id = a.id where f.amenity = ANY(%s) and c.idvrm = ANY(%s) and cast(c.bedrooms as varchar) = ANY(%s) and cast(DATE_PART('year',a.check_in) as varchar) = ANY(%s) and a.name = ANY(%s) and c.tier = ANY(%s) and a.rate > 0 group by c.idvrm, a.check_in, a.check_out, a."name" order by c.idvrm;'''
+    sql = '''select c.idvrm, a.check_in, a.check_out, a."name", '$' || round(avg(a.rate)) as average, '$' || round(min(a.rate)) as minimum, '$' || round(max(a.rate)) as maximum from db.cabin as c join db.features as f on c.id = f.id join db.availability as a on c.id = a.id where f.amenity ilike ANY(%s) and c.idvrm = ANY(%s) and cast(c.bedrooms as varchar) = ANY(%s) and cast(DATE_PART('year',a.check_in) as varchar) = ANY(%s) and a.name = ANY(%s) and c.tier = ANY(%s) and a.rate > 0 group by c.idvrm, a.check_in, a.check_out, a."name" order by c.idvrm;'''
     connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)
     with connection, connection.cursor() as c:
         c.execute(sql, (
-            '{' + ','.join(data['amenities']) + '}', 
+            '{%' + '%,%'.join(data['amenities']) + '%}', 
             '{' + ','.join(data['vrms']) + '}', 
             '{' + ','.join(data['bedrooms']) + '}', 
             '{' + ','.join(data['years']) + '}', 
