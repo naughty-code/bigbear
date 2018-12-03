@@ -61,11 +61,11 @@
 	<!-- Third row (Button) -->
 	<div flex="none" layout="column" layout-gt-sm layout-align="center center">
 		<md-input-container>
-			<md-button ng-click="$ctrl.search($event)">Search</md-button>
+			<md-button ng-click="$ctrl.search($event)" ng-disabled="$ctrl.buttonDisabled">Search</md-button>
 		</md-input-container>
 	</div>
 	<!-- Fourth row (table) -->
-	<div layout layout-align="center center" flex="grow">
+	<div layout layout-align="{{ $ctrl.lastDivPosition }}" flex="grow">
 		<md-progress-circular ng-disabled="!$ctrl.loading" md-diameter="96" ng-if="$ctrl.loading"></md-progress-circular>
 		<table ng-if="!$ctrl.loading && $ctrl.showTable">
 			<tr>
@@ -80,7 +80,7 @@
 				<th ng-if="$ctrl.some($ctrl.showSelected, 'Vacants')">%</th>
 			</tr>
 			<tr ng-repeat="vrm in $ctrl.firstData">
-				<td>{{ vrm.check_in | date : 'mediumDate'}} - {{ vrm.check_out | date : 'mediumDate'}}</td>
+				<td>{{ vrm.check_in | date : 'mediumDate': '+0000'}} - {{ vrm.check_out | date : 'mediumDate': '+0000'}}</td>
 				<td>{{ vrm.idvrm }}</td>
 				<td ng-if="$ctrl.some($ctrl.compareSelected, 'Avg Rate')">{{ vrm.average }}</td>
 				<td ng-if="$ctrl.some($ctrl.compareSelected, 'Min Rate')">{{ vrm.minimum }}</td>

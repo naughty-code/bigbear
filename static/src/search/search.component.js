@@ -1,7 +1,10 @@
 function searchController($http, $mdDialog) {
 	var ctrl = this;
 	ctrl.loading = false;
-	ctrl.showTable = true;
+	ctrl.showTable = false;
+	ctrl.buttonDisabled = false;
+	ctrl.lastDivPosition = "center center";
+
 	ctrl.some = function(array, value) {
 		if (array)
 			return array.some(function(a){
@@ -10,9 +13,8 @@ function searchController($http, $mdDialog) {
 		else
 			return false;
 	}
-	// var host = "74.91.126.179";
-	var host = "localhost";
-	// $http.get('http://74.91.126.179:5001/api/metrics1')
+	var host = "74.91.126.179";
+	// var host = "localhost";
 	var promises = [
 		$http.get(`http://${host}:5001/api/search/amenities`),
 		$http.get(`http://${host}:5001/api/search/vrms`),
@@ -60,6 +62,11 @@ function searchController($http, $mdDialog) {
 			return;
 		}
 
+		ctrl.showTable = false;
+		ctrl.loading = true;
+		ctrl.buttonDisabled = true;
+		ctrl.lastDivPosition = "center center";
+
 		var data = {
 			amenities: ctrl.amenitySelected,
 			vrms: ctrl.vrmSelected,
@@ -78,11 +85,15 @@ function searchController($http, $mdDialog) {
 			comparePomises.push($http.post(`http://${host}:5001/api/search/avg`, data));
 
 		Promise.all(comparePomises).then(function (values) {
-			console.log(values);
 			ctrl.firstData = values[0].data;
 			angular.forEach(ctrl.firstData, function(value, key) {
-				ctrl.firstData[key].check_in = new Date(ctrl.firstData[key].cjeck_in.replace(/-/g,"/"));
+				ctrl.firstData[key].check_in = moment.utc(ctrl.firstData[key].check_in).toDate();
+				ctrl.firstData[key].check_out = moment.utc(ctrl.firstData[key].check_out).toDate();
 			});
+			ctrl.loading = false;
+			ctrl.showTable = true;
+			ctrl.buttonDisabled = false;
+			ctrl.lastDivPosition = "center start";
 		})
 
 	}
