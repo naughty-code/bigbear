@@ -315,6 +315,85 @@ and reservas.amenity = vacantes.amenity;'''
     connection.close()
     return jsonify(result)
 
+# API from view search
+@app.route('/api/search/amenities')
+def search_amenities():
+    sql = '''SELECT amenity from db.features group by amenity order by amenity asc'''
+    connection = psycopg2.connect(DATABASE_URI)
+    with connection, connection.cursor() as c:
+        c.execute(sql)
+        result = [r[0] for r in c.fetchall()]
+    connection.close()
+    return jsonify(result)
+
+@app.route('/api/search/vrms')
+def search_vrms():
+    sql = '''SELECT idvrm from db.vrm order by idvrm asc'''
+    connection = psycopg2.connect(DATABASE_URI)
+    with connection, connection.cursor() as c:
+        c.execute(sql)
+        result = [r[0] for r in c.fetchall()]
+    connection.close()
+    return jsonify(result)
+
+@app.route('/api/search/bedrooms')
+def search_bedrooms():
+    sql = '''SELECT bedrooms from db.cabin group by bedrooms order by bedrooms asc'''
+    connection = psycopg2.connect(DATABASE_URI)
+    with connection, connection.cursor() as c:
+        c.execute(sql)
+        result = [r[0] for r in c.fetchall()]
+    connection.close()
+    return jsonify(result)
+
+@app.route('/api/search/years')
+def search_years():
+    sql = '''select cast(DATE_PART('YEAR', check_in) as varchar) as year from db.availability group by DATE_PART('YEAR', check_in);'''
+    connection = psycopg2.connect(DATABASE_URI)
+    with connection, connection.cursor() as c:
+        c.execute(sql)
+        result = [r[0] for r in c.fetchall()]
+    connection.close()
+    return jsonify(result)
+
+@app.route('/api/search/days')
+def search_days():
+    sql = '''SELECT name from db.availability group by name order by name asc'''
+    connection = psycopg2.connect(DATABASE_URI)
+    with connection, connection.cursor() as c:
+        c.execute(sql)
+        result = [r[0] for r in c.fetchall()]
+    connection.close()
+    return jsonify(result)
+
+@app.route('/api/search/tiers')
+def search_tiers():
+    print('firs')
+    sql = '''SELECT tier from db.cabin group by tier order by tier asc'''
+    connection = psycopg2.connect(DATABASE_URI)
+    with connection, connection.cursor() as c:
+        c.execute(sql)
+        result = [r[0] for r in c.fetchall()]
+    connection.close()
+    return jsonify(result)
+
+@app.route('/api/search/avg', methods = ['POST'])
+def search_avg():
+    data = request.get_json()
+    sql = '''select c.idvrm, a.check_in, a.check_out, a."name", '$' || round(avg(a.rate)) as average, '$' || round(min(a.rate)) as minimum, '$' || round(max(a.rate)) as maximum from db.cabin as c join db.features as f on c.id = f.id join db.availability as a on c.id = a.id where f.amenity = ANY(%s) and c.idvrm = ANY(%s) and cast(c.bedrooms as varchar) = ANY(%s) and cast(DATE_PART('year',a.check_in) as varchar) = ANY(%s) and a.name = ANY(%s) and c.tier = ANY(%s) and a.rate > 0 group by c.idvrm, a.check_in, a.check_out, a."name" order by c.idvrm;'''
+    connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)
+    with connection, connection.cursor() as c:
+        c.execute(sql, (
+            '{' + ','.join(data['amenities']) + '}', 
+            '{' + ','.join(data['vrms']) + '}', 
+            '{' + ','.join(data['bedrooms']) + '}', 
+            '{' + ','.join(data['years']) + '}', 
+            '{' + ','.join(data['days']) + '}', 
+            '{' + ','.join(data['tiers']) + '}'))
+        result = c.fetchall()
+    connection.close()
+    return jsonify(result)
+# API from view search
 @app.route('/')
 def root():
     return app.send_static_file('index.html')
