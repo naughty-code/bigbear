@@ -6,8 +6,10 @@ angular.module('app')
 
 		$routeProvider.
 			when('/', {
-				controller: "singleTableController",
-				templateUrl: "src/single-table/single-table.template.html"
+				template: "<search></search>"
+			}).
+			when('/search', {
+				template: "<search></search>"
 			}).
 			when('/metrics', {
 				template: "<metric-table1></metric-table1><metric-table2></metric-table2>"

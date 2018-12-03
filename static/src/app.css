@@ -116,3 +116,17 @@ th, td {
 .font-12 {
   font-size: 12px;
 }
+
+.gl-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.gl-table th, td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+search {
+  height: 100%;
+}
