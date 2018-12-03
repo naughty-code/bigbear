@@ -70,7 +70,7 @@ def availability():
     connection.close()
     return jsonify(data)
 
-@app.route('/api/advance-report')
+@app.route('/api/advanced-report')
 def report2():
     sql = '''select a.check_in as "Date IN", a.check_out as "Date OUT", a.name as "Note", c.idvrm as "VRM",
 count(a.id) as "Units", count(a.id) filter (where a.status = 'AVAILABLE') as "Vacant",
