@@ -201,7 +201,10 @@ def extract_cabin_urls_splinter():
             if next_button:
                 next_button[0].click()
             else:
+                soup = BeautifulSoup(b.html, 'html.parser')
+                urls += [base_url + a['href'] for a in soup('a', class_='unit-listing-title')]
                 break
+    urls = list(set(urls))
     with open('scrappers/vacasa_cabin_urls.json', 'w', encoding='utf8') as f:
         json.dump(urls, f, indent=2)
 
