@@ -229,7 +229,7 @@ def rate_scrapper_single_threaded():
                     break
                 for c in cabin_tags:
                     id_ = c['data-unit-id']
-                    pattern = re.compile(r'\$(\d+)')
+                    pattern = re.compile(r'\$(\d+[,]*\d+)')
                     price = pattern.match(c.find('a', text=pattern).get_text()).group(1)
                     cabins.append({
                         'id': id_, 
@@ -270,7 +270,7 @@ def extract_costs_faster_function(range_tuple):
                 break
             for c in cabin_tags:
                 id_ = c['data-unit-id']
-                pattern = re.compile(r'\$(\d+)')
+                pattern = re.compile(r'\$(\d+[,]*\d+)')
                 price = pattern.match(c.find('a', text=pattern).get_text()).group(1)
                 cabins.append({
                     'id': id_, 
@@ -441,7 +441,7 @@ def insert_cabins():
         description = c['description']
         address = c.get('address', '')
         location = c.get('location', '')
-        pattern = re.compile(r'(\d+) Bedrooms')
+        pattern = re.compile(r'(\d+) Bedroom')
         bedroom_matches = (pattern.match(f) for f in c['features'])
         bedrooms = next((mo.group(1) for mo in bedroom_matches if mo), '0')
         pattern = re.compile(r'Max Occupancy: (\d+)')
