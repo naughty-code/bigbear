@@ -27,6 +27,8 @@ import itertools
 # bigbearvacations   -> bbv
 # Don't forget to handle exceptions
 
+db_id = 'VACASA'
+
 executable_path = {'executable_path': os.getenv('CHROME_DRIVER_EXECUTABLE_PATH')}
 
 HEADERS = { 'accept-language': 'en', 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36' }
@@ -229,8 +231,9 @@ def rate_scrapper_single_threaded():
                     break
                 for c in cabin_tags:
                     id_ = c['data-unit-id']
-                    pattern = re.compile(r'\$(\d+[,]*\d+)')
-                    price = pattern.match(c.find('a', text=pattern).get_text()).group(1)
+                    pattern = re.compile(r'\$([\d,.]+)')
+                    price_with_commas = pattern.match(c.find('a', text=pattern).get_text()).group(1)
+                    price = price_with_commas.replace(',', '')
                     cabins.append({
                         'id': id_, 
                         'quote': price, 
@@ -536,6 +539,18 @@ def scrape_cabins(filename='./scrappers/vacasa_cabins.json'):
         # Write finally result
         name = dump_from(filename, results)
         print('Dumped', name)    
+
+def run():
+    try:
+        extract_cabin_urls_splinter()
+        scrape_cabins()
+        insert_cabins()
+        insert_features()
+        rate_scrapper_single_threaded()
+        update_last_scrape()
+    except Exception as e:
+        print('Error running vacasa scrapper')
+        raise(e)
 
 def main():
 

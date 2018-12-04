@@ -8,6 +8,7 @@ from scrappers import settings
 import os
 
 DB_URI = os.getenv('DATABASE_URI')
+db_id = 'BBV'
 
 HEADERS = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36'
@@ -35,7 +36,9 @@ def load_cabins():
     return cabins
 
 def scrape_and_store_cabins():
-    store_cabins(scrape_cabins())
+    cabins = scrape_cabins()
+    store_cabins(cabins)
+    return cabins
 
 def get_cabins_from_db():
     cabins = []
@@ -153,3 +156,14 @@ def update_last_scrape():
             excluded.last_scrape""", ('BBV', 'Big Bear Vacations', 
             'https://www.bigbearvacations.com/'))
     connection.close()
+
+def run():
+    try:
+        cabins = scrape_and_store_cabins()
+        insert_cabins(cabins)
+        insert_amenities(cabins)
+        scrape_and_insert_rates()
+        update_last_scrape()
+    except Exception as e:
+        print('Error in Big Bear Vacations scrapper')
+        raise(e)

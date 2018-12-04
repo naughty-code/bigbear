@@ -20,6 +20,8 @@ from selenium import webdriver
 CABIN_URLS_FILE = './scrappers/dbb_cabin_urls.json'
 DATABASE_URI = os.environ.get('DATABASE_URL', None) or os.getenv('DATABASE_URI')
 
+db_id = 'DBB'
+
 executable_path = {'executable_path': os.getenv('CHROME_DRIVER_EXECUTABLE_PATH')}
 
 def load_cabins():
@@ -805,6 +807,18 @@ def update_last_scrape():
             excluded.last_scrape""", ('DBB', 'Destination Big Bear', 
             'http://www.destinationbigbear.com'))
     connection.close()
+
+def run():
+    try:
+        scrape_cabin_urls()
+        scrape_cabins()
+        insert_cabins()
+        insert_amenities()
+        scrape_rates_and_insert_faster()
+        update_last_scrape()
+    except Exception as e:
+        print('Error in Destination Big Bear scrapper:')
+        raise(e)
 
 def main():
 

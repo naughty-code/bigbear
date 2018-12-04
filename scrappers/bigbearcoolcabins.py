@@ -19,6 +19,7 @@ from psycopg2.extras import execute_values
 
 BASE_URL = 'https://www.bigbearcoolcabins.com'
 CABIN_URLS_FILE = './scrappers/bbcc_cabin_urls.json'
+db_id = 'BBCC'
 
 # Read step
 def read_csv_cabins(filename):
@@ -920,6 +921,18 @@ def scrape_cabins(filename='./scrappers/bbcc_cabins.js'):
         print('Dumped', name)
         #upload_to_database()
         #insert_availabilities(new_availabilities)
+
+def run():
+    try:
+        scrape_cabin_urls_and_store()
+        scrape_cabins()
+        insert_cabins()
+        insert_amenities()
+        extract_costs_and_insert()
+        update_last_scrape()
+    except Exception as e:
+        print('Error in Big Bear Cool Cabins scrapper:')
+        raise(e)
 
 def main():
     if len(sys.argv) != 2:

@@ -6,6 +6,24 @@ from scrappers import destinationbigbear, vacasa, bigbearcoolcabins, bigbearvaca
 
 DATABASE_URI = os.environ.get('DATABASE_URL', None) or os.getenv('DATABASE_URI')
 
+log_file = 'errors.log'
+
+def log(e):
+    with open(log_file, 'a', encoding='utf8') as f:
+        f.write(str(e))
+
+def run(scrappers_to_run):
+    scrapers = [destinationbigbear, vacasa, bigbearcoolcabins, bigbearvacations]
+    for scraper in scrapers:
+        try:
+            if scraper.db_id in scrappers_to_run:
+                scraper.run()
+        except Exception as e:
+            print(e)
+            
+
+        
+
 def update_cabin_urls():
     destinationbigbear.scrape_cabin_urls()
     vacasa.extract_cabin_urls_splinter()
