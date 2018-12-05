@@ -174,7 +174,7 @@ def update():
             if result != 'Updating':
                 print(data['vrm'])
                 cursor.execute("UPDATE db.status_update SET status='Updating'")
-                scrapper_process = Process(target=scrapper.run(), args=(data['vrm'],))
+                scrapper_process = Process(target=scrapper.run, args=(data['vrm'],))
                 scrapper_process.start()
     connection.close()
     return 'true'
