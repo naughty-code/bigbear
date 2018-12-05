@@ -290,7 +290,10 @@ def extract_costs_faster_function(range_tuple):
                 pass
             next_button = b.find_link_by_text('next')
             if next_button:
-                next_button[0].click()
+                try:
+                    next_button[0].click()
+                except TimeoutException as e:
+                    return cabins
             else:
                 break
     return cabins
