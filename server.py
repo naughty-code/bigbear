@@ -163,16 +163,18 @@ def report():
 
     return jsonify(result_json)
 
-@app.route('/api/update')
+@app.route('/api/update', methods=['POST'])
 def update():
+    data = request.get_json()
     connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)
     with connection:
         with connection.cursor() as cursor:
             cursor.execute('select status from db.status_update where id=1')
             result = cursor.fetchall()
             if result != 'Updating':
+                print(data['vrm'])
                 cursor.execute("UPDATE db.status_update SET status='Updating'")
-                scrapper_process = Process(target=scrapper.update)
+                scrapper_process = Process(target=scrapper.run(), args=(data['vrm'],))
                 scrapper_process.start()
     connection.close()
     return 'true'
@@ -338,7 +340,7 @@ def search_vrms():
 
 @app.route('/api/search/bedrooms')
 def search_bedrooms():
-    sql = '''SELECT bedrooms from db.cabin group by bedrooms order by bedrooms asc'''
+    sql = '''SELECT bedrooms from db.cabin where status = 'ACTIVE' group by bedrooms order by bedrooms asc'''
     connection = psycopg2.connect(DATABASE_URI)
     with connection, connection.cursor() as c:
         c.execute(sql)
@@ -380,11 +382,12 @@ def search_tiers():
 @app.route('/api/search/avg', methods = ['POST'])
 def search_avg():
     data = request.get_json()
-    sql = '''select c.idvrm, a.check_in, a.check_out, a."name", round(avg(a.rate) filter (where a.rate > 0))::money as average, round(min(a.rate) filter (where a.rate > 0))::money as minimum, round(max(a.rate) filter (where a.rate > 0))::money as maximum, count(a.id) filter (where a.status = 'BOOKED') as "Bookings", (count(a.id) filter (where a.status = 'BOOKED')) * 100 / count(a.id) as "Bookings %%", count(a.id) filter (where a.status = 'AVAILABLE') as "Vacants", (count(a.id) filter (where a.status = 'AVAILABLE')) * 100 / count(a.id) as "Vacants %%" from db.cabin as c join db.features as f on c.id = f.id join db.availability as a on c.id = a.id where f.amenity ilike ANY(%s) and c.idvrm = ANY(%s) and cast(c.bedrooms as varchar) = ANY(%s) and cast(DATE_PART('year',a.check_in) as varchar) = ANY(%s) and a.name = ANY(%s) and c.tier = ANY(%s) and c.status = 'ACTIVE' group by c.idvrm, a.check_in, a.check_out, a."name" order by c.idvrm;'''
+    sql = '''select c.idvrm, a.check_in, a.check_out, a."name", round(avg(a.rate) filter (where a.rate > 0))::money as average, round(min(a.rate) filter (where a.rate > 0))::money as minimum, round(max(a.rate) filter (where a.rate > 0))::money as maximum, count(a.id) filter (where a.status = 'BOOKED') as "Bookings", (count(a.id) filter (where a.status = 'BOOKED')) * 100 / count(a.id) as "Bookings %%", count(a.id) filter (where a.status = 'AVAILABLE') as "Vacants", (count(a.id) filter (where a.status = 'AVAILABLE')) * 100 / count(a.id) as "Vacants %%" from db.cabin as c join db.availability as a on c.id = a.id where (select count(*) from db.features as f where f.id = c.id and f.amenity = ANY (%s)) = %s and c.idvrm = ANY(%s) and cast(c.bedrooms as varchar) = ANY(%s) and cast(DATE_PART('year',a.check_in) as varchar) = ANY(%s) and a.name = ANY(%s) and c.tier = ANY(%s) and c.status = 'ACTIVE' group by c.idvrm, a.check_in, a.check_out, a."name" order by c.idvrm;'''
     connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)
     with connection, connection.cursor() as c:
         c.execute(sql, (
-            '{%' + '%,%'.join(data['amenities']) + '%}', 
+            '{' + ','.join(data['amenities']) + '}', 
+            len(data['amenities']),
             '{' + ','.join(data['vrms']) + '}', 
             '{' + ','.join(data['bedrooms']) + '}', 
             '{' + ','.join(data['years']) + '}', 
