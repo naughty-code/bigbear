@@ -72,9 +72,9 @@ def scrape_rates(start_date, end_date, holiday):
         headers=HEADERS
         )
     property_rates = res.json()['data']['available_properties']
-    print(property_rates)
     if property_rates:
         if isinstance(property_rates['property'], list):
+            print(f'found properties for date range:{start_str}-{end_str}-{holiday}: {len(property_rates["propery"])}')
             rates = [{**r, 'start_date': start_date, 'end_date': end_date, 'holiday': holiday, 'id': 'BBV' + str(r['id']), 'status': 'AVAILABLE' } for r in property_rates['property']]
         else:
             rates = [property_rates['property']]
