@@ -70,11 +70,7 @@ function searchController($http, $mdDialog) {
 		var data = {
 			amenities: ctrl.amenitySelected,
 			vrms: ctrl.vrmSelected,
-			bedrooms: (function() {
-				return ctrl.bedroomSelected.map(function (b) {
-					return b.toString();
-				})
-			})(),
+			bedrooms: ctrl.bedroomSelected,
 			years: ctrl.yearSelected,
 			days: ctrl.daySelected,
 			tiers: ctrl.tierSelected
@@ -92,6 +88,8 @@ function searchController($http, $mdDialog) {
 				ctrl.firstData[key].average = ctrl.firstData[key].average ? ctrl.firstData[key].average : '$0';
 				ctrl.firstData[key].minimum = ctrl.firstData[key].minimum ? ctrl.firstData[key].minimum : '$0';
 				ctrl.firstData[key].maximum = ctrl.firstData[key].maximum ? ctrl.firstData[key].maximum : '$0';
+				ctrl.firstData[key]['Bookings %'] = ctrl.firstData[key]['Bookings %'] + '%';
+				ctrl.firstData[key]['Vacants %'] = ctrl.firstData[key]['Vacants %'] + '%';
 			});
 			ctrl.loading = false;
 			ctrl.showTable = true;
@@ -106,7 +104,7 @@ function searchController($http, $mdDialog) {
 			return false;
 		if (!ctrl.vrmSelected || ctrl.vrmSelected.length === 0)
 			return false;
-		if (!ctrl.bedroomSelected || ctrl.bedroomSelected.length === 0)
+		if (!ctrl.bedroomSelected)
 			return false;
 		if (!ctrl.yearSelected || ctrl.yearSelected.length === 0)
 			return false;
