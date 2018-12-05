@@ -109,7 +109,7 @@ def insert_cabins(cabins):
     connection = connect(DB_URI)
     tuples = [db_format_cabin(c) for c in cabins]
     with connection, connection.cursor() as cursor:
-        str_sql = '''UPDATE db.cabin SET status = 'INACTIVE' WHERE idvrm = 'DBB' '''
+        str_sql = '''UPDATE db.cabin SET status = 'INACTIVE' WHERE idvrm = 'BBV' '''
         cursor.execute(str_sql)
         # Update cabins
         str_sql = '''INSERT INTO db.cabin (idvrm, id, name, website, description, address, location, bedrooms, 
