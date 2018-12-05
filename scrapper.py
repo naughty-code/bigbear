@@ -16,7 +16,7 @@ def run(scrappers_to_run):
     scrapers = [destinationbigbear, vacasa, bigbearcoolcabins, bigbearvacations]
     for scraper in scrapers:
         try:
-            if scraper.db_id in scrappers_to_run:
+            if 'ALL' in scrappers_to_run or scraper.db_id in scrappers_to_run:
                 scraper.run()
         except Exception as e:
             print(e)
