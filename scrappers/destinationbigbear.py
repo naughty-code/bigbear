@@ -177,7 +177,8 @@ def insert_rates_faster(rates):
         execute_values(cursor, str_sql, tupled_rates)
     connection.close()
 
-
+def get_quote():
+    pass
 
 def extract_costs():
     cabins = load_cabins()
@@ -672,7 +673,7 @@ def scrape_cabin(url):
     except Exception as e:
         print(f'Exception scraping url:{url}')
         print(e)
-        logging.exception("error aqui :c")
+        logging.exception("error aqui")
         return None
     except KeyboardInterrupt: pass
 
