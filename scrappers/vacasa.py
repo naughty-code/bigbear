@@ -473,8 +473,9 @@ def update_last_scrape():
         c.execute("""INSERT INTO db.vrm (idvrm, name, website, ncabins, last_scrape)
             VALUES (%s, %s, %s, (select count(id) from db.cabin where idvrm = 'VACASA' and 
             status='ACTIVE'), now()) ON CONFLICT (idvrm) DO UPDATE SET name = excluded.name, 
-            website = excluded.website, ncabins = excluded.ncabins, last_scrape = 
-            excluded.last_scrape""", ('VACASA', 'Vacasa', 'https://www.vacasa.com/'))
+            website = excluded.website, ncabins = (select count(id) from db.cabin where idvrm = 'VACASA' and 
+            status='ACTIVE'), last_scrape = now()""", 
+            ('VACASA', 'Vacasa', 'https://www.vacasa.com/'))
     connection.close()
 
 def insert():

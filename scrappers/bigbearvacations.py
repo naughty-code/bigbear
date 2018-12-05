@@ -150,10 +150,11 @@ def update_last_scrape():
     connection = connect(DB_URI)
     with connection, connection.cursor() as c:
         c.execute("""INSERT INTO db.vrm (idvrm, name, website, ncabins, last_scrape)
-            VALUES (%s, %s, %s, (select count(id) from db.cabin where idvrm = 'DBB' and 
+            VALUES (%s, %s, %s, (select count(id) from db.cabin where idvrm = 'BBV' and 
             status='ACTIVE'), now()) ON CONFLICT (idvrm) DO UPDATE SET name = excluded.name, 
-            website = excluded.website, ncabins = excluded.ncabins, last_scrape = 
-            excluded.last_scrape""", ('BBV', 'Big Bear Vacations', 
+            website = excluded.website, ncabins = (select count(id) from db.cabin where idvrm = 'BBV' and 
+            status='ACTIVE'), last_scrape = 
+            now()""", ('BBV', 'Big Bear Vacations', 
             'https://www.bigbearvacations.com/'))
     connection.close()
 

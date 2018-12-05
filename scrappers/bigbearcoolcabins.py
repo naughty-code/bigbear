@@ -10,6 +10,7 @@ import re
 import itertools
 from decimal import Decimal
 from scrappers import util
+from scrappers import settings
 
 from urllib.parse import urljoin
 from datetime import date, datetime, timedelta
@@ -795,10 +796,11 @@ def update_last_scrape():
     connection = psycopg2.connect(os.getenv('DATABASE_URI'))
     with connection, connection.cursor() as c:
         c.execute("""INSERT INTO db.vrm (idvrm, name, website, ncabins, last_scrape)
-            VALUES (%s, %s, %s, (select count(id) from db.cabin where idvrm = 'DBB' and 
+            VALUES (%s, %s, %s, (select count(id) from db.cabin where idvrm = 'BBCC' and 
             status='ACTIVE'), now()) ON CONFLICT (idvrm) DO UPDATE SET name = excluded.name, 
-            website = excluded.website, ncabins = excluded.ncabins, last_scrape = 
-            excluded.last_scrape""", ('BBCC', 'Big Bear Cool Cabins', 
+            website = excluded.website, ncabins = (select count(id) from db.cabin where idvrm = 'BBCC' and 
+            status='ACTIVE'), last_scrape = now()""", 
+            ('BBCC', 'Big Bear Cool Cabins', 
             'https://www.bigbearcoolcabins.com'))
     connection.close()
 
