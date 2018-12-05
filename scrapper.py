@@ -20,6 +20,11 @@ def run(scrappers_to_run):
                 scraper.run()
         except Exception as e:
             print(e)
+    print('scraping process finished')
+    connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)
+    with connection, connection.cursor() as c:
+        c.execute("UPDATE db.status_update SET status = 'Updated' WHERE id=1;")
+    connection.close()
             
 
         
