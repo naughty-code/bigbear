@@ -8,6 +8,7 @@ import datetime as dt
 import os
 import psycopg2
 import html
+import logging
 from scrappers import util
 from psycopg2.extras import execute_values
 from datetime import datetime
@@ -671,6 +672,7 @@ def scrape_cabin(url):
     except Exception as e:
         print(f'Exception scraping url:{url}')
         print(e)
+        logging.exception("error aqui :c")
         return None
     except KeyboardInterrupt: pass
 
