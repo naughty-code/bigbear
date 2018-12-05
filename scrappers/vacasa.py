@@ -69,7 +69,7 @@ def extract_description(soup):
     return text
 
 def extract_amenities(soup):
-    elems = soup.find_all(class_='featured-amenity')
+    elems = soup.find_all(class_='amenity')
     return [ e.get_text(strip=True) for e in elems ]
 
 def extract_features(soup):
@@ -360,7 +360,7 @@ def insert_features():
     cabins = load_cabins()
     features_tuples = []
     for c in cabins:
-        for f in itertools.chain(c['features'], c['amenities']):
+        for f in c['amenities']:
             id_ = 'VACASA' + re.search(r'UnitID=(\d+)', c['url']).group(1)
             features_tuples.append((id_, f))
     with connection, connection.cursor() as c:
