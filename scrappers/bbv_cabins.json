@@ -5251,7 +5251,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -6605,7 +6605,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -7648,7 +7648,7 @@
     "name": "1156-Can't Bear to Leave",
     "location_name": "1156-Can't Bear to Leave",
     "web_name": "Can't Bear to Leave  #1156",
-    "short_description": "Can&#39;t Bear to Leave #1156 is a wonderfully furnished and decorated single story log home located less than a mile to the ski slopes, with easy level parking and a garage available, plus packed fun with amenities and entertainment. This home features a fully outfitted and equipped kitchen with essentials and cookware, appliances including a dishwasher, and island bar and dining table seating for meals. Entering into the cozy and warm living room area, there are comfy furnishings, a toasty wood burning fireplace, and a TV/DVD player plus separate laundry room and a full hallway bathroom are available. There is a nice front porch for sitting, plus a side deck area with patio furnishings and a charcoal BBQ grill for your enjoyment. With a central location, entertainment and wonderful charm, you truly &quot;Can&#39;t Bear To Leave&quot; this home out of your next Big Bear mountain vacation!!<br /><br />Bedroom 1: Master Suite- King Bed, TV/DVD, Private Bath With Spa Tub<br />Bedroom 2: Queen Bed<br />Bedroom 3: Full Bed Plus Twin Bed, TV/DVD<br /><br />Parking: 3 Vehicles (Includes 1 Car Attached Garage)<br />Sorry NO PETS Allowed&nbsp;<br />Rental Agreement To Be Signed Prior To Key Release.&nbsp;<br />Minimum Age Requirement Of 21 Yrs Or Older.&nbsp;<br />Valid ID &amp; CC Charged Must Be Present At Check In.<br />EXTENDED STAY: MUST BOOK BY PHONE-",
+    "short_description": "Can&#39;t Bear to Leave #1156 is a wonderfully furnished and decorated single story log home located less than a mile to the ski slopes, with easy level parking and a garage available, plus packed fun with amenities and entertainment. This home features a fully outfitted and equipped kitchen with essentials and cookware, appliances including a dishwasher, and island bar and dining table seating for meals. Entering into the cozy and warm living room area, there are comfy furnishings, a toasty wood burning fireplace, and a TV/DVD player plus separate laundry room and a full hallway bathroom are available. There is a nice front porch for sitting, plus a side deck area with patio furnishings and a charcoal BBQ grill for your enjoyment. With a central location, entertainment and wonderful charm, you truly &quot;Can&#39;t Bear To Leave&quot; this home out of your next Big Bear mountain vacation!!<br /><br />Bedroom 1: Master Suite- King Bed, TV/DVD, Private Bath With Spa Tub<br />Bedroom 2: Queen Bed<br />Bedroom 3: Full Bed Plus Twin Bed, TV/DVD<br /><br />Parking: 3 Vehicles (Includes 1 Car Attached Garage)<br />Sorry NO PETS Allowed - NO WIFI AVAILABLE<br />Rental Agreement To Be Signed Prior To Key Release.&nbsp;<br />Minimum Age Requirement Of 21 Yrs Or Older.&nbsp;<br />Valid ID &amp; CC Charged Must Be Present At Check In.<br />EXTENDED STAY: MUST BOOK BY PHONE-",
     "max_occupants": 7,
     "bedrooms_number": 3,
     "bathrooms_number": 2,
@@ -7702,14 +7702,6 @@
     "default_image_path": "https://s3-us-west-2.amazonaws.com/locations-images/image_71638.jpeg",
     "unit_amenities": {
       "amenity": [
-        {
-          "group_name": "Property Amenities",
-          "group_description": [],
-          "amenity_name": "WiFi",
-          "amenity_description": [],
-          "amenity_id": 93831,
-          "amenity_show_on_website": "yes"
-        },
         {
           "group_name": "Property Amenities",
           "group_description": [],
@@ -7804,6 +7796,14 @@
           "amenity_name": "NO PETS PLEASE",
           "amenity_description": [],
           "amenity_id": 150598,
+          "amenity_show_on_website": "yes"
+        },
+        {
+          "group_name": "Property Amenities",
+          "group_description": [],
+          "amenity_name": "NO WIFI AVAILABLE- Hot Spots Accessible In Town",
+          "amenity_description": [],
+          "amenity_id": 280369,
           "amenity_show_on_website": "yes"
         },
         {
@@ -9139,7 +9139,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -9180,8 +9180,8 @@
     "max_occupants": 9,
     "bedrooms_number": 3,
     "bathrooms_number": 2,
-    "condo_type_name": "121-Le Trianon",
-    "condo_type_group_name": "Bronze",
+    "condo_type_name": "Silver 121-Le Trianon",
+    "condo_type_group_name": "Silver",
     "view_name": "Lake View",
     "floor_name": "Ground & Upper",
     "resort_area_id": 10274,
@@ -9192,7 +9192,7 @@
     "neighborhood_name": "Mallard Bay",
     "city": "Big Bear Lake",
     "max_adults": 9,
-    "max_pets": null,
+    "max_pets": 2,
     "lodging_type_id": 3,
     "location_original_id": null,
     "square_foots": 1736,
@@ -9725,7 +9725,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -10573,7 +10573,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -10830,10 +10830,10 @@
     "property_code": 1260,
     "renting_type": "RENTING",
     "price_data": {
-      "daily": 84.95,
+      "daily": 79.09,
       "currency": "USD"
     },
-    "price_str": "From $84.95 daily<br>",
+    "price_str": "From $79.09 daily<br>",
     "default_thumbnail_path": "https://s3-us-west-2.amazonaws.com/locations-images/thumbnail_71667.jpeg",
     "default_image_path": "https://s3-us-west-2.amazonaws.com/locations-images/image_71667.jpeg",
     "unit_amenities": {
@@ -12133,7 +12133,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -12845,7 +12845,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -13273,7 +13273,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -13519,7 +13519,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -15175,7 +15175,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -16015,7 +16015,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -16221,7 +16221,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -16419,7 +16419,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -17251,7 +17251,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -17869,7 +17869,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -19073,7 +19073,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -19714,10 +19714,10 @@
     "location_name": "1495-Red Door Cabin",
     "web_name": "Red Door Cabin  #1495",
     "short_description": "Red Door Cabin is a great two story chalet-style cabin close to the ski slopes and within a few minutes drive to the grocery store or the downtown Village for shopping, dining, or entertainment. This home is decorated in lovely mountain cabin charm, with a cozy and warm living room that includes comfy furnishings, a toasty wood burning fireplace, and a TV/DVD player. The cabin has an equipped kitchen with cookware, appliances including a dishwasher, and there is a separate laundry room on this main level. Upstairs there is a great room with an additional wood burning fireplace, a TV and sitting couches plus there is a wonderful fenced back yard and a relaxing front deck surrounded by tall pines.<br /><br />Bedroom 1: Full Bed-&nbsp;1st&nbsp;Level<br />Bedroom 2: Twin Bunk Bed Set Plus Twin Single Underneath-&nbsp;1st&nbsp;Level<br />Bedroom 3: King Bed, TV, Private Balcony-&nbsp;2nd&nbsp;Level<br /><br />Parking: 3 Vehicles<br />Sorry NO PETS Allowed&nbsp;<br />Rental Agreement To Be Signed Prior To Key Release.&nbsp;<br />Minimum Age Requirement Of 21 Yrs Or Older.&nbsp;<br />Valid ID &amp; CC Charged Must Be Present At Check In.<br />EXTENDED STAY: MUST BOOK BY PHONE-",
-    "max_occupants": 8,
+    "max_occupants": 7,
     "bedrooms_number": 3,
     "bathrooms_number": 2,
-    "condo_type_name": "1495-Red Door Cabin",
+    "condo_type_name": "Silver 1495-Red Door Cabin",
     "condo_type_group_name": "Silver",
     "view_name": "None",
     "floor_name": "Ground & Upper",
@@ -19728,7 +19728,7 @@
     "neighborhood_area_id": 4728,
     "neighborhood_name": "Snow Summit Ski Resort",
     "city": "Big Bear Lake",
-    "max_adults": 8,
+    "max_adults": 7,
     "max_pets": null,
     "lodging_type_id": 3,
     "location_original_id": null,
@@ -19882,7 +19882,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -19965,10 +19965,10 @@
     "property_code": 1504,
     "renting_type": "RENTING",
     "price_data": {
-      "daily": 84.95,
+      "daily": 79.09,
       "currency": "USD"
     },
-    "price_str": "From $84.95 daily<br>",
+    "price_str": "From $79.09 daily<br>",
     "default_thumbnail_path": "https://s3-us-west-2.amazonaws.com/locations-images/thumbnail_71756.jpeg",
     "default_image_path": "https://s3-us-west-2.amazonaws.com/locations-images/image_71756.jpeg",
     "unit_amenities": {
@@ -20610,7 +20610,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -20693,10 +20693,10 @@
     "property_code": 1516,
     "renting_type": "RENTING",
     "price_data": {
-      "daily": 84.95,
+      "daily": 79.09,
       "currency": "USD"
     },
-    "price_str": "From $84.95 daily<br>",
+    "price_str": "From $79.09 daily<br>",
     "default_thumbnail_path": "https://s3-us-west-2.amazonaws.com/locations-images/thumbnail_71763.jpeg",
     "default_image_path": "https://s3-us-west-2.amazonaws.com/locations-images/image_71763.jpeg",
     "unit_amenities": {
@@ -24796,7 +24796,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -26445,10 +26445,10 @@
     "property_code": 1606,
     "renting_type": "RENTING",
     "price_data": {
-      "daily": 89.6,
+      "daily": 150,
       "currency": "USD"
     },
-    "price_str": "From $89.60 daily<br>",
+    "price_str": "From $150.00 daily<br>",
     "default_thumbnail_path": "https://s3-us-west-2.amazonaws.com/locations-images/thumbnail_78370.jpeg",
     "default_image_path": "https://s3-us-west-2.amazonaws.com/locations-images/image_78370.jpeg",
     "unit_amenities": {
@@ -27473,10 +27473,10 @@
     "property_code": 1620,
     "renting_type": "RENTING",
     "price_data": {
-      "daily": 205.5,
+      "daily": 189.7,
       "currency": "USD"
     },
-    "price_str": "From $205.50 daily<br>",
+    "price_str": "From $189.70 daily<br>",
     "default_thumbnail_path": "https://s3-us-west-2.amazonaws.com/locations-images/thumbnail_139086.jpeg",
     "default_image_path": "https://s3-us-west-2.amazonaws.com/locations-images/image_139086.jpeg",
     "unit_amenities": {
@@ -27813,156 +27813,6 @@
           "amenity_name": "Walk To Dining or Shops",
           "amenity_description": [],
           "amenity_id": 93833,
-          "amenity_show_on_website": "yes"
-        },
-        {
-          "group_name": "Add-Ons",
-          "group_description": [],
-          "amenity_name": "AirBnB Rounding Adjustment",
-          "amenity_description": [],
-          "amenity_id": 105416,
-          "amenity_show_on_website": "no"
-        }
-      ]
-    }
-  },
-  {
-    "id": 172603,
-    "sale_enabled": "no",
-    "longterm_enabled": 1,
-    "shortterm_enabled": 1,
-    "rating_count": 1,
-    "rating_average": null,
-    "property_rating_points": 3,
-    "flyer_url": "http://www.bigbearvacations.com/mountain-escape-1622",
-    "seo_page_name": "cabin-rentals/1622-mountain-escape/172603",
-    "name": "1622- Mountain Escape",
-    "location_name": "1622- Mountain Escape",
-    "web_name": "Mountain Escape #1622",
-    "short_description": "Mountain Escape #1622 is a two story family retreat that has been newly renovated from top to bottom and is nestled amongst more than a dozen pine trees on nearly a quarter acre flat lot, yet is only minutes to the ski resorts, local zoo, grocery stores, or downtown Village for entertainment. This home features two separate living rooms, both with new gorgeous hardwood floors, comfy furnishings and a toasty gas fireplace, plus large flat screen TV/DVD. There is a laundry room and&nbsp;wifi&nbsp;available for your use, as well as the expansive decking at this home, with outdoor patio furnishings and a relaxing treed location.&nbsp;<br /><br />Sleeping Arrangements:<br />Bedroom 1: King Bed-&nbsp;1st&nbsp;Level&nbsp;<br />Bedroom 2: Two Twin Bunk Bed Sets (4 Twins)-&nbsp;1st&nbsp;Level&nbsp;<br />Bedroom 3: King Bed-&nbsp;2nd&nbsp;Level&nbsp;<br />Bedroom 4: Queen Bed -&nbsp;2nd&nbsp;Level&nbsp;<br /><br />Parking:<br />4 Vehicles<br /><br />Sorry NO PETS Allowed&nbsp;<br />Rental Agreement To Be Signed Prior To Key Release.&nbsp;<br />Minimum Age Requirement Of 21 Yrs Or Older.&nbsp;<br />Valid ID &amp; CC Charged Must Be Present At Check In.",
-    "max_occupants": 10,
-    "bedrooms_number": 4,
-    "bathrooms_number": 2,
-    "condo_type_name": "1622- Mountain Escape",
-    "condo_type_group_name": "Silver",
-    "view_name": "None",
-    "floor_name": "Ground & Upper",
-    "resort_area_id": 9997,
-    "resort_area_name": "Big Bear City (East)",
-    "location_area_id": 10247,
-    "location_area_name": "East Big Bear City",
-    "neighborhood_area_id": 4724,
-    "neighborhood_name": "Big Bear City",
-    "city": "Big Bear City",
-    "max_adults": 10,
-    "max_pets": null,
-    "lodging_type_id": 3,
-    "location_original_id": null,
-    "square_foots": null,
-    "home_type": "Homes",
-    "latitude": null,
-    "longitude": null,
-    "location_latitude": 34.256688,
-    "location_longitude": -116.860989,
-    "location_comment": null,
-    "not_allow_online_bookings": null,
-    "state_id": 5,
-    "state_name": "CA",
-    "region": null,
-    "community": null,
-    "country_id": 227,
-    "city_id": null,
-    "community_id": null,
-    "region_id": null,
-    "continent_id": 6,
-    "continent_name": "North America",
-    "continent_description": null,
-    "use_streamshare": null,
-    "virtual_tour_url": null,
-    "data_fields": {
-      "tapechart_sorting_order": 368
-    },
-    "property_code": 1622,
-    "renting_type": "RENTING",
-    "price_data": {
-      "daily": 276.55,
-      "currency": "USD"
-    },
-    "price_str": "From $276.55 daily<br>",
-    "default_thumbnail_path": "https://s3-us-west-2.amazonaws.com/locations-images/thumbnail_154370.jpeg",
-    "default_image_path": "https://s3-us-west-2.amazonaws.com/locations-images/image_154370.jpeg",
-    "unit_amenities": {
-      "amenity": [
-        {
-          "group_name": "Property Amenities",
-          "group_description": [],
-          "amenity_name": "WiFi",
-          "amenity_description": [],
-          "amenity_id": 93831,
-          "amenity_show_on_website": "yes"
-        },
-        {
-          "group_name": "Property Amenities",
-          "group_description": [],
-          "amenity_name": "Fenced Yard",
-          "amenity_description": [],
-          "amenity_id": 94384,
-          "amenity_show_on_website": "yes"
-        },
-        {
-          "group_name": "Property Amenities",
-          "group_description": [],
-          "amenity_name": "BBQ (Propane/Natural Gas)",
-          "amenity_description": [],
-          "amenity_id": 95961,
-          "amenity_show_on_website": "yes"
-        },
-        {
-          "group_name": "Property Amenities",
-          "group_description": [],
-          "amenity_name": "Fireplace (Gas)",
-          "amenity_description": [],
-          "amenity_id": 95960,
-          "amenity_show_on_website": "yes"
-        },
-        {
-          "group_name": "Property Amenities",
-          "group_description": [],
-          "amenity_name": "Dishwasher",
-          "amenity_description": [],
-          "amenity_id": 148938,
-          "amenity_show_on_website": "yes"
-        },
-        {
-          "group_name": "Property Amenities",
-          "group_description": [],
-          "amenity_name": "Washer/Dryer",
-          "amenity_description": [],
-          "amenity_id": 94383,
-          "amenity_show_on_website": "yes"
-        },
-        {
-          "group_name": "Property Amenities",
-          "group_description": [],
-          "amenity_name": "Cable / Satellite Provided",
-          "amenity_description": [],
-          "amenity_id": 148939,
-          "amenity_show_on_website": "yes"
-        },
-        {
-          "group_name": "Property Amenities",
-          "group_description": [],
-          "amenity_name": "NO PETS PLEASE",
-          "amenity_description": [],
-          "amenity_id": 150598,
-          "amenity_show_on_website": "yes"
-        },
-        {
-          "group_name": "Property Amenities",
-          "group_description": [],
-          "amenity_name": "NO AIR CONDITIONING IN BIG BEAR PRIVATE RENTALS",
-          "amenity_description": [],
-          "amenity_id": 372844,
           "amenity_show_on_website": "yes"
         },
         {
@@ -29818,7 +29668,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -29968,7 +29818,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -30974,7 +30824,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -31204,7 +31054,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -33832,7 +33682,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -33950,9 +33800,25 @@
         {
           "group_name": "Property Amenities",
           "group_description": [],
+          "amenity_name": "Deck",
+          "amenity_description": [],
+          "amenity_id": 275506,
+          "amenity_show_on_website": "yes"
+        },
+        {
+          "group_name": "Property Amenities",
+          "group_description": [],
           "amenity_name": "Fireplace (Gas)",
           "amenity_description": [],
           "amenity_id": 95960,
+          "amenity_show_on_website": "yes"
+        },
+        {
+          "group_name": "Property Amenities",
+          "group_description": [],
+          "amenity_name": "Central Heat",
+          "amenity_description": [],
+          "amenity_id": 250020,
           "amenity_show_on_website": "yes"
         },
         {
@@ -34354,7 +34220,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -35395,10 +35261,10 @@
     "property_code": 1701,
     "renting_type": "RENTING",
     "price_data": {
-      "daily": 276.55,
+      "daily": 409.64,
       "currency": "USD"
     },
-    "price_str": "From $276.55 daily<br>",
+    "price_str": "From $409.64 daily<br>",
     "default_thumbnail_path": "https://s3-us-west-2.amazonaws.com/locations-images/thumbnail_283001.jpeg",
     "default_image_path": "https://s3-us-west-2.amazonaws.com/locations-images/image_283001.jpeg",
     "unit_amenities": {
@@ -36839,7 +36705,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -42365,7 +42231,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -44617,7 +44483,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -45022,7 +44888,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -45273,7 +45139,7 @@
     "name": "1785-Hillendale Hideaway",
     "location_name": "1785-Hillendale Hideaway",
     "web_name": "Hillendale Hideaway#1785",
-    "short_description": "Hillendale Hideaway is a peaceful cabin, backing up to the forest, and perfect for you the next quiet getaway. Located in Bear City, you will have close access to Oktoberfest, The Famer&rsquo;s Market, Snow Tubing and many other seasonal activities. And if your plan is just to stay in and relax, you are going to love wildlife watching from the back deck. Or enjoying the sun coming in the floor to ceiling windows in the living room. Enter into the living room which is bright and open, with a flat screen TV, wood burning fireplace, and comfy couches. The newly updated kitchen features stainless steel appliances and is fully equipped to prepare your meals. Downstairs is the first bedroom and full bathroom. Upstairs, you will find a small loft, master bedroom, and access to the deck with BBQ and patio furnishings. Come hideaway in Big Bear, you will love this home for your next getaway.<br /><br />Bedroom 1: Queen -Downstairs<br />Bedroom 2: Queen - Upstairs, Private Bath<br />Loft: Twin Bed - Upstairs<br />Living Room: Sleeper Sofa<br /><br />Parking: 2 Vehicles<br />Sorry NO PETS Allowed<br />Rental Agreement To Be Signed Prior To Key Release.&nbsp;<br />Minimum Age Requirement Of 21 Yrs Or Older.&nbsp;<br />Valid ID &amp; CC Charged Must Be Present At Check In",
+    "short_description": "Hillendale Hideaway is a peaceful cabin, backing up to the forest, and perfect for you the next quiet getaway. Located in Bear City, you will have close access to Oktoberfest, The Famer&rsquo;s Market, Snow Tubing and many other seasonal activities. And if your plan is just to stay in and relax, you are going to love wildlife watching from the back deck. Or enjoying the sun coming in the floor to ceiling windows in the living room. Enter into the living room which is bright and open, with a flat screen TV, wood burning fireplace, and comfy couches. The newly updated kitchen features stainless steel appliances and is fully equipped to prepare your meals. Downstairs is the first bedroom and full bathroom. Upstairs, you will find a small loft, master bedroom, and access to the deck with BBQ and patio furnishings. Come hideaway in Big Bear, you will love this home for your next getaway.<br /><br />Bedroom 1: Queen -Downstairs<br />Bedroom 2: Queen - Upstairs, Private Bath<br />Loft: Twin Bed - Upstairs<br />Living Room: Queen Sleeper Sofa<br /><br />Parking: 2 Vehicles<br />Sorry NO PETS Allowed<br />Rental Agreement To Be Signed Prior To Key Release.&nbsp;<br />Minimum Age Requirement Of 21 Yrs Or Older.&nbsp;<br />Valid ID &amp; CC Charged Must Be Present At Check In",
     "max_occupants": 6,
     "bedrooms_number": 2,
     "bathrooms_number": 2,
@@ -45649,10 +45515,10 @@
     "property_code": 1787,
     "renting_type": "RENTING",
     "price_data": {
-      "daily": 84.88,
+      "daily": 81.52,
       "currency": "USD"
     },
-    "price_str": "From $84.88 daily<br>",
+    "price_str": "From $81.52 daily<br>",
     "default_thumbnail_path": "https://s3-us-west-2.amazonaws.com/locations-images/thumbnail_353294.jpeg",
     "default_image_path": "https://s3-us-west-2.amazonaws.com/locations-images/image_353294.jpeg",
     "unit_amenities": {
@@ -45978,7 +45844,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -46176,7 +46042,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -46572,7 +46438,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -47024,7 +46890,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -47436,7 +47302,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -47772,8 +47638,8 @@
     "seo_page_name": 370413,
     "name": "1802 - Fairway Chalet",
     "location_name": "1802 - Fairway Chalet",
-    "web_name": "Fairway Chelt #1802",
-    "short_description": "This phenomenal home located right on the golf course and just down the road from Bear Mountain ski resort is the perfect next stop for your vacation. If you were looking for luxury in Big Bear, than you have found it. This home has the perfect feel the second you walk in the door. you enter into the vaulted ceiling living room with comfortable furnishings, flat screen TV with cable, gas fireplace, in floor to ceiling Windows overlooking the golf course. just outside of the glass doors you will find an outdoor kitchen with an expansive charcoal barbecue, natural gas fire pit, and plenty of seating for the family. You will also find the jacuzzi tub for your use. Back inside into the kitchen you will find stainless steel appliances and it fully equipped for you to prepare meals for your friends and family. Downstairs you will also find the master ensuite bath bedroom. Upstairs you will enter into the loft with a pool table and Views out of the windows towards the golf course. This level also holds two additional back bedrooms and a shared hall bath. this home will forever be your go-to for your trips to Big Bear. come experience the adventure Lodge and you&#39;ll never want to leave.<br /><br />Sleeping Arrangements:<br />Bedroom 1: King Bed, ensuite 3/4 bath - downstairs<br />Bedroom 2: 1 King, 1 Queen bed - downstairs<br />Bedroom 3: King Bed&nbsp;- upstairs<br /><br />Parking:<br />4 vehicles",
+    "web_name": "Fairway Chalet #1802",
+    "short_description": "This phenomenal home located right on the golf course and just down the road from Bear Mountain ski resort is the perfect next stop for your vacation. If you were looking for luxury in Big Bear, than you have found it. This home has the perfect feel the second you walk in the door. you enter into the vaulted ceiling living room with comfortable furnishings, flat screen TV with cable, gas fireplace, and floor to ceiling Windows that overlooking the golf course. Just outside of the glass doors you will find an outdoor kitchen with an expansive natural gas barbecue, natural gas fire pit, and plenty of seating for the family. You will also find the Jacuzzi tub for your use. Back inside into the kitchen you will find stainless steel appliances and it fully equipped for you to prepare meals for your friends and family. Downstairs you will also find two bedrooms, including the ensuite&nbsp;master. Upstairs you will enter into the loft with a pool table and views out of the windows towards the golf course. This level also holds an additional bedroom and full bathroom. This home will forever be your go-to for your trips to Big Bear. Come experience the Fairway Chalet&nbsp;and you&#39;ll never want to leave.<br /><br />Sleeping Arrangements:<br />Bedroom 1: King Bed, ensuite 3/4 bath - downstairs<br />Bedroom 2: 1 King, 1 Queen bed - downstairs<br />Bedroom 3: King Bed&nbsp;- upstairs<br /><br />Parking:<br />4 vehicles",
     "max_occupants": 8,
     "bedrooms_number": 3,
     "bathrooms_number": 3,
@@ -47950,7 +47816,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -48528,7 +48394,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -49828,7 +49694,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -50033,7 +49899,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -53604,7 +53470,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -54000,7 +53866,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -54618,7 +54484,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -55014,7 +54880,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -55632,7 +55498,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -55830,7 +55696,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"
@@ -57280,7 +57146,7 @@
         {
           "group_name": "Local Amenities",
           "group_description": [],
-          "amenity_name": "Walk To Ski Resort",
+          "amenity_name": "Walk To Ski Resort Shuttle Pickup",
           "amenity_description": [],
           "amenity_id": 260643,
           "amenity_show_on_website": "yes"

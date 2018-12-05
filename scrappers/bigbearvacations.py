@@ -64,14 +64,20 @@ def scrape_and_insert_rates():
 def scrape_rates(start_date, end_date, holiday):
     start_str = start_date.strftime('%m/%d/%Y')
     end_str = end_date.strftime('%m/%d/%Y')
+    rates = []
     res = rq.post(
         'https://www.bigbearvacations.com/wp-admin/admin-ajax.php',
         params={ 'action':'streamlinecore-api-request', 
         'params':'{"methodName":"GetPropertyAvailabilityWithRatesWordPress", "params": {"startdate":"'+start_str+'", "enddate":"'+end_str+'"}}'},
         headers=HEADERS
         )
-    property_rates = res.json()['data']['available_properties']['property']
-    rates = [{**r, 'start_date': start_date, 'end_date': end_date, 'holiday': holiday, 'id': 'BBV' + str(r['id']), 'status': 'AVAILABLE' } for r in property_rates]
+    property_rates = res.json()['data']['available_properties']
+    print(property_rates)
+    if property_rates:
+        if isinstance(property_rates['property'], list):
+            rates = [{**r, 'start_date': start_date, 'end_date': end_date, 'holiday': holiday, 'id': 'BBV' + str(r['id']), 'status': 'AVAILABLE' } for r in property_rates['property']]
+        else:
+            rates = [property_rates['property']]
     return rates
 
 
