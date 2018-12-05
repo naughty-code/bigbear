@@ -89,6 +89,9 @@ function searchController($http, $mdDialog) {
 			angular.forEach(ctrl.firstData, function(value, key) {
 				ctrl.firstData[key].check_in = moment.utc(ctrl.firstData[key].check_in).toDate();
 				ctrl.firstData[key].check_out = moment.utc(ctrl.firstData[key].check_out).toDate();
+				ctrl.firstData[key].average = ctrl.firstData[key].average ? ctrl.firstData[key].average : '$0';
+				ctrl.firstData[key].minimum = ctrl.firstData[key].minimum ? ctrl.firstData[key].minimum : '$0';
+				ctrl.firstData[key].maximum = ctrl.firstData[key].maximum ? ctrl.firstData[key].maximum : '$0';
 			});
 			ctrl.loading = false;
 			ctrl.showTable = true;
