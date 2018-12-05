@@ -8,9 +8,18 @@ angular.module('app').controller('appController', function ($scope, $mdSidenav, 
 	
 	$scope.update = function() {
 		$scope.disableButton = true;
-		$http.get('http://74.91.126.179:5001/api/update');
-		// $http.get('http://localhost:5000/api/update');
+		$http.post('http://74.91.126.179:5001/api/update', {vrm: $scope.vrmSelected});
+		// $http.post('http://localhost:5001/api/update', {vrm: $scope.vrmSelected});
 	}
+
+	$scope.vrms = [
+		'DBB',
+		'VACASA',
+		'BBCC',
+		'BBV',
+		'ALL'
+	]
+	$scope.vrmSelected = ['ALL']
 
 	var before = ["Updating", ""];
 	$interval(function () {

@@ -163,16 +163,18 @@ def report():
 
     return jsonify(result_json)
 
-@app.route('/api/update')
+@app.route('/api/update', methods=['POST'])
 def update():
+    data = request.get_json()
     connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)
     with connection:
         with connection.cursor() as cursor:
             cursor.execute('select status from db.status_update where id=1')
             result = cursor.fetchall()
             if result != 'Updating':
+                print(data['vrm'])
                 cursor.execute("UPDATE db.status_update SET status='Updating'")
-                scrapper_process = Process(target=scrapper.update)
+                scrapper_process = Process(target=scrapper.run(), args=(data['vrm'],))
                 scrapper_process.start()
     connection.close()
     return 'true'
