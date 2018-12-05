@@ -340,7 +340,7 @@ def search_vrms():
 
 @app.route('/api/search/bedrooms')
 def search_bedrooms():
-    sql = '''SELECT bedrooms from db.cabin group by bedrooms order by bedrooms asc'''
+    sql = '''SELECT bedrooms from db.cabin where status = 'ACTIVE' group by bedrooms order by bedrooms asc'''
     connection = psycopg2.connect(DATABASE_URI)
     with connection, connection.cursor() as c:
         c.execute(sql)
