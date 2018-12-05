@@ -9,6 +9,7 @@ import os
 import psycopg2
 import html
 import logging
+import time
 from scrappers import util
 from psycopg2.extras import execute_values
 from datetime import datetime
@@ -663,6 +664,7 @@ def scrape_cabin(url):
         # Request for html
         print('Scraping...' + url) 
         resp = rq.get(url)
+        time.sleep(0.8)
         html = resp.text # raise for status
 
         data = parse_data(html)
