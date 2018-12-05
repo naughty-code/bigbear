@@ -28,7 +28,7 @@ def read_csv_cabins(filename):
     df = pd.read_csv(filename)
     return df.Link
 
-def load_cabins(filename='./scrappers/bbcc_cabins.json'):
+def load_cabins(filename='./scrappers/bbcc_cabins.js'):
     cabins = []
     with open(filename) as f:
         cabins = json.load(f)
@@ -45,7 +45,7 @@ def dump_from(filename, data):
 
 def scrape_cabin_urls():
     base_url = 'https://www.bigbearcoolcabins.com'
-    pagination_url = 'https://www.bigbearcoolcabins.com/big-bear-cabin-rentals?avail_filter%5Brcav%5D%5Bbegin%5D=&avail_filter%5Brcav%5D%5Bend%5D=&avail_filter%5Brcav%5D%5Bflex_type%5D=d&occ_total_numeric=&beds_numeric=&ldrc_location=All&sort_by=field_listing_sort_weight_value&items_per_page=50&page='
+    pagination_url = 'https://www.bigbearcoolcabins.com/big-bear-rentals?page='
     urls = []
     for page_number in itertools.count():
         res = rq.get(pagination_url + str(page_number))
