@@ -254,9 +254,10 @@ def extract_amenities(id, soup):
     amenities = [ (id, x.get_text(strip=True)) for x in amenities ]
     #amenities from details section
     detail_list_tag = soup.find('div', class_='detail-list')
-    for li in detail_list_tag('li'):
-        amenity = li.get_text(strip=True)
-        amenities.append( (id, amenity) )
+    if detail_list_tag:
+        for li in detail_list_tag('li'):
+            amenity = li.get_text(strip=True)
+            amenities.append( (id, amenity) )
     return amenities
 
 @default_value
