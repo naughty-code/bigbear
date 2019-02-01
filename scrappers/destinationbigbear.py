@@ -48,7 +48,7 @@ def scrape_cabin_urls():
     base_url = 'https://www.destinationbigbear.com/'
     res = rq.get('https://www.destinationbigbear.com/AllCabinList.aspx')
     soup = BeautifulSoup(res.text, 'html.parser')
-    urls = [base_url + a['href'] for a in soup('a', href=lambda href: 'Property_detail' in href)]
+    urls = [base_url + a['href'] for a in soup('a', href=lambda href: 'Property_detail' in href if href else False)]
     with open(CABIN_URLS_FILE, 'w', encoding='utf8') as f:
         json.dump(urls, f, indent=2)
 
