@@ -116,11 +116,11 @@ def parse_data(html):
     features = extract_features(soup)
     data['features'] = features
 
-    calendar = extract_calendar(soup)
-    data['availability'] = calendar
+    # calendar = extract_calendar(soup)
+    # data['availability'] = calendar
 
-    rates = extract_rates(soup)
-    data['rates'] = rates
+    # rates = extract_rates(soup)
+    # data['rates'] = rates
 
     occupancy = soup.find(class_='icon-people-family').next_sibling # sibling next to occupancy icon
     data['occupancy'] = re.search(r'\d+', occupancy).group(0) # digit in "Max Occupancy: \d+"
@@ -363,17 +363,10 @@ def insert_features():
     cabins = load_cabins()
     features_tuples = []
     for c in cabins:
-        for f in c['amenities']:
+        for f in c['amenities'] + c['features']:
             id_ = 'VACASA' + re.search(r'UnitID=(\d+)', c['url']).group(1)
             features_tuples.append((id_, f))
     with connection, connection.cursor() as c:
-        """sql = 
-                INSERT INTO db.features
-                SELECT (val.id, val.amenity) FROM (VALUES %s) val (id, amenity)
-                JOIN db.cabin USING (id)
-                ON CONFLICT DO NOTHING
-        psycopg2.extras.execute_values(c, sql, features_tuples)
-        """
         sql = 'insert into db.features VALUES (%s, %s) on conflict do nothing'
         for t in features_tuples:
             c.execute(sql, t)
