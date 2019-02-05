@@ -796,8 +796,8 @@ def insert_cabins():
 
 def insert_amenities():
     cabins = load_cabins()
-    amenities = []
     for cabin in cabins:
+        amenities = []
         cabin_id = cabin['site_id']
         for amenity in cabin.get('amenities') :
                 amenities.append(amenity)
