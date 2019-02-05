@@ -106,6 +106,8 @@ def db_format_cabin(cabin):
     address = f'{cabin.get("city", "")}, {cabin.get("neightborhood_name", "")}, {cabin.get("neightborhood_area_id","")}'
     location = cabin.get('city', '')
     bedrooms = cabin['bedrooms_number']
+    if bedrooms is None:
+        bedrooms = 1
     occupancy = cabin['max_occupants']
     tier = cabin['condo_type_group_name'].upper()
     status = 'ACTIVE'
