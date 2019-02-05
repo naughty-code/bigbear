@@ -796,25 +796,25 @@ def insert_cabins():
 
 def insert_amenities():
     cabins = load_cabins()
-    insertAmenities = []
+    amenities = []
     for cabin in cabins:
         for amenity in cabin.get('amenities') :
-                insertAmenities.append(amenity)
+                amenities.append(amenity)
         for k, v in cabin['properties'].items():
             if 'Game' in k and v == 'Yes':
-                insert_amenities.append('Games')
+                amenities.append('Games')
             elif k == 'Internet' and v == 'Yes':
-                insert_amenities.append('WIFI/Internet')
+                amenities.append('WIFI/Internet')
             elif k == 'Hot Tub' and v == 'Yes':
-                insert_amenities.append('SPA/Hot Tub/Jacuzzi')
+                amenities.append('SPA/Hot Tub/Jacuzzi')
             elif k == 'Pet Friendly' and v == 'Yes':
-                insert_amenities.append('PETS')
+                amenities.append('PETS')
     # Update amenities
     connection = psycopg2.connect(DATABASE_URI)
     with connection:
         with connection.cursor() as cursor:
             str_sql = '''INSERT INTO db.features (id, amenity) VALUES %s ON CONFLICT (id, amenity) DO NOTHING'''
-            execute_values(cursor, str_sql, insertAmenities)
+            execute_values(cursor, str_sql, amenities)
     connection.close()
 
 def update_last_scrape():
