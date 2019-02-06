@@ -799,8 +799,8 @@ def insert_amenities():
     amenities = []
     for cabin in cabins:
         cabin_id = cabin['site_id']
-        for amenity in cabin.get('amenities') :
-                amenities.append(amenity)
+        # for amenity in cabin.get('amenities') :
+        #         amenities.append(amenity)
         for k, v in cabin['properties'].items():
             if 'Game' in k and v == 'Yes':
                 amenities.append((cabin_id,'Games'))
@@ -814,6 +814,8 @@ def insert_amenities():
     connection = psycopg2.connect(DATABASE_URI)
     with connection:
         with connection.cursor() as cursor:
+            str_sql = "delete from db.features where id like 'DBB%'"
+            cursor.execute(str_sql)
             str_sql = '''INSERT INTO db.features (id, amenity) VALUES %s ON CONFLICT (id, amenity) DO NOTHING'''
             execute_values(cursor, str_sql, amenities)
     connection.close()

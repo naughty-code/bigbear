@@ -133,8 +133,10 @@ def insert_amenities(cabins):
     # Update amenities
     connection = connect(DB_URI)
     with connection, connection.cursor() as cursor:
-        str_sql = '''INSERT INTO db.features (id, amenity) VALUES %s ON CONFLICT (id, amenity) DO NOTHING'''
-        execute_values(cursor, str_sql, tuples)
+        sql = "delete from db.features where id like 'BBV%'"
+        cursor.execute(sql)
+        sql = '''INSERT INTO db.features (id, amenity) VALUES %s ON CONFLICT (id, amenity) DO NOTHING'''
+        execute_values(cursor, sql, tuples)
     connection.close()
 
 def insert_rates(rates):

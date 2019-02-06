@@ -722,10 +722,12 @@ def insert_amenities(cabins=None):
             insertAmenities.append(('BBCC' + id, d))
     with connection:
         with connection.cursor() as cursor:
-            str_sql = '''INSERT INTO db.features (id, amenity)
+            sql = "delete from db.features where id like 'BBCC%'"
+            cursor.execute(sql)
+            sql = '''INSERT INTO db.features (id, amenity)
                     VALUES %s
                     ON CONFLICT (id, amenity) DO NOTHING'''
-            execute_values(cursor, str_sql, insertAmenities)
+            execute_values(cursor, sql, insertAmenities)
     connection.close()
 
 def insert_cabins(cabins=None):
