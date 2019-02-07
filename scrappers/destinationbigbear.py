@@ -71,7 +71,7 @@ def scrape_rates_and_insert_faster():
         start_date = rates[0]['start']
         end_date = rates[0]['end']
         holiday = rates[0]['holiday']
-        print(f'scrapped rates: {start_date} {end_date} - {holiday}')
+        print(f'scrapped rates: {start_date} {end_date} - {holiday} - found_count: {len(rates)}')
         rates_with_id = []
         for r in rates:
             id_ = id_from_name.get(r['name'])
