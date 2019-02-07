@@ -71,7 +71,7 @@ def scrape_rates_and_insert_faster():
         start_date = rates[0]['start']
         end_date = rates[0]['end']
         holiday = rates[0]['holiday']
-        print(f'scrapped rates: {start_date} {end_date} - {holiday}')
+        print(f'scrapped rates: {start_date} {end_date} - {holiday} - found_count: {len(rates)}')
         rates_with_id = []
         for r in rates:
             id_ = id_from_name.get(r['name'])
@@ -89,6 +89,9 @@ def scrape_rates_and_insert_faster():
                 'holiday': holiday,
                 'price': 0
             })
+        with open('debug.txt', 'a', encoding='utf8') as f:
+            f.write(f'---- scrapped rates: {start_date} {end_date} - {holiday} - found_count: {len(rates)} ----')
+            f.write(f'rates to be inserted {rates_with_id}')
         insert_rates_faster(rates_with_id)
 
 def initializer():
@@ -796,8 +799,8 @@ def insert_cabins():
 
 def insert_amenities():
     cabins = load_cabins()
+    amenities = []
     for cabin in cabins:
-        amenities = []
         cabin_id = cabin['site_id']
         # for amenity in cabin.get('amenities') :
         #         amenities.append(amenity)
