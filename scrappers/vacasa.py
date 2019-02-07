@@ -367,9 +367,10 @@ def insert_features():
             id_ = 'VACASA' + re.search(r'UnitID=(\d+)', c['url']).group(1)
             features_tuples.append((id_, f))
     with connection, connection.cursor() as c:
-        sql = 'insert into db.features VALUES (%s, %s) on conflict do nothing'
-        for t in features_tuples:
-            c.execute(sql, t)
+        sql = "delete from db.features where id like 'VACASA%'"
+        c.execute(sql)
+        sql = '''INSERT INTO db.features (id, amenity) VALUES %s ON CONFLICT (id, amenity) DO NOTHING'''
+        execute_values(c, sql, features_tuples)
     connection.close()
     
 
