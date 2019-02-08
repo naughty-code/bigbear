@@ -101,7 +101,7 @@ def db_format_amenity(cabin):
 def db_format_cabin(cabin):
     id_ = 'BBV' + str(cabin['id'])
     name = cabin['name']
-    website = cabin.get('flyer_url', '') or ''
+    website = 'https://www.bigbearvacations.com/' + cabin.get('seo_page_name', '')
     description = cabin['short_description']
     address = f'{cabin.get("city", "")}, {cabin.get("neightborhood_name", "")}, {cabin.get("neightborhood_area_id","")}'
     location = cabin.get('city', '')
