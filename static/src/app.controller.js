@@ -41,7 +41,7 @@ angular.module('app').controller('appController', function ($scope, $mdSidenav, 
 					before[1] = before[0];
 					before[0] = 'Updating';
 				}
-				$scope.lastUpdate = response.data[0]['last_update'];
+				$scope.lastUpdate = moment(response.data[0]['last_update']).format('YYYY-MM-DD HH:mm:ss Z');
 			}, function(response) {
 				var data = response.data || 'Request failed';
 				var status = response.status;
