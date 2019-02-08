@@ -212,12 +212,13 @@ def extract_cabin_urls_splinter():
 def rate_scrapper_single_threaded():
     df = pd.read_csv('scrappers/CEK_DB_-_Dates_CSV.csv', parse_dates=['PL', 'PR'])
     range_ = [(pl, pr, h) for i,pl,pr,h in df.itertuples()]
-    cabins = []
     chrome_options = webdriver.ChromeOptions()
     prefs = {"profile.managed_default_content_settings.images": 2}
     chrome_options.add_experimental_option("prefs", prefs)
     with Browser('chrome', headless=True, options=chrome_options,**executable_path) as b:
         for start, end, holiday in range_:
+            if start < dt.datetime.now(): continue
+            cabins = []
             start_string = start.strftime("%m/%d/%Y").replace('/', '%2F')
             end_string = end.strftime("%m/%d/%Y").replace('/', '%2F')
             url = f'https://www.vacasa.com/usa/Big-Bear/?arrival={start_string}&departure={end_string}'
@@ -227,7 +228,10 @@ def rate_scrapper_single_threaded():
             except TimeoutException as e:
                 print(e)
                 return cabins
+            page_num = 0
             while True:
+                page_num+=1
+                print('scraping page number: ', page_num)
                 soup = BeautifulSoup(b.html, 'html.parser')
                 cabin_tags = soup(class_='unit-result-list')
                 if not cabin_tags:
@@ -243,7 +247,7 @@ def rate_scrapper_single_threaded():
                         'startDate': start, 
                         'endDate': end, 
                         'holiday': holiday,
-                        'status': 'BOOKED' if c.find('a', text='BOOKED') else 'AVAILABLE'
+                        'status': 'BOOKED' if c.find('a',class_='ribbon-content', text='BOOKED') else 'AVAILABLE'
                         })
                 while b.is_element_present_by_css('.loader.d-block'):
                     pass
@@ -252,7 +256,7 @@ def rate_scrapper_single_threaded():
                     next_button[0].click()
                 else:
                     break
-    insert_rates_faster(cabins)
+            insert_rates_faster(cabins)
 
 
 def extract_costs_faster_function(range_tuple):
