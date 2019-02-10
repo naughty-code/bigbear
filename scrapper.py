@@ -3,6 +3,8 @@ import itertools
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from scrappers import destinationbigbear, vacasa, bigbearcoolcabins, bigbearvacations
+from functools import partial
+import builtins
 
 DATABASE_URI = os.environ.get('DATABASE_URL', None) or os.getenv('DATABASE_URI')
 
@@ -11,6 +13,17 @@ log_file = 'errors.log'
 def log(e):
     with open(log_file, 'a', encoding='utf8') as f:
         f.write(str(e))
+
+def print(*args, **kwargs):
+    sep = kwargs.get('sep')
+    end = kwargs.get('end')
+    if sep is None:
+        sep = ' '
+    if end is None:
+        end = '\n'
+    with open('debug.txt', 'a', encoding='utf8') as f:
+        f.write(sep.join(map(str, args)) + end)
+    builtins.print(*args,**kwargs)
 
 def run(scrappers_to_run):
     scrapers = [destinationbigbear, vacasa, bigbearcoolcabins, bigbearvacations]

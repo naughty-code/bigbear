@@ -89,7 +89,7 @@ def scrape_rates_and_insert_faster():
                 'holiday': holiday,
                 'price': 0
             })
-        with open('debug.txt', 'a', encoding='utf8') as f:
+        with open('dbb_debug.txt', 'a', encoding='utf8') as f:
             f.write(f'---- scrapped rates: {start_date} {end_date} - {holiday} - found_count: {len(rates)} ----')
             f.write(f'rates to be inserted {rates_with_id}')
         insert_rates_faster(rates_with_id)
