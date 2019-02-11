@@ -373,7 +373,6 @@ def search_days():
 
 @app.route('/api/search/tiers')
 def search_tiers():
-    print('firs')
     sql = '''SELECT tier from db.cabin group by tier order by tier asc'''
     connection = psycopg2.connect(DATABASE_URI)
     with connection, connection.cursor() as c:
