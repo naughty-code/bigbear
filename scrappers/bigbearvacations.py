@@ -103,7 +103,10 @@ def db_format_amenity(cabin):
 def db_format_cabin(cabin):
     id_ = 'BBV' + str(cabin['id'])
     name = cabin['name']
-    website = 'https://www.bigbearvacations.com/' + cabin.get('seo_page_name', '')
+    seo_page_name = cabin.get('seo_page_name', '')
+    if isinstance(seo_page_name, int) is True:
+        seo_page_name = str(cabin.get('seo_page_name', ''))
+    website = 'https://www.bigbearvacations.com/' + seo_page_name
     description = cabin['short_description']
     address = f'{cabin.get("city", "")}, {cabin.get("neightborhood_name", "")}, {cabin.get("neightborhood_area_id","")}'
     location = cabin.get('city', '')
