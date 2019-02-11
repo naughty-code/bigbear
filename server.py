@@ -7,6 +7,8 @@ from flask import jsonify
 import os
 import json
 import scrapper
+import sys
+import logging
 from multiprocessing import Process
 
 from dotenv import load_dotenv
@@ -174,8 +176,9 @@ def update():
             if result != 'Updating':
                 print(data['vrm'])
                 cursor.execute("UPDATE db.status_update SET status='Updating'")
-                scrapper_process = Process(target=scrapper.run, args=(data['vrm'],))
-                scrapper_process.start()
+                scrapper.run(data['vrm'])
+                # scrapper_process = Process(target=scrapper.run, args=(data['vrm'],))
+                # scrapper_process.start()
     connection.close()
     return 'true'
 
