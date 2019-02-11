@@ -15,6 +15,7 @@ from scrappers import util
 from scrappers import settings
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
+from scrappers.util import print
 
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse

@@ -18,6 +18,7 @@ from bs4 import BeautifulSoup
 from splinter import Browser
 from scrappers import settings
 from selenium import webdriver
+from scrappers.util import print
 
 CABIN_URLS_FILE = './scrappers/dbb_cabin_urls.json'
 DATABASE_URI = os.environ.get('DATABASE_URL', None) or os.getenv('DATABASE_URI')

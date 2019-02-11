@@ -4,7 +4,7 @@ import pandas as pd
 import functools
 import json
 import multiprocessing as mp
-
+import builtins
 
 
 DATE_FORMAT = '%Y-%m-%d'
@@ -139,3 +139,15 @@ def get_holidays_in_range(start, end, holidays_filename='./scrappers/holidays.cs
 
 def add_one_week(day):
   return day + timedelta(days=7)
+
+  
+def print(*args, **kwargs):
+    sep = kwargs.get('sep')
+    end = kwargs.get('end')
+    if sep is None:
+        sep = ' '
+    if end is None:
+        end = '\n'
+    with open('debug.txt', 'a', encoding='utf8') as f:
+        f.write(sep.join(map(str, args)) + end)
+    builtins.print(*args,**kwargs)
