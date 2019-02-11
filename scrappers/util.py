@@ -69,7 +69,7 @@ def extract_costs_faster(quote, date_ranges_=None):
     #    end = start + timedelta(days=450)
     #    range_ = get_weekends_from_to(start, end) + get_holidays_in_range(start, end)
     range_ = get_date_ranges()
-    with mp.Pool(1) as p:
+    with mp.Pool() as p:
         yield from p.imap_unordered(quote, range_)
 
 def get_date_ranges():
