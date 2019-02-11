@@ -10,7 +10,7 @@ import scrapper
 import sys
 import logging
 from multiprocessing import Process
-
+from scrappers.util import print
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -174,11 +174,11 @@ def update():
             cursor.execute('select status from db.status_update where id=1')
             result = cursor.fetchall()
             if result != 'Updating':
+                print('Actualizar:')
                 print(data['vrm'])
                 cursor.execute("UPDATE db.status_update SET status='Updating'")
-                scrapper.run(data['vrm'])
-                # scrapper_process = Process(target=scrapper.run, args=(data['vrm'],))
-                # scrapper_process.start()
+                scrapper_process = Process(target=scrapper.run, args=(data['vrm'],))
+                scrapper_process.start()
     connection.close()
     return 'true'
 
