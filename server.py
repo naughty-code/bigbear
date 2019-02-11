@@ -186,7 +186,10 @@ def check():
         with connection.cursor() as cursor:
             cursor.execute('select status from db.status_update where id=1')
             result = cursor.fetchall()
+            cursor.execute('select last_scrape from db.vrm order by last_scrape desc limit 1')
+            result2 = cursor.fetchall()
     connection.close()
+    result[0]['last_update'] = result2[0].get('last_scrape')
     return jsonify(result)
 
 @app.route('/api/metrics1')

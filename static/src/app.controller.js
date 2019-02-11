@@ -5,6 +5,7 @@ angular.module('app').controller('appController', function ($scope, $mdSidenav, 
 
 	$scope.disableButton = true;
 	$scope.textUpdate = 'Updating'
+	$scope.lastUpdate = '';
 	
 	$scope.update = function() {
 		$scope.disableButton = true;
@@ -23,8 +24,8 @@ angular.module('app').controller('appController', function ($scope, $mdSidenav, 
 
 	var before = ["Updating", ""];
 	$interval(function () {
-		$http.get('http://74.91.126.179:5001/api/check')
-		// $http.get('http://localhost:5000/api/check')
+		// $http.get('http://74.91.126.179:5001/api/check')
+		$http.get('http://localhost:5001/api/check')
 			.then(function(response) {
 				if (response.data[0].status == "Updated") {
 					$scope.disableButton = false;
@@ -40,6 +41,7 @@ angular.module('app').controller('appController', function ($scope, $mdSidenav, 
 					before[1] = before[0];
 					before[0] = 'Updating';
 				}
+				$scope.lastUpdate = moment(response.data[0]['last_update']).format('YYYY-MM-DD HH:mm:ss Z');
 			}, function(response) {
 				var data = response.data || 'Request failed';
 				var status = response.status;
