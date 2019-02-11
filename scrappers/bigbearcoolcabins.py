@@ -18,6 +18,8 @@ from calendar import month_name
 from bs4 import BeautifulSoup
 from psycopg2.extras import execute_values
 
+from scrappers.util import print
+
 BASE_URL = 'https://www.bigbearcoolcabins.com'
 CABIN_URLS_FILE = './scrappers/bbcc_cabin_urls.json'
 db_id = 'BBCC'

@@ -6,6 +6,8 @@ from psycopg2.extras import execute_values
 from datetime import datetime
 from scrappers import settings
 import os
+from scrappers.util import print
+
 
 DB_URI = os.getenv('DATABASE_URI')
 db_id = 'BBV'

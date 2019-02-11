@@ -18,6 +18,7 @@ from bs4 import BeautifulSoup
 from splinter import Browser
 from scrappers import settings
 from selenium import webdriver
+from scrappers.util import print
 
 CABIN_URLS_FILE = './scrappers/dbb_cabin_urls.json'
 DATABASE_URI = os.environ.get('DATABASE_URL', None) or os.getenv('DATABASE_URI')
@@ -89,7 +90,7 @@ def scrape_rates_and_insert_faster():
                 'holiday': holiday,
                 'price': 0
             })
-        with open('debug.txt', 'a', encoding='utf8') as f:
+        with open('dbb_debug.txt', 'a', encoding='utf8') as f:
             f.write(f'---- scrapped rates: {start_date} {end_date} - {holiday} - found_count: {len(rates)} ----')
             f.write(f'rates to be inserted {rates_with_id}')
         insert_rates_faster(rates_with_id)
