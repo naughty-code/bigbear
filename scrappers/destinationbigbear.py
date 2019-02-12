@@ -8,7 +8,6 @@ import datetime as dt
 import os
 import psycopg2
 import html
-import logging
 import time
 from scrappers import util
 from psycopg2.extras import execute_values
@@ -90,9 +89,6 @@ def scrape_rates_and_insert_faster():
                 'holiday': holiday,
                 'price': 0
             })
-        with open('dbb_debug.txt', 'a', encoding='utf8') as f:
-            f.write(f'---- scrapped rates: {start_date} {end_date} - {holiday} - found_count: {len(rates)} ----')
-            f.write(f'rates to be inserted {rates_with_id}')
         insert_rates_faster(rates_with_id)
 
 def initializer():
@@ -679,7 +675,6 @@ def scrape_cabin(url):
     except Exception as e:
         print(f'Exception scraping url:{url}')
         print(e)
-        logging.exception("error aqui")
         return None
     except KeyboardInterrupt: pass
 
