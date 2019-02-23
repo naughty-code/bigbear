@@ -12,7 +12,7 @@ from multiprocessing import Process
 from dotenv import load_dotenv
 load_dotenv()
 
-DATABASE_URI = os.environ['DATABASE_URL']
+DATABASE_URI = os.environ.get('DATABASE_URL') or os.environ.get('DATABASE_URI')
 
 app = Flask(__name__, static_url_path='')
 app.config['JSON_SORT_KEYS'] = False
