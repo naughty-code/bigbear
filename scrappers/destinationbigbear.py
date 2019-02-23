@@ -8,7 +8,6 @@ import datetime as dt
 import os
 import psycopg2
 import html
-import logging
 import time
 from scrappers import util
 from psycopg2.extras import execute_values
@@ -18,6 +17,7 @@ from bs4 import BeautifulSoup
 from splinter import Browser
 from scrappers import settings
 from selenium import webdriver
+from scrappers.util import print
 
 CABIN_URLS_FILE = './scrappers/dbb_cabin_urls.json'
 DATABASE_URI = os.environ.get('DATABASE_URL', None) or os.getenv('DATABASE_URI')
@@ -48,7 +48,7 @@ def scrape_cabin_urls():
     base_url = 'https://www.destinationbigbear.com/'
     res = rq.get('https://www.destinationbigbear.com/AllCabinList.aspx')
     soup = BeautifulSoup(res.text, 'html.parser')
-    urls = [base_url + a['href'] for a in soup('a', href=lambda href: 'Property_detail' in href)]
+    urls = [base_url + a['href'] for a in soup('a', href=lambda href: 'Property_detail' in href if href else False)]
     with open(CABIN_URLS_FILE, 'w', encoding='utf8') as f:
         json.dump(urls, f, indent=2)
 
@@ -71,7 +71,7 @@ def scrape_rates_and_insert_faster():
         start_date = rates[0]['start']
         end_date = rates[0]['end']
         holiday = rates[0]['holiday']
-        print(f'scrapped rates: {start_date} {end_date} - {holiday}')
+        print(f'scrapped rates: {start_date} {end_date} - {holiday} - found_count: {len(rates)}')
         rates_with_id = []
         for r in rates:
             id_ = id_from_name.get(r['name'])
@@ -675,7 +675,6 @@ def scrape_cabin(url):
     except Exception as e:
         print(f'Exception scraping url:{url}')
         print(e)
-        logging.exception("error aqui")
         return None
     except KeyboardInterrupt: pass
 
@@ -796,16 +795,28 @@ def insert_cabins():
 
 def insert_amenities():
     cabins = load_cabins()
-    insertAmenities = []
+    amenities = []
     for cabin in cabins:
-        for amenity in cabin.get('amenities') :
-                insertAmenities.append(amenity)
+        cabin_id = cabin['site_id']
+        # for amenity in cabin.get('amenities') :
+        #         amenities.append(amenity)
+        for k, v in cabin['properties'].items():
+            if 'Game' in k and v == 'Yes':
+                amenities.append((cabin_id,'Games'))
+            elif k == 'Internet' and v == 'Yes':
+                amenities.append((cabin_id, 'WIFI/Internet'))
+            elif k == 'Hot Tub' and v == 'Yes':
+                amenities.append((cabin_id,'SPA/Hot Tub/Jacuzzi'))
+            elif k == 'Pet Friendly' and v == 'Yes':
+                amenities.append((cabin_id,'PETS'))
     # Update amenities
     connection = psycopg2.connect(DATABASE_URI)
     with connection:
         with connection.cursor() as cursor:
+            str_sql = "delete from db.features where id like 'DBB%'"
+            cursor.execute(str_sql)
             str_sql = '''INSERT INTO db.features (id, amenity) VALUES %s ON CONFLICT (id, amenity) DO NOTHING'''
-            execute_values(cursor, str_sql, insertAmenities)
+            execute_values(cursor, str_sql, amenities)
     connection.close()
 
 def update_last_scrape():

@@ -7,8 +7,10 @@ from flask import jsonify
 import os
 import json
 import scrapper
+import sys
+import logging
 from multiprocessing import Process
-
+from scrappers.util import print
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -172,6 +174,7 @@ def update():
             cursor.execute('select status from db.status_update where id=1')
             result = cursor.fetchall()
             if result != 'Updating':
+                print('Actualizar:')
                 print(data['vrm'])
                 cursor.execute("UPDATE db.status_update SET status='Updating'")
                 scrapper_process = Process(target=scrapper.run, args=(data['vrm'],))
@@ -186,7 +189,10 @@ def check():
         with connection.cursor() as cursor:
             cursor.execute('select status from db.status_update where id=1')
             result = cursor.fetchall()
+            cursor.execute('select last_scrape from db.vrm order by last_scrape desc limit 1')
+            result2 = cursor.fetchall()
     connection.close()
+    result[0]['last_update'] = result2[0].get('last_scrape')
     return jsonify(result)
 
 @app.route('/api/metrics1')
@@ -370,7 +376,6 @@ def search_days():
 
 @app.route('/api/search/tiers')
 def search_tiers():
-    print('firs')
     sql = '''SELECT tier from db.cabin group by tier order by tier asc'''
     connection = psycopg2.connect(DATABASE_URI)
     with connection, connection.cursor() as c:

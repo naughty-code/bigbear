@@ -4,7 +4,7 @@ import pandas as pd
 import functools
 import json
 import multiprocessing as mp
-
+import builtins
 
 
 DATE_FORMAT = '%Y-%m-%d'
@@ -69,7 +69,7 @@ def extract_costs_faster(quote, date_ranges_=None):
     #    end = start + timedelta(days=450)
     #    range_ = get_weekends_from_to(start, end) + get_holidays_in_range(start, end)
     range_ = get_date_ranges()
-    with mp.Pool(1) as p:
+    with mp.Pool() as p:
         yield from p.imap_unordered(quote, range_)
 
 def get_date_ranges():
@@ -139,3 +139,15 @@ def get_holidays_in_range(start, end, holidays_filename='./scrappers/holidays.cs
 
 def add_one_week(day):
   return day + timedelta(days=7)
+
+  
+def print(*args, **kwargs):
+    sep = kwargs.get('sep')
+    end = kwargs.get('end')
+    if sep is None:
+        sep = ' '
+    if end is None:
+        end = '\n'
+    with open('debug.txt', 'a', encoding='utf8') as f:
+        f.write(sep.join(map(str, args)) + end)
+    builtins.print(*args,**kwargs)

@@ -3,6 +3,8 @@ import itertools
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from scrappers import destinationbigbear, vacasa, bigbearcoolcabins, bigbearvacations
+from scrappers.util import print
+from functools import partial
 
 DATABASE_URI = os.environ.get('DATABASE_URL', None) or os.getenv('DATABASE_URI')
 

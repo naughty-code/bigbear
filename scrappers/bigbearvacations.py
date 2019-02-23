@@ -6,6 +6,8 @@ from psycopg2.extras import execute_values
 from datetime import datetime
 from scrappers import settings
 import os
+from scrappers.util import print
+
 
 DB_URI = os.getenv('DATABASE_URI')
 db_id = 'BBV'
@@ -100,11 +102,16 @@ def db_format_amenity(cabin):
 def db_format_cabin(cabin):
     id_ = 'BBV' + str(cabin['id'])
     name = cabin['name']
-    website = cabin.get('flyer_url', '') or ''
+    seo_page_name = cabin.get('seo_page_name', '')
+    if isinstance(seo_page_name, int) is True:
+        seo_page_name = str(cabin.get('seo_page_name', ''))
+    website = 'https://www.bigbearvacations.com/' + seo_page_name
     description = cabin['short_description']
     address = f'{cabin.get("city", "")}, {cabin.get("neightborhood_name", "")}, {cabin.get("neightborhood_area_id","")}'
     location = cabin.get('city', '')
     bedrooms = cabin['bedrooms_number']
+    if bedrooms is None:
+        bedrooms = 1
     occupancy = cabin['max_occupants']
     tier = cabin['condo_type_group_name'].upper()
     status = 'ACTIVE'
@@ -130,8 +137,10 @@ def insert_amenities(cabins):
     # Update amenities
     connection = connect(DB_URI)
     with connection, connection.cursor() as cursor:
-        str_sql = '''INSERT INTO db.features (id, amenity) VALUES %s ON CONFLICT (id, amenity) DO NOTHING'''
-        execute_values(cursor, str_sql, tuples)
+        sql = "delete from db.features where id like 'BBV%'"
+        cursor.execute(sql)
+        sql = '''INSERT INTO db.features (id, amenity) VALUES %s ON CONFLICT (id, amenity) DO NOTHING'''
+        execute_values(cursor, sql, tuples)
     connection.close()
 
 def insert_rates(rates):
