@@ -1,6 +1,40 @@
 <div layout="column" style="height: 100%">
+	<fieldset>
+		<legend>Search</legend>
+		<div>
+			<h4>Date range:</h4>
+			<md-datepicker ng-model="$ctrl.startDate" md-placeholder="Start date" md-open-on-focus md-max-date="$ctrl.endDate"></md-datepicker>
+			<md-datepicker ng-model="$ctrl.endDate" md-placeholder="End date" md-open-on-focus md-max-date="$ctrl.maxDate" ng-change="$ctrl.changeEndDate()"></md-datepicker>
+		</div>
+		<div>
+			<h4>VRM</h4>
+			<md-checkbox 
+				aria-label="Select all"
+				ng-checked="$ctrl.isChecked('vrms', 'vrmSelected')"
+				md-indeterminate="$ctrl.isIndeterminate('vrms', 'vrmSelected')"
+				ng-click="$ctrl.toggleAll('vrms', 'vrmSelected')">
+				Select all
+			</md-checkbox>
+			<md-checkbox ng-repeat="item in $ctrl.vrms" ng-checked="$ctrl.exists(item, $ctrl.vrmSelected)" ng-click="$ctrl.toggle(item, $ctrl.vrmSelected)">
+				{{ item }}
+			</md-checkbox>
+		</div>
+		<div>
+			<h4>Tier</h4>
+			<md-checkbox 
+				aria-label="Select all"
+				ng-checked="$ctrl.isChecked('tiers', 'tierSelected')"
+				md-indeterminate="$ctrl.isIndeterminate('tiers', 'tierSelected')"
+				ng-click="$ctrl.toggleAll('tiers', 'tierSelected')">
+				Select all
+			</md-checkbox>
+			<md-checkbox ng-repeat="item in $ctrl.tiers" ng-checked="$ctrl.exists(item, $ctrl.tierSelected)" ng-click="$ctrl.toggle(item, $ctrl.tierSelected)">
+				{{ item }}
+			</md-checkbox>
+		</div>
+	</fieldset>
 	<!-- First row -->
-	<div layout="column" layout-gt-sm="row" layout-align-gt-sm="space-around center" flex="none">
+	<!-- <div layout="column" layout-gt-sm="row" layout-align-gt-sm="space-around center" flex="none">
 		<md-input-container>
 			<label>Amenities</label>
 			<md-select ng-model="$ctrl.amenitySelected" multiple>
@@ -38,9 +72,9 @@
 				<md-option ng-value="tier" ng-repeat="tier in $ctrl.tiers">{{ tier }}</md-option>
 			</md-select>
 		</md-input-container>
-	</div>
+	</div> -->
 	<!-- Second row -->
-	<div layout="column" layout-gt-sm="row" flex="none">
+	<!-- <div layout="column" layout-gt-sm="row" flex="none">
 		<div flex="45" layout="column" layout-gt-sm layout-align="none" layout-align-gt-sm="end center">
 			<md-input-container>
 				<label>Compare</label>
@@ -57,7 +91,7 @@
 				</md-select>
 			</md-input-container>
 		</div>
-	</div>
+	</div> -->
 	<!-- Third row (Button) -->
 	<div flex="none" layout="column" layout-gt-sm layout-align="center center">
 		<md-input-container>
@@ -65,7 +99,7 @@
 		</md-input-container>
 	</div>
 	<!-- Fourth row (table) -->
-	<div layout layout-align="{{ $ctrl.lastDivPosition }}" flex="grow">
+	<!-- <div layout layout-align="{{ $ctrl.lastDivPosition }}" flex="grow">
 		<md-progress-circular ng-disabled="!$ctrl.loading" md-diameter="96" ng-if="$ctrl.loading"></md-progress-circular>
 		<table ng-if="!$ctrl.loading && $ctrl.showTable">
 			<tr>
@@ -91,7 +125,7 @@
 				<td ng-if="$ctrl.some($ctrl.showSelected, 'Vacants')">{{ vrm["Vacants %"] }}</td>
 			</tr>
 		</table>
-	</div>
+	</div> -->
 </div>
 <div style="visibility: hidden">
 	<div class="md-dialog-container" id="myDialog">
