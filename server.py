@@ -8,11 +8,13 @@ import os
 import json
 import scrapper
 from multiprocessing import Process
+import itertools as it
+import re
 
 from dotenv import load_dotenv
 load_dotenv()
 
-DATABASE_URI = os.environ['DATABASE_URL']
+DATABASE_URI = os.environ.get('DATABASE_URL') or os.environ.get('DATABASE_URI')
 
 app = Flask(__name__, static_url_path='')
 app.config['JSON_SORT_KEYS'] = False
@@ -396,7 +398,48 @@ def search_avg():
         result = c.fetchall()
     connection.close()
     return jsonify(result)
+
+#search rate statistics by daterange and sort them by tier and vrm
+@app.route('/api/search/daterange') 
+def get_rates_by_tier():
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    vrms = request.args.get('vrms').split(',')
+    print(start_date)
+    print(end_date)
+    print(vrms)
+    availabilities = get_availabilities_in_range(start_date, end_date, vrms)
+    results = calculate_means(availabilities)
+    not_tupled_keys = { str(k): v for k,v in results.items() }
+    return jsonify(not_tupled_keys)
+
 # API from view search
 @app.route('/')
 def root():
     return app.send_static_file('index.html')
+
+    # %load date_range_statistics.py
+def get_availabilities_in_range(start, end, vrms=['BBV', 'BBCC', 'VACASA', 'DBB']):
+    with psycopg2.connect(DATABASE_URI) as connection:
+        with connection, connection.cursor() as c:
+            sql = 'SELECT cabin.id,availability.rate, cabin.tier FROM db.availability, db.cabin where check_in = %s and check_out = %s and availability.id ilike any(%s) and rate > 0 and cabin.id = availability.id'
+            c.execute(sql, (start, end, [f'{vrm}%' for vrm in vrms]))
+            results = c.fetchall()
+            return results
+
+
+def calculate_means(availabilities):
+    results = {}
+    for g, v in it.groupby(availabilities, lambda tup: (re.match(r'[A-Z]+', tup[0]).group(0), tup[2])):
+        for id_, rate, tier in v:
+            if not results.get(g):
+                results[g] = {
+                    'rate': float(rate),
+                    'count': 1,
+                }
+            else:
+                results[g]['rate'] += float(rate)
+                results[g]['count'] += 1
+    for k, v in results.items():
+        v['mean'] = v['rate'] / v['count']
+    return results
