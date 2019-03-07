@@ -130,3 +130,8 @@ pip-selfcheck.json
 
 # Javascript libraries
 **/node_modules
+
+scrappers/*.json
+scrappers/*.csv
+scrappers/*.js
+debug.txt

@@ -15,6 +15,7 @@ from scrappers import util
 from scrappers import settings
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
+from scrappers.util import print
 
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
@@ -116,11 +117,11 @@ def parse_data(html):
     features = extract_features(soup)
     data['features'] = features
 
-    calendar = extract_calendar(soup)
-    data['availability'] = calendar
+    # calendar = extract_calendar(soup)
+    # data['availability'] = calendar
 
-    rates = extract_rates(soup)
-    data['rates'] = rates
+    # rates = extract_rates(soup)
+    # data['rates'] = rates
 
     occupancy = soup.find(class_='icon-people-family').next_sibling # sibling next to occupancy icon
     data['occupancy'] = re.search(r'\d+', occupancy).group(0) # digit in "Max Occupancy: \d+"
@@ -212,12 +213,13 @@ def extract_cabin_urls_splinter():
 def rate_scrapper_single_threaded():
     df = pd.read_csv('scrappers/CEK_DB_-_Dates_CSV.csv', parse_dates=['PL', 'PR'])
     range_ = [(pl, pr, h) for i,pl,pr,h in df.itertuples()]
-    cabins = []
     chrome_options = webdriver.ChromeOptions()
     prefs = {"profile.managed_default_content_settings.images": 2}
     chrome_options.add_experimental_option("prefs", prefs)
     with Browser('chrome', headless=True, options=chrome_options,**executable_path) as b:
         for start, end, holiday in range_:
+            if start < dt.datetime.now(): continue
+            cabins = []
             start_string = start.strftime("%m/%d/%Y").replace('/', '%2F')
             end_string = end.strftime("%m/%d/%Y").replace('/', '%2F')
             url = f'https://www.vacasa.com/usa/Big-Bear/?arrival={start_string}&departure={end_string}'
@@ -227,7 +229,10 @@ def rate_scrapper_single_threaded():
             except TimeoutException as e:
                 print(e)
                 return cabins
+            page_num = 0
             while True:
+                page_num+=1
+                print('scraping page number: ', page_num)
                 soup = BeautifulSoup(b.html, 'html.parser')
                 cabin_tags = soup(class_='unit-result-list')
                 if not cabin_tags:
@@ -243,7 +248,7 @@ def rate_scrapper_single_threaded():
                         'startDate': start, 
                         'endDate': end, 
                         'holiday': holiday,
-                        'status': 'BOOKED' if c.find('a', text='BOOKED') else 'AVAILABLE'
+                        'status': 'BOOKED' if c.find('a',class_='ribbon-content', text='BOOKED') else 'AVAILABLE'
                         })
                 while b.is_element_present_by_css('.loader.d-block'):
                     pass
@@ -252,7 +257,7 @@ def rate_scrapper_single_threaded():
                     next_button[0].click()
                 else:
                     break
-    insert_rates_faster(cabins)
+            insert_rates_faster(cabins)
 
 
 def extract_costs_faster_function(range_tuple):
@@ -363,20 +368,14 @@ def insert_features():
     cabins = load_cabins()
     features_tuples = []
     for c in cabins:
-        for f in c['amenities']:
+        for f in c['amenities'] + c['features']:
             id_ = 'VACASA' + re.search(r'UnitID=(\d+)', c['url']).group(1)
             features_tuples.append((id_, f))
     with connection, connection.cursor() as c:
-        """sql = 
-                INSERT INTO db.features
-                SELECT (val.id, val.amenity) FROM (VALUES %s) val (id, amenity)
-                JOIN db.cabin USING (id)
-                ON CONFLICT DO NOTHING
-        psycopg2.extras.execute_values(c, sql, features_tuples)
-        """
-        sql = 'insert into db.features VALUES (%s, %s) on conflict do nothing'
-        for t in features_tuples:
-            c.execute(sql, t)
+        sql = "delete from db.features where id like 'VACASA%'"
+        c.execute(sql)
+        sql = '''INSERT INTO db.features (id, amenity) VALUES %s ON CONFLICT (id, amenity) DO NOTHING'''
+        execute_values(c, sql, features_tuples)
     connection.close()
     
 

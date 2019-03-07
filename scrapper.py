@@ -3,6 +3,8 @@ import itertools
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from scrappers import destinationbigbear, vacasa, bigbearcoolcabins, bigbearvacations
+from scrappers.util import print
+from functools import partial
 
 DATABASE_URI = os.environ.get('DATABASE_URL', None) or os.getenv('DATABASE_URI')
 
@@ -25,8 +27,93 @@ def run(scrappers_to_run):
     with connection, connection.cursor() as c:
         c.execute("UPDATE db.status_update SET status = 'Updated' WHERE id=1;")
     connection.close()
-            
 
+def get_category(amenities):
+    categories = [
+                    ['PLATINUM', { 'Hot Tub', 
+                                'Pool/Game Room',
+                                'WiFi',
+                                'Pets',
+                                'BBQ',
+                                'TV/DVD/Cable',
+                                'Kitchen/Dining',
+                                'Dishwasher',
+                                'Washer/Dryer',
+                                'Sauna',
+                                'Spa Tub',
+                                'Bedding',
+                                'TV in All Rooms',
+                                'No Bunks/Sleepers',
+                                'Master Suite Avail',
+                                'Walk to Lake',
+                                'Walk to Village',
+                                'Walk to Ski',
+                                'Lakefront',
+                                'Log Home',
+                                'Castle Glen',
+                                'Eagle Point',
+                                'Fox Farm',
+                                'Village'
+                    }],
+                    ['GOLD', {   'Hot Tub', 
+                                'Pool/Game Room',
+                                'WiFi',
+                                'Pets',
+                                'BBQ',
+                                'TV/DVD/Cable',
+                                'Kitchen/Dining',
+                                'Dishwasher',
+                                'Washer/Dryer',
+                                'Spa Tub',
+                                'Walk to Lake',
+                                'Walk to Village',
+                                'Walk to Ski',
+                                'Lakefront',
+                                'Log Home',
+                                'Castle Glen',
+                                'Eagle Point',
+                                'Fox Farm',
+                                'Village'
+                    }],
+                    ['SILVER', { 'Hot Tub', 
+                                'WiFi',
+                                'Pets',
+                                'BBQ',
+                                'TV/DVD/Cable',
+                                'Kitchen/Dining',
+                                'Walk to Lake',
+                                'Walk to Village',
+                                'Walk to Ski',
+                                'Bear City',
+                                'Sugarloaf',
+                                'Fawnskin',
+                                'Moonridge'
+                    }],
+                    ['BRONZE', { 'Pets',
+                                'BBQ',
+                                'TV/DVD/Cable',
+                                'Kitchen/Dining',
+                                'Bear City',
+                                'Sugarloaf',
+                                'Fawnskin',
+                                'Moonridge'
+                    }]
+    ]
+    for category, cat_amenities in categories:
+        if all(a in cat_amenities for a in amenities):
+            return category
+    return 'UNCLASSIFIED'                
+
+def categorize_cabins():
+    connection = psycopg2.connect(DATABASE_URI, cursor_factory=psycopg2.extras.RealDictCursor)
+    with connection, connection.cursor() as c:
+        c.execute('SELECT * FROM db.cabin')
+        cabins = c.fetchall()
+        for cabin in cabins:
+            c.execute('SELECT amenity from db.features WHERE id = %s', (cabin['id'],))
+            amenities = c.fetchall()
+            category =  get_category([a['amenity'] for a in amenities])
+            c.execute('UPDATE db.features SET tier = %s WHERE id=%s', (category, cabin['id']))
         
 
 def update_cabin_urls():
