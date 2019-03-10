@@ -15,15 +15,19 @@ function searchController($http, $mdDialog) {
 
 	ctrl.vrms = ["BBCC", "DBB", "VACASA", "BBV"];
 	ctrl.vrmSelected = [];
-	ctrl.tiers = ["Broze", "Silver", "Gold", "Platinum"];
+	ctrl.tiers = ["Bronze", "Silver", "Gold", "Platinum"];
 	ctrl.tierSelected = [];
+	ctrl.result = [];
+	ctrl.addons = [];
+	ctrl.statisticals = [];
+	ctrl.tierTotals = [];
 	ctrl.toggle = function (item, list) {
 		var idx = list.indexOf(item);
 		if (idx > -1) {
-		  list.splice(idx, 1);
+			list.splice(idx, 1);
 		}
 		else {
-		  list.push(item);
+			list.push(item);
 		}
 	}
 	
@@ -45,14 +49,6 @@ function searchController($http, $mdDialog) {
 		}
 	}
 
-	// ctrl.some = function(array, value) {
-	// 	if (array)
-	// 		return array.some(function(a){
-	// 			return a === value;
-	// 		})
-	// 	else
-	// 		return false;
-	// }
 	var host = "74.91.126.179";
 	// var host = "localhost";
 	// var promises = [
@@ -63,44 +59,21 @@ function searchController($http, $mdDialog) {
 	// 	$http.get(`http://${host}:5001/api/search/days`),
 	// 	$http.get(`http://${host}:5001/api/search/tiers`),
 	// ]
-	// Promise.all(promises).then(function(values) {
-	// 	ctrl.amenities = values[0].data;
-	// 	ctrl.vrms = values[1].data;
-	// 	ctrl.bedrooms = values[2].data;
-	// 	ctrl.years = values[3].data;
-	// 	ctrl.days = values[4].data;
-	// 	ctrl.tiers = values[5].data;
 
-	// 	ctrl.vrmSelected = [];
-	// 	for (const vrm of ctrl.vrms) {
-	// 		ctrl.vrmSelected.push(vrm);
-	// 	}
-	// 	});
-	// ctrl.compares = [
-	// 	'Avg Rate',
-	// 	'Max Rate',
-	// 	'Min Rate'
-	// ]
-	// ctrl.shows = [
-	// 	'Booking',
-	// 	'Vacants'
-	// ]
-	// ctrl.compareSelected = ctrl.compares;
-	// ctrl.showSelected = ctrl.shows;
 	ctrl.search = function(ev) {
-		if (!validFilters()) {
-			$mdDialog.show(
-				$mdDialog.alert()
-				.parent(angular.element(document.querySelector('#popupContainer')))
-				.clickOutsideToClose(true)
-				.title('Missing filters!')
-				.textContent('You need to set all the filters to achieve the search.')
-				.ariaLabel('Alert Dialog')
-				.ok('Got it!')
-				.targetEvent(ev)
-			);
-			return;
-		}
+		// if (!validFilters()) {
+		// 	$mdDialog.show(
+		// 		$mdDialog.alert()
+		// 		.parent(angular.element(document.querySelector('#popupContainer')))
+		// 		.clickOutsideToClose(true)
+		// 		.title('Missing filters!')
+		// 		.textContent('You need to set all the filters to achieve the search.')
+		// 		.ariaLabel('Alert Dialog')
+		// 		.ok('Got it!')
+		// 		.targetEvent(ev)
+		// 	);
+		// 	return;
+		// }
 
 		var requestBody = {
 			startDate: moment.utc(ctrl.startDate).format('YYYY-MM-DD'),
@@ -111,10 +84,98 @@ function searchController($http, $mdDialog) {
 		console.log(requestBody)
 		// $http.post(`http://${host}:5001/api/search/avg`, data)
 
-	// 	ctrl.showTable = false;
-	// 	ctrl.loading = true;
-	// 	ctrl.buttonDisabled = true;
-	// 	ctrl.lastDivPosition = "center center";
+		ctrl.result = [
+			{
+				title: "Prime Area",
+				values: [
+					{
+						tier: "Platinum",
+						values: ['$565', '$645', '$282', '$3543', '$544', '$544', '$321', '$224']
+					},
+					{
+						tier: "Gold",
+						values: ['$565', '$645', '$282', '$3543', '$544', '$544', '$321', '$224']
+					},
+				]
+			}
+		];
+		ctrl.addons = [
+			{
+				name: "Spa",
+				value: "$50.00"
+			},
+			{
+				name: "WIFI",
+				value: "$20.00"
+			},
+			{
+				name: "Game room or table",
+				value: "$50.00"
+			}
+		]
+		ctrl.tierTotals = [
+			{
+				name: "Platinum",
+				value: "100"
+			},
+			{
+				name: "Gold",
+				value: "250"
+			},
+			{
+				name: "Silver",
+				value: "205"
+			},
+			{
+				name: "Bronze",
+				value: "300"
+			}
+		]
+		ctrl.areaTotals = [
+			{
+				name: "Prime",
+				value: "100"
+			},
+			{
+				name: "Medium Demand",
+				value: "250"
+			},
+			{
+				name: "Low Demand",
+				value: "205"
+			}
+		]
+		ctrl.statisticals = [
+			{
+				name: "Percent booked/Vacant shown",
+				value: "50% / 50%"
+			},
+			{
+				name: "Market Share",
+				value: "50%"
+			},
+			{
+				name: "occupancy over or under ours",
+				value: "50%"
+			},
+			{
+				name: "bookings in last week",
+				value: "50"
+			},
+			{
+				name: "bookings in last month",
+				value: "50"
+			},
+			{
+				name: "Bookings last year",
+				value: "200"
+			}
+		]
+		
+		ctrl.showTable = false;
+		ctrl.loading = true;
+		ctrl.buttonDisabled = true;
+		ctrl.lastDivPosition = "center center";
 
 	// 	// var data = {
 	// 	// 	amenities: ctrl.amenitySelected,
@@ -141,12 +202,19 @@ function searchController($http, $mdDialog) {
 	// 	// 		ctrl.firstData[key]['Bookings %'] = ctrl.firstData[key]['Bookings %'] + '%';
 	// 	// 		ctrl.firstData[key]['Vacants %'] = ctrl.firstData[key]['Vacants %'] + '%';
 	// 	// 	});
-	// 	// 	ctrl.loading = false;
-	// 	// 	ctrl.showTable = true;
-	// 	// 	ctrl.buttonDisabled = false;
-	// 	// 	ctrl.lastDivPosition = "center start";
+			ctrl.loading = false;
+			ctrl.showTable = true;
+			ctrl.buttonDisabled = false;
+			ctrl.lastDivPosition = "center start";
 	// 	// })
 
+	}
+
+	ctrl.backToSearch = function(ev) {
+		ctrl.showTable = false;
+		ctrl.loading = false;
+		ctrl.buttonDisabled = false;
+		ctrl.lastDivPosition = "center center";
 	}
 
 	function validFilters() {
@@ -158,22 +226,6 @@ function searchController($http, $mdDialog) {
 			return false;
 		return true;
 	}
-
-	// function validFilters() {
-	// 	if (!ctrl.amenitySelected || ctrl.amenitySelected.length === 0)
-	// 		return false;
-	// 	if (!ctrl.vrmSelected || ctrl.vrmSelected.length === 0)
-	// 		return false;
-	// 	if (!ctrl.bedroomSelected)
-	// 		return false;
-	// 	if (!ctrl.yearSelected || ctrl.yearSelected.length === 0)
-	// 		return false;
-	// 	if (!ctrl.daySelected || ctrl.daySelected.length === 0)
-	// 		return false;
-	// 	if (!ctrl.tierSelected || ctrl.tierSelected.length === 0)
-	// 		return false;
-	// 	return true;
-	// }
 }
 angular.
 	module("search").
