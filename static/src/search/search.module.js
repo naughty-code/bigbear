@@ -1,1 +1,1 @@
-angular.module("search", ['ngMaterial']);
+angular.module("search", ['ngMaterial','ngMessages']);

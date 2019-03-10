@@ -11,7 +11,7 @@ function singleTableController($scope, $http, $routeParams) {
 		minimumColumnSize: 150
 	};
 	$http.get('http://74.91.126.179:5001/api/' + view)
-	// $http.get('http://localhost:5000/api/' + view)
+	// $http.get('http://localhost:5001/api/' + view)
 		.then(function(response) {
 			for (const key in response.data[0]) {
 				if (response.data[0].hasOwnProperty(key)) {

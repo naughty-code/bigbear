@@ -1,96 +1,130 @@
-<div layout="column" style="height: 100%">
-	<!-- First row -->
-	<div layout="column" layout-gt-sm="row" layout-align-gt-sm="space-around center" flex="none">
-		<md-input-container>
-			<label>Amenities</label>
-			<md-select ng-model="$ctrl.amenitySelected" multiple>
-				<md-option ng-value="amenity" ng-repeat="amenity in $ctrl.amenities">{{ amenity }}</md-option>
-			</md-select>
-		</md-input-container>
-		<md-input-container>
-			<label>VRMs</label>
-			<md-select ng-model="$ctrl.vrmSelected" ng-model-options="{trackBy: '$value'}" multiple>
-				<md-option ng-value="vrm" ng-repeat="vrm in $ctrl.vrms">{{ vrm }}</md-option>
-			</md-select>
-		</md-input-container>
-		<md-input-container>
-			<label>Bedrooms</label>
-			<md-select ng-model="$ctrl.bedroomSelected">
-				<md-option ng-value="bedroom" ng-repeat="bedroom in $ctrl.bedrooms">{{ bedroom }}</md-option>
-			</md-select>
-		</md-input-container>
-		<div layout="column" layout-gt-sm>
+<div flex="none" layout="column">
+	<div ng-if="!$ctrl.loading && !$ctrl.showTable">
+		<fieldset>
+			<legend>Search</legend>
+			<div>
+				<h4>Date range:</h4>
+				<md-datepicker ng-model="$ctrl.startDate" md-placeholder="Start date" md-open-on-focus md-max-date="$ctrl.endDate"></md-datepicker>
+				<md-datepicker ng-model="$ctrl.endDate" md-placeholder="End date" md-open-on-focus md-max-date="$ctrl.maxDate" ng-change="$ctrl.changeEndDate()"></md-datepicker>
+			</div>
+			<div>
+				<h4>VRM</h4>
+				<md-checkbox 
+					aria-label="Select all"
+					ng-checked="$ctrl.isChecked('vrms', 'vrmSelected')"
+					md-indeterminate="$ctrl.isIndeterminate('vrms', 'vrmSelected')"
+					ng-click="$ctrl.toggleAll('vrms', 'vrmSelected')">
+					Select all
+				</md-checkbox>
+				<md-checkbox ng-repeat="item in $ctrl.vrms" ng-checked="$ctrl.exists(item, $ctrl.vrmSelected)" ng-click="$ctrl.toggle(item, $ctrl.vrmSelected)">
+					{{ item }}
+				</md-checkbox>
+			</div>
+			<div>
+				<h4>Tier</h4>
+				<md-checkbox 
+					aria-label="Select all"
+					ng-checked="$ctrl.isChecked('tiers', 'tierSelected')"
+					md-indeterminate="$ctrl.isIndeterminate('tiers', 'tierSelected')"
+					ng-click="$ctrl.toggleAll('tiers', 'tierSelected')">
+					Select all
+				</md-checkbox>
+				<md-checkbox ng-repeat="item in $ctrl.tiers" ng-checked="$ctrl.exists(item, $ctrl.tierSelected)" ng-click="$ctrl.toggle(item, $ctrl.tierSelected)">
+					{{ item }}
+				</md-checkbox>
+			</div>
+		</fieldset>
+
+		<div flex="none" layout="column" layout-gt-sm layout-align="center center">
 			<md-input-container>
-				<label>Date</label>
-				<md-select ng-model="$ctrl.yearSelected" multiple>
-					<md-option ng-value="year" ng-repeat="year in $ctrl.years">{{ year }}</md-option>
-				</md-select>
-			</md-input-container>
-			<md-input-container>
-				<md-select ng-model="$ctrl.daySelected" placeholder="day" multiple>
-					<md-option ng-value="day" ng-repeat="day in $ctrl.days">{{ day }}</md-option>
-				</md-select>
-			</md-input-container>
-		</div>
-		<md-input-container>
-			<label>Tier</label>
-			<md-select ng-model="$ctrl.tierSelected" multiple>
-				<md-option ng-value="tier" ng-repeat="tier in $ctrl.tiers">{{ tier }}</md-option>
-			</md-select>
-		</md-input-container>
-	</div>
-	<!-- Second row -->
-	<div layout="column" layout-gt-sm="row" flex="none">
-		<div flex="45" layout="column" layout-gt-sm layout-align="none" layout-align-gt-sm="end center">
-			<md-input-container>
-				<label>Compare</label>
-				<md-select ng-model="$ctrl.compareSelected" multiple>
-					<md-option ng-value="compare" ng-repeat="compare in $ctrl.compares">{{ compare }}</md-option>
-				</md-select>
-			</md-input-container>
-		</div>
-		<div flex="45" flex-offset-gt-sm="10" layout="column" layout-gt-sm layout-align="none" layout-align-gt-sm="start center">
-			<md-input-container>
-				<label>Show</label>
-				<md-select ng-model="$ctrl.showSelected" multiple>
-					<md-option ng-value="show" ng-repeat="show in $ctrl.shows">{{ show }}</md-option>
-				</md-select>
+				<md-button ng-click="$ctrl.search($event)" ng-disabled="$ctrl.buttonDisabled" class="md-raised md-primary">Search</md-button>
 			</md-input-container>
 		</div>
 	</div>
-	<!-- Third row (Button) -->
-	<div flex="none" layout="column" layout-gt-sm layout-align="center center">
-		<md-input-container>
-			<md-button ng-click="$ctrl.search($event)" ng-disabled="$ctrl.buttonDisabled">Search</md-button>
-		</md-input-container>
-	</div>
-	<!-- Fourth row (table) -->
-	<div layout layout-align="{{ $ctrl.lastDivPosition }}" flex="grow">
+	<div layout="column" layout-gt-sm>
 		<md-progress-circular ng-disabled="!$ctrl.loading" md-diameter="96" ng-if="$ctrl.loading"></md-progress-circular>
-		<table ng-if="!$ctrl.loading && $ctrl.showTable">
-			<tr>
-				<th ng-if="$ctrl.some($ctrl.daySelected, 'Weekend')">Date</th>
-				<th>VRM</th>
-				<th ng-if="$ctrl.some($ctrl.compareSelected, 'Avg Rate')">Avg</th>
-				<th ng-if="$ctrl.some($ctrl.compareSelected, 'Min Rate')">Min</th>
-				<th ng-if="$ctrl.some($ctrl.compareSelected, 'Max Rate')">Max</th>
-				<th ng-if="$ctrl.some($ctrl.showSelected, 'Booking')">Bookings</th>
-				<th ng-if="$ctrl.some($ctrl.showSelected, 'Booking')">%</th>
-				<th ng-if="$ctrl.some($ctrl.showSelected, 'Vacants')">Vacants</th>
-				<th ng-if="$ctrl.some($ctrl.showSelected, 'Vacants')">%</th>
-			</tr>
-			<tr ng-repeat="vrm in $ctrl.firstData">
-				<td ng-if="$ctrl.some($ctrl.daySelected, 'Weekend')">{{ vrm.check_in | date : 'mediumDate': '+0000'}} - {{ vrm.check_out | date : 'mediumDate': '+0000'}}</td>
-				<td>{{ vrm.idvrm }}</td>
-				<td ng-if="$ctrl.some($ctrl.compareSelected, 'Avg Rate')">{{ vrm.average }}</td>
-				<td ng-if="$ctrl.some($ctrl.compareSelected, 'Min Rate')">{{ vrm.minimum }}</td>
-				<td ng-if="$ctrl.some($ctrl.compareSelected, 'Max Rate')">{{ vrm.maximum }}</td>
-				<td ng-if="$ctrl.some($ctrl.showSelected, 'Booking')">{{ vrm.Bookings }}</td>
-				<td ng-if="$ctrl.some($ctrl.showSelected, 'Booking')">{{ vrm["Bookings %"] }}</td>
-				<td ng-if="$ctrl.some($ctrl.showSelected, 'Vacants')">{{ vrm.Vacants }}</td>
-				<td ng-if="$ctrl.some($ctrl.showSelected, 'Vacants')">{{ vrm["Vacants %"] }}</td>
-			</tr>
-		</table>
+		<div flex="initial" flex-gt-sm="80" ng-if="!$ctrl.loading && $ctrl.showTable" style="overflow-x:auto;">
+			<table class="result-table">
+				<tbody>
+					<tr>
+						<th class="result-table"></th>
+						<th class="result-table">Bdrm/Sleeps up to 1/4</th>
+						<th class="result-table">Bdrm/Sleeps up to 2/6</th>
+						<th class="result-table">Bdrm/Sleeps up to 3/8</th>
+						<th class="result-table">Bdrm/Sleeps up to 4/10</th>
+						<th class="result-table">Bdrm/Sleeps up to 5/12</th>
+						<th class="result-table">Bdrm/Sleeps up to 6/14</th>
+						<th class="result-table">Bdrm/Sleeps up to 7/16</th>
+						<th class="result-table">Bdrm/Sleeps up to 8/16</th>
+					</tr>
+				</tbody>
+				
+				<tbody ng-repeat="area in $ctrl.result track by index">
+					<tr>
+						<th class="result-table" colspan="9">{{area.title}}</th>
+					</tr>
+					<tr ng-repeat="row in area.values track by $index">
+						<td class="result-table">{{ row.tier }}</td>
+						<td class="result-table" ng-repeat="col in row.values track by $index"> {{ col }}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		
+		<div flex-gt-sm="15" flex-offset-gt-sm="5" ng-if="!$ctrl.loading && $ctrl.showTable">
+			<table class="result-table">
+				<tbody>
+					<tr>
+						<th class="result-table" colspan="2">Add ons</th>
+					</tr>
+					<tr ng-repeat="addon in $ctrl.addons track by $index">
+						<td class="result-table">{{ addon.name }}</td>
+						<td class="result-table">{{ addon.value }}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div layout="column" layout-gt-sm ng-if="!$ctrl.loading && $ctrl.showTable">
+		<div flex="none" style="margin-top: 10px">
+			<table class="result-table">
+				<tbody>
+					<tr>
+						<th class="result-table" colspan="2">Statisticals</th>
+					</tr>
+					<tr ng-repeat="sta in $ctrl.statisticals track by $index">
+						<td class="result-table">{{ sta.name }}</td>
+						<td class="result-table">{{ sta.value }}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div flex="none" flex-offset-gt-sm="5" style="margin-top: 10px">
+			<table class="result-table">
+				<tbody>
+					<tr>
+						<th class="result-table" colspan="2">Total Units by tier category</th>
+					</tr>
+					<tr ng-repeat="tier in $ctrl.tierTotals track by $index">
+						<td class="result-table">{{ tier.name }}</td>
+						<td class="result-table">{{ tier.value }}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div flex="none" flex-offset-gt-sm="5" style="margin-top: 10px">
+			<table class="result-table">
+				<tbody>
+					<tr>
+						<th class="result-table" colspan="2">Total Units by Area</th>
+					</tr>
+					<tr ng-repeat="area in $ctrl.areaTotals track by $index">
+						<td class="result-table">{{ area.name }}</td>
+						<td class="result-table">{{ area.value }}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 	</div>
 </div>
 <div style="visibility: hidden">
@@ -99,3 +133,4 @@
 		</md-dialog>
 	</div>
 </div>
+<md-button class="md-raised md-primary goToTop" ng-if="$ctrl.showTable" ng-click="$ctrl.backToSearch()">Search</md-button>

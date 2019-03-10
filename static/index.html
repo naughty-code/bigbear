@@ -65,7 +65,7 @@
                     </md-button>
             </div>
             <div>
-                <md-select ng-model="vrmSelected" ng-disabled="disableButton" class="md-no-underline select-vrm" multiple>
+                <md-select ng-model="vrmSelected" ng-disabled="disableButton" class="md-no-underline select-vrm" aria-label="vrms" multiple>
                     <md-option ng-value="vrm" ng-repeat="vrm in vrms">{{ vrm }}</md-option>
                 </md-select>
             </div>

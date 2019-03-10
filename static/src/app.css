@@ -100,7 +100,7 @@ md-sidenav.md-locked-open {
   }
 }
 
-table {
+/* table {
   border-collapse: collapse;
   width: 100%;
 }
@@ -109,7 +109,7 @@ th, td {
   padding: 8px;
   text-align: left;
   border-bottom: 1px solid #ddd;
-}
+} */
 
 .margin-bottom {
   margin-bottom: 40px;
@@ -136,4 +136,28 @@ search {
 
 .select-vrm {
   font-size: medium;
+}
+
+.goToTop {
+  position: fixed;
+  width: 100px;
+  height: 40px;
+  bottom: 0;
+  right: 0;
+  z-index: 100000;
+  cursor: pointer;
+  margin: 30px;
+}
+
+
+table.result-table {
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+th.result-table, td.result-table {
+  padding: 15px;
+  border: 1px solid #ddd;
+  text-align: center;
 }
