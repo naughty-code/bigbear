@@ -4,7 +4,6 @@ function searchController($http, $mdDialog) {
 	ctrl.showTable = false;
 	ctrl.buttonDisabled = false;
 	ctrl.lastDivPosition = "center center";
-	ctrl.maxDate = new Date()
 
 	ctrl.changeEndDate = function () {
 		if (ctrl.startDate)
@@ -15,7 +14,7 @@ function searchController($http, $mdDialog) {
 
 	ctrl.vrms = ["BBCC", "DBB", "VACASA", "BBV"];
 	ctrl.vrmSelected = [];
-	ctrl.tiers = ["Bronze", "Silver", "Gold", "Platinum"];
+	ctrl.tiers = ["BRONZE", "SILVER", "GOLD", "PLATINUM"];
 	ctrl.tierSelected = [];
 	ctrl.result = [];
 	ctrl.addons = [];
@@ -61,19 +60,24 @@ function searchController($http, $mdDialog) {
 	// ]
 
 	ctrl.search = function(ev) {
-		// if (!validFilters()) {
-		// 	$mdDialog.show(
-		// 		$mdDialog.alert()
-		// 		.parent(angular.element(document.querySelector('#popupContainer')))
-		// 		.clickOutsideToClose(true)
-		// 		.title('Missing filters!')
-		// 		.textContent('You need to set all the filters to achieve the search.')
-		// 		.ariaLabel('Alert Dialog')
-		// 		.ok('Got it!')
-		// 		.targetEvent(ev)
-		// 	);
-		// 	return;
-		// }
+		if (!validFilters()) {
+			$mdDialog.show(
+				$mdDialog.alert()
+				.parent(angular.element(document.querySelector('#popupContainer')))
+				.clickOutsideToClose(true)
+				.title('Missing filters!')
+				.textContent('You need to set all the filters to achieve the search.')
+				.ariaLabel('Alert Dialog')
+				.ok('Got it!')
+				.targetEvent(ev)
+			);
+			return;
+		}
+
+		ctrl.showTable = false;
+		ctrl.loading = true;
+		ctrl.buttonDisabled = true;
+		ctrl.lastDivPosition = "center center";
 
 		var requestBody = {
 			startDate: moment.utc(ctrl.startDate).format('YYYY-MM-DD'),
@@ -81,102 +85,114 @@ function searchController($http, $mdDialog) {
 			vrms: ctrl.vrmSelected,
 			tiers: ctrl.tierSelected
 		}
-		console.log(requestBody)
-		// $http.post(`http://${host}:5001/api/search/avg`, data)
+		$http.post(`http://${host}:5001/api/search/daterange`, requestBody)
+			.then(function (result) {
+				ctrl.result = [];
+				for (const area of result.data.result) {
+					var area_temp = {
+						title: area.title,
+						values: []
+					}
+					for (const tier of ctrl.tierSelected) {
+						var tier_temp = {
+							tier: tier,
+							values: []
+						}
+						for (let index = 1; index < 9; index++) {
+							let find = area.values.find( v => {
+								return (v.tier == tier && v.bedrooms == index)
+							})
+							if (find)
+								tier_temp.values.push(find.avg)
+							else
+								tier_temp.values.push('0')
+						}
+						area_temp.values.push(tier_temp)
+					}
+					ctrl.result.push(area_temp);
+				}
+				ctrl.loading = false;
+				ctrl.showTable = true;
+				ctrl.buttonDisabled = false;
+				ctrl.lastDivPosition = "center start";
+			}, function (result) {
+				console.log(result)
+			});
 
-		ctrl.result = [
-			{
-				title: "Prime Area",
-				values: [
-					{
-						tier: "Platinum",
-						values: ['$565', '$645', '$282', '$3543', '$544', '$544', '$321', '$224']
-					},
-					{
-						tier: "Gold",
-						values: ['$565', '$645', '$282', '$3543', '$544', '$544', '$321', '$224']
-					},
-				]
-			}
-		];
+
 		ctrl.addons = [
 			{
 				name: "Spa",
-				value: "$50.00"
+				value: "--"
 			},
 			{
 				name: "WIFI",
-				value: "$20.00"
+				value: "--"
 			},
 			{
 				name: "Game room or table",
-				value: "$50.00"
+				value: "--"
 			}
 		]
 		ctrl.tierTotals = [
 			{
 				name: "Platinum",
-				value: "100"
+				value: "--"
 			},
 			{
 				name: "Gold",
-				value: "250"
+				value: "--"
 			},
 			{
 				name: "Silver",
-				value: "205"
+				value: "--"
 			},
 			{
 				name: "Bronze",
-				value: "300"
+				value: "--"
 			}
 		]
 		ctrl.areaTotals = [
 			{
 				name: "Prime",
-				value: "100"
+				value: "--"
 			},
 			{
 				name: "Medium Demand",
-				value: "250"
+				value: "--"
 			},
 			{
 				name: "Low Demand",
-				value: "205"
+				value: "--"
 			}
 		]
 		ctrl.statisticals = [
 			{
 				name: "Percent booked/Vacant shown",
-				value: "50% / 50%"
+				value: "-- / --"
 			},
 			{
 				name: "Market Share",
-				value: "50%"
+				value: "--"
 			},
 			{
-				name: "occupancy over or under ours",
-				value: "50%"
+				name: "Occupancy over or under ours",
+				value: "--"
 			},
 			{
 				name: "bookings in last week",
-				value: "50"
+				value: "--"
 			},
 			{
-				name: "bookings in last month",
-				value: "50"
+				name: "Bookings in last month",
+				value: "--"
 			},
 			{
 				name: "Bookings last year",
-				value: "200"
+				value: "--"
 			}
 		]
 		
-		ctrl.showTable = false;
-		ctrl.loading = true;
-		ctrl.buttonDisabled = true;
-		ctrl.lastDivPosition = "center center";
-
 	// 	// var data = {
 	// 	// 	amenities: ctrl.amenitySelected,
 	// 	// 	vrms: ctrl.vrmSelected,
@@ -202,10 +218,6 @@ function searchController($http, $mdDialog) {
 	// 	// 		ctrl.firstData[key]['Bookings %'] = ctrl.firstData[key]['Bookings %'] + '%';
 	// 	// 		ctrl.firstData[key]['Vacants %'] = ctrl.firstData[key]['Vacants %'] + '%';
 	// 	// 	});
-			ctrl.loading = false;
-			ctrl.showTable = true;
-			ctrl.buttonDisabled = false;
-			ctrl.lastDivPosition = "center start";
 	// 	// })
 
 	}

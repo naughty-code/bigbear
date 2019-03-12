@@ -405,18 +405,69 @@ def search_avg():
     return jsonify(result)
 
 #search rate statistics by daterange and sort them by tier and vrm
-@app.route('/api/search/daterange') 
+@app.route('/api/search/daterange', methods = ['POST']) 
 def get_rates_by_tier():
-    start_date = request.args.get('start_date')
-    end_date = request.args.get('end_date')
-    vrms = request.args.get('vrms').split(',')
-    print(start_date)
-    print(end_date)
-    print(vrms)
-    availabilities = get_availabilities_in_range(start_date, end_date, vrms)
-    results = calculate_means(availabilities)
-    not_tupled_keys = { str(k): v for k,v in results.items() }
-    return jsonify(not_tupled_keys)
+    data = request.get_json()
+    start_date = data.get('startDate')
+    end_date = data.get('endDate')
+    vrms = data.get('vrms')
+    tiers = data.get('tiers')
+    connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)
+    with connection, connection.cursor() as c:
+        sql = '''select c.bedrooms, c.tier, avg(avail.rate)::money from db.cabin as c 
+            join db.availability as avail on avail.id = c.id 
+            and avail.rate > 0 
+            and avail.check_in >= %s
+            and avail.check_out <= %s
+            where c.location in ('Sugarloaf', 'Fawnskin', 'Big Bear City')  
+            and c.tier = ANY(%s)
+            and c.idvrm = ANY(%s)
+            and c.status='ACTIVE' 
+            group by bedrooms, tier;'''
+        c.execute(sql, (start_date, end_date, '{' + ','.join(tiers) + '}', '{' + ','.join(vrms) + '}'))
+        low_demand = c.fetchall()
+
+        sql = '''select c.bedrooms, c.tier, avg(avail.rate)::money from db.cabin as c 
+            join db.availability as avail on avail.id = c.id 
+            and avail.rate > 0 
+            and avail.check_in >= %s
+            and avail.check_out <= %s
+            where c.location in ('Moonridge')  
+            and c.tier = ANY(%s)
+            and c.idvrm = ANY(%s)
+            and c.status='ACTIVE' 
+            group by bedrooms, tier;'''
+        c.execute(sql, (start_date, end_date, '{' + ','.join(tiers) + '}', '{' + ','.join(vrms) + '}'))
+        medium_demand = c.fetchall()
+
+        sql = '''select c.bedrooms, c.tier, avg(avail.rate)::money from db.cabin as c 
+            join db.availability as avail on avail.id = c.id 
+            and avail.rate > 0 
+            and avail.check_in >= %s
+            and avail.check_out <= %s
+            where c.location in ('Big Bear Lake')  
+            and c.tier = ANY(%s)
+            and c.idvrm = ANY(%s)
+            and c.status='ACTIVE' 
+            group by bedrooms, tier;'''
+        c.execute(sql, (start_date, end_date, '{' + ','.join(tiers) + '}', '{' + ','.join(vrms) + '}'))
+        prime_demand = c.fetchall()
+    connection.close()
+    result = {
+        'result': [{
+            'title': 'Low demand area',
+            'values': low_demand
+        },
+        {
+            'title': 'Medium demand area',
+            'values': medium_demand
+        },{
+
+            'title': 'Prime demand area',
+            'values': prime_demand
+        },]
+    }
+    return jsonify(result)
 
 # API from view search
 @app.route('/')

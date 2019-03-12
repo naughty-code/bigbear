@@ -5,7 +5,7 @@
 			<div>
 				<h4>Date range:</h4>
 				<md-datepicker ng-model="$ctrl.startDate" md-placeholder="Start date" md-open-on-focus md-max-date="$ctrl.endDate"></md-datepicker>
-				<md-datepicker ng-model="$ctrl.endDate" md-placeholder="End date" md-open-on-focus md-max-date="$ctrl.maxDate" ng-change="$ctrl.changeEndDate()"></md-datepicker>
+				<md-datepicker ng-model="$ctrl.endDate" md-placeholder="End date" md-open-on-focus ng-change="$ctrl.changeEndDate()"></md-datepicker>
 			</div>
 			<div>
 				<h4>VRM</h4>
@@ -59,7 +59,7 @@
 					</tr>
 				</tbody>
 				
-				<tbody ng-repeat="area in $ctrl.result track by index">
+				<tbody ng-repeat="area in $ctrl.result track by $index">
 					<tr>
 						<th class="result-table" colspan="9">{{area.title}}</th>
 					</tr>
