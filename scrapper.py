@@ -28,92 +28,93 @@ def run(scrappers_to_run):
         c.execute("UPDATE db.status_update SET status = 'Updated' WHERE id=1;")
     connection.close()
 
-def get_category(amenities):
+def get_category(cabin_amenities):
     categories = [
-                    ['PLATINUM', { 'Hot Tub', 
-                                'Pool/Game Room',
-                                'WiFi',
-                                'Pets',
+                    ['PLATINUM', { 'SPA/Hot Tub/Jacuzzi', 
+                                'Games',
+                                'WiFi/Internet',
+                                'PETS',
                                 'BBQ',
                                 'TV/DVD/Cable',
                                 'Kitchen/Dining',
                                 'Dishwasher',
                                 'Washer/Dryer',
                                 'Sauna',
-                                'Spa Tub',
-                                'Bedding',
+                                #'Spa Tub', #possible conflict with SPA/Hot Tub/Jacuzzi
+                                #'Bedding',
                                 'TV in All Rooms',
                                 'No Bunks/Sleepers',
                                 'Master Suite Avail',
-                                'Walk to Lake',
-                                'Walk to Village',
-                                'Walk to Ski',
-                                'Lakefront',
-                                'Log Home',
-                                'Castle Glen',
-                                'Eagle Point',
-                                'Fox Farm',
-                                'Village'
+                                #'Walk to Lake',
+                                #'Walk to Village',
+                                #'Walk to Ski',
+                                #'Lakefront',
+                                #'Log Home',
+                                #'Castle Glen',
+                                #'Eagle Point',
+                                #'Fox Farm',
+                                #'Village'
                     }],
-                    ['GOLD', {   'Hot Tub', 
-                                'Pool/Game Room',
-                                'WiFi',
-                                'Pets',
+                    ['GOLD', {  'SPA/Hot Tub/Jacuzzi', 
+                                'Games',
+                                'WiFi/Internet',
+                                'PETS',
                                 'BBQ',
                                 'TV/DVD/Cable',
                                 'Kitchen/Dining',
                                 'Dishwasher',
                                 'Washer/Dryer',
-                                'Spa Tub',
-                                'Walk to Lake',
-                                'Walk to Village',
-                                'Walk to Ski',
-                                'Lakefront',
-                                'Log Home',
-                                'Castle Glen',
-                                'Eagle Point',
-                                'Fox Farm',
-                                'Village'
+                                #'Spa Tub', #possible conflict with SPA/Hot Tub/Jacuzzi
+                                #'Walk to Lake',
+                                #'Walk to Village',
+                                #'Walk to Ski',
+                                #'Lakefront',
+                                #'Log Home',
+                                #'Castle Glen',
+                                #'Eagle Point',
+                                #'Fox Farm',
+                                #'Village'
                     }],
-                    ['SILVER', { 'Hot Tub', 
-                                'WiFi',
-                                'Pets',
+                    ['SILVER', { 'SPA/Hot Tub/Jacuzzi', 
+                                'WiFi/Internet',
+                                'PETS',
                                 'BBQ',
                                 'TV/DVD/Cable',
                                 'Kitchen/Dining',
-                                'Walk to Lake',
-                                'Walk to Village',
-                                'Walk to Ski',
-                                'Bear City',
-                                'Sugarloaf',
-                                'Fawnskin',
-                                'Moonridge'
+                                #'Walk to Lake',
+                                #'Walk to Village',
+                                #'Walk to Ski',
+                                #'Bear City',
+                                #'Sugarloaf',
+                                #'Fawnskin',
+                                #'Moonridge'
                     }],
-                    ['BRONZE', { 'Pets',
+                    ['BRONZE', { 'PETS',
                                 'BBQ',
                                 'TV/DVD/Cable',
                                 'Kitchen/Dining',
-                                'Bear City',
-                                'Sugarloaf',
-                                'Fawnskin',
-                                'Moonridge'
+                                #'Bear City',
+                                #'Sugarloaf',
+                                #'Fawnskin',
+                                #'Moonridge'
                     }]
     ]
     for category, cat_amenities in categories:
-        if all(a in cat_amenities for a in amenities):
+        if all(cat_amenity in cabin_amenities for cat_amenity in cat_amenities):
             return category
     return 'UNCLASSIFIED'                
 
 def categorize_cabins():
     connection = psycopg2.connect(DATABASE_URI, cursor_factory=psycopg2.extras.RealDictCursor)
     with connection, connection.cursor() as c:
-        c.execute('SELECT * FROM db.cabin')
+        c.execute("SELECT * FROM db.cabin WHERE id NOT ILIKE 'BBV%'")
         cabins = c.fetchall()
         for cabin in cabins:
             c.execute('SELECT amenity from db.features WHERE id = %s', (cabin['id'],))
             amenities = c.fetchall()
             category =  get_category([a['amenity'] for a in amenities])
-            c.execute('UPDATE db.features SET tier = %s WHERE id=%s', (category, cabin['id']))
+            print(f'id:{cabin["id"]}, category: {category}')
+            c.execute('UPDATE db.cabin SET tier = %s WHERE id=%s', (category, cabin['id']))
         
 
 def update_cabin_urls():
