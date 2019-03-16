@@ -414,6 +414,7 @@ def get_rates_by_tier():
     tiers = data.get('tiers')
     connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)
     with connection, connection.cursor() as c:
+        # result
         sql = '''select c.bedrooms, c.tier, avg(avail.rate)::money from db.cabin as c 
             join db.availability as avail on avail.id = c.id 
             and avail.rate > 0 
@@ -452,6 +453,113 @@ def get_rates_by_tier():
             group by bedrooms, tier;'''
         c.execute(sql, (start_date, end_date, '{' + ','.join(tiers) + '}', '{' + ','.join(vrms) + '}'))
         prime_demand = c.fetchall()
+        # statistics
+        statistics = list(())
+        for vrm in vrms:
+            vrm_dict = dict(name=vrm)
+            total_category = list(())
+            # Percent booked/Vacant shown
+            sql = '''select
+                round(count(a.id) filter (where a.status = 'BOOKED')::numeric * 100/ count(a.id), 2) as "booked",  
+                round(count(a.id) filter (where a.status = 'AVAILABLE')::numeric * 100 / count(a.id), 2) as "vacant"
+                from db.availability as a
+                join db.cabin as c 
+                on c.id = a.id and c.idvrm = %s and c.status = 'ACTIVE'
+                where a.check_in >= %s and a.check_out <= %s;'''
+            c.execute(sql, (vrm, start_date, end_date))
+            booked_vacant = c.fetchone()
+            vrm_dict['statistics'] = list(())
+            vrm_dict['statistics'].append({
+                "name": "Percent booked/Vacant shown",
+                "value": str(booked_vacant.get('booked')) + ' / ' + str(booked_vacant.get('vacant'))
+            })
+            # Market Share
+            sql = '''select
+                round(count(c.id) filter (where c.idvrm = %s)::numeric * 100 / count(c.id), 2) as market_share
+                from db.availability as a
+                join db.cabin as c 
+                on c.id = a.id and c.status = 'ACTIVE'
+                where a.check_in >= %s and a.check_out <= %s;'''
+            c.execute(sql, (vrm, start_date, end_date))
+            vrm_dict['statistics'].append({
+                "name": "Market Share",
+                "value": str(c.fetchone().get('market_share')) + '%'
+            })
+            # Occupancy over or under ours
+            sql = '''select
+                count(c.id) filter (where c.idvrm = %s) - count(c.id) filter (where c.idvrm = 'BBV') as overunder
+                from db.availability as a
+                join db.cabin as c 
+                on c.id = a.id and c.status = 'ACTIVE'
+                where a.check_in >= %s and a.check_out <= %s and a.status='BOOKED';'''
+            c.execute(sql, (vrm, start_date, end_date))
+            vrm_dict['statistics'].append({
+                "name": "Occupancy over or under ours",
+                "value": c.fetchone().get('overunder')
+            })
+            # Bookings in last week
+            sql = '''select count(a.id) 
+                from db.availability as a
+                join db.cabin as c 
+                on c.id = a.id and c.status = 'ACTIVE' and c.idvrm = %s
+                where a.check_in >= date_trunc('week', CURRENT_TIMESTAMP - interval '1 week') 
+                and a.check_out <= date_trunc('week', CURRENT_TIMESTAMP) 
+                and a.status='BOOKED';'''
+            c.execute(sql, (vrm,))
+            vrm_dict['statistics'].append({
+                "name": "Bookings in last week",
+                "value": c.fetchone().get('count')
+            })
+            # Bookings in last month
+            sql = '''select count(a.id) 
+                from db.availability as a
+                join db.cabin as c 
+                on c.id = a.id and c.status = 'ACTIVE' and c.idvrm = %s
+                where a.check_in >= date_trunc('month', CURRENT_TIMESTAMP - interval '1 month') 
+                and a.check_out <= date_trunc('month', CURRENT_TIMESTAMP) 
+                and a.status='BOOKED';'''
+            c.execute(sql, (vrm,))
+            vrm_dict['statistics'].append({
+                "name": "Bookings in last month",
+                "value": c.fetchone().get('count')
+            })
+            # Bookings in last year
+            sql = '''select count(a.id) 
+                from db.availability as a
+                join db.cabin as c 
+                on c.id = a.id and c.status = 'ACTIVE' and c.idvrm = %s
+                where a.check_in >= date_trunc('year', CURRENT_TIMESTAMP - interval '1 year') 
+                and a.check_out <= date_trunc('year', CURRENT_TIMESTAMP) 
+                and a.status='BOOKED';'''
+            c.execute(sql, (vrm,))
+            vrm_dict['statistics'].append({
+                "name": "Bookings in last year",
+                "value": c.fetchone().get('count')
+            })
+            # Total Units by tier category
+            sql = '''select c.tier, count(c.tier) from db.cabin as c 
+                join db.availability as a on a.id = c.id 
+                and a.check_in >= %s and a.check_out <= %s
+                where c.idvrm = %s and c.status = 'ACTIVE'
+                group by tier;'''
+            c.execute(sql, (start_date, end_date, vrm))
+            vrm_dict['total_category'] = c.fetchall()
+            # Total Units by Area
+            sql = '''select count(c.id), 
+                case 
+                    when c.location in ('Sugarloaf', 'Fawnskin', 'Big Bear City') then 'Low demand area'
+                    when c.location in ('Moonridge') then 'Medium demand area'
+                    when c.location in ('Big Bear Lake') then 'Prime demand area'
+                end as area from db.availability as a 
+                join db.cabin as c 
+                on c.id = a.id and c.idvrm = %s and c.status = 'ACTIVE'
+                where a.check_in >= %s and a.check_out <= %s
+                group by area;'''
+            c.execute(sql, (vrm, start_date, end_date))
+            vrm_dict['total_area'] = c.fetchall()
+
+            statistics.append(vrm_dict)
+
     connection.close()
     result = {
         'result': [{
@@ -465,7 +573,8 @@ def get_rates_by_tier():
 
             'title': 'Prime demand area',
             'values': prime_demand
-        },]
+        },],
+        'statistics': statistics
     }
     return jsonify(result)
 
