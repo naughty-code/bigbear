@@ -1,9 +1,6 @@
-from geopy.geocoders import Nominatim
-from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
-import numpy as np
-
 from psycopg2.extras import RealDictCursor
+from shapely.geometry import Point
 import requests as rq
 import psycopg2
 import server
