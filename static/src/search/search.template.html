@@ -85,14 +85,14 @@
 			</table>
 		</div>
 	</div>
-	<div layout="column" layout-gt-sm ng-if="!$ctrl.loading && $ctrl.showTable">
+	<div layout="column" layout-gt-sm ng-if="!$ctrl.loading && $ctrl.showTable" ng-repeat="vrm in $ctrl.statistics track by $index">
 		<div flex="none" style="margin-top: 10px">
 			<table class="result-table">
 				<tbody>
 					<tr>
-						<th class="result-table" colspan="2">Statisticals</th>
+						<th class="result-table" colspan="2">Statistics for {{ vrm.name }}</th>
 					</tr>
-					<tr ng-repeat="sta in $ctrl.statisticals track by $index">
+					<tr ng-repeat="sta in vrm.statistics track by $index">
 						<td class="result-table">{{ sta.name }}</td>
 						<td class="result-table">{{ sta.value }}</td>
 					</tr>
@@ -103,9 +103,9 @@
 			<table class="result-table">
 				<tbody>
 					<tr>
-						<th class="result-table" colspan="2">Total Units by tier category</th>
+						<th class="result-table" colspan="2">Total Units by tier category for {{ vrm.name }}</th>
 					</tr>
-					<tr ng-repeat="tier in $ctrl.tierTotals track by $index">
+					<tr ng-repeat="tier in vrm.total_category track by $index">
 						<td class="result-table">{{ tier.name }}</td>
 						<td class="result-table">{{ tier.value }}</td>
 					</tr>
@@ -116,11 +116,11 @@
 			<table class="result-table">
 				<tbody>
 					<tr>
-						<th class="result-table" colspan="2">Total Units by Area</th>
+						<th class="result-table" colspan="2">Total Units by Area for {{ vrm.name }}</th>
 					</tr>
-					<tr ng-repeat="area in $ctrl.areaTotals track by $index">
-						<td class="result-table">{{ area.name }}</td>
-						<td class="result-table">{{ area.value }}</td>
+					<tr ng-repeat="area in vrm.total_area track by $index">
+						<td class="result-table">{{ area.area }}</td>
+						<td class="result-table">{{ area.count }}</td>
 					</tr>
 				</tbody>
 			</table>

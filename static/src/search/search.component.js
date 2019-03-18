@@ -18,7 +18,7 @@ function searchController($http, $mdDialog) {
 	ctrl.tierSelected = [];
 	ctrl.result = [];
 	ctrl.addons = [];
-	ctrl.statisticals = [];
+	ctrl.statistics = [];
 	ctrl.tierTotals = [];
 	ctrl.toggle = function (item, list) {
 		var idx = list.indexOf(item);
@@ -50,14 +50,6 @@ function searchController($http, $mdDialog) {
 
 	var host = "74.91.126.179";
 	// var host = "localhost";
-	// var promises = [
-	// 	$http.get(`http://${host}:5001/api/search/amenities`),
-	// 	$http.get(`http://${host}:5001/api/search/vrms`),
-	// 	$http.get(`http://${host}:5001/api/search/bedrooms`),
-	// 	$http.get(`http://${host}:5001/api/search/years`),
-	// 	$http.get(`http://${host}:5001/api/search/days`),
-	// 	$http.get(`http://${host}:5001/api/search/tiers`),
-	// ]
 
 	ctrl.search = function(ev) {
 		if (!validFilters()) {
@@ -88,18 +80,18 @@ function searchController($http, $mdDialog) {
 		$http.post(`http://${host}:5001/api/search/daterange`, requestBody)
 			.then(function (result) {
 				ctrl.result = [];
-				for (const area of result.data.result) {
+				for (var area of result.data.result) {
 					var area_temp = {
 						title: area.title,
 						values: []
 					}
-					for (const tier of ctrl.tierSelected) {
+					for (var tier of ctrl.tierSelected) {
 						var tier_temp = {
 							tier: tier,
 							values: []
 						}
-						for (let index = 1; index < 9; index++) {
-							let find = area.values.find( v => {
+						for (var index = 1; index < 9; index++) {
+							var find = area.values.find( v => {
 								return (v.tier == tier && v.bedrooms == index)
 							})
 							if (find)
@@ -110,6 +102,23 @@ function searchController($http, $mdDialog) {
 						area_temp.values.push(tier_temp)
 					}
 					ctrl.result.push(area_temp);
+					ctrl.statistics = result.data.statistics;
+				}
+				for (var sta of ctrl.statistics) {
+					var total = sta['total_category'];
+					sta['total_category'] = [];
+					for (var tier of ctrl.tierSelected) {
+						var tier_temp = {
+							name: tier,
+							value: 0
+						}
+						var find = total.find( t => {
+							return (t.tier == tier)
+						})
+						if (find)
+							tier_temp.value = find.count;
+						sta['total_category'].push(tier_temp);
+				}
 				}
 				ctrl.loading = false;
 				ctrl.showTable = true;
@@ -134,91 +143,6 @@ function searchController($http, $mdDialog) {
 				value: "--"
 			}
 		]
-		ctrl.tierTotals = [
-			{
-				name: "Platinum",
-				value: "--"
-			},
-			{
-				name: "Gold",
-				value: "--"
-			},
-			{
-				name: "Silver",
-				value: "--"
-			},
-			{
-				name: "Bronze",
-				value: "--"
-			}
-		]
-		ctrl.areaTotals = [
-			{
-				name: "Prime",
-				value: "--"
-			},
-			{
-				name: "Medium Demand",
-				value: "--"
-			},
-			{
-				name: "Low Demand",
-				value: "--"
-			}
-		]
-		ctrl.statisticals = [
-			{
-				name: "Percent booked/Vacant shown",
-				value: "-- / --"
-			},
-			{
-				name: "Market Share",
-				value: "--"
-			},
-			{
-				name: "Occupancy over or under ours",
-				value: "--"
-			},
-			{
-				name: "bookings in last week",
-				value: "--"
-			},
-			{
-				name: "Bookings in last month",
-				value: "--"
-			},
-			{
-				name: "Bookings last year",
-				value: "--"
-			}
-		]
-		
-	// 	// var data = {
-	// 	// 	amenities: ctrl.amenitySelected,
-	// 	// 	vrms: ctrl.vrmSelected,
-	// 	// 	bedrooms: ctrl.bedroomSelected,
-	// 	// 	years: ctrl.yearSelected,
-	// 	// 	days: ctrl.daySelected,
-	// 	// 	tiers: ctrl.tierSelected
-	// 	// }
-
-	// 	// var comparePomises = [];
-	// 	// if (ctrl.compareSelected.length > 0)
-	// 	// 	comparePomises.push($http.post(`http://${host}:5001/api/search/avg`, data));
-		
-	// 	// Promise.all(comparePomises).then(function (values) {
-	// 	// 	console.log(values);
-	// 	// 	ctrl.firstData = values[0].data;
-	// 	// 	angular.forEach(ctrl.firstData, function(value, key) {
-	// 	// 		ctrl.firstData[key].check_in = moment.utc(ctrl.firstData[key].check_in).toDate();
-	// 	// 		ctrl.firstData[key].check_out = moment.utc(ctrl.firstData[key].check_out).toDate();
-	// 	// 		ctrl.firstData[key].average = ctrl.firstData[key].average ? ctrl.firstData[key].average : '$0';
-	// 	// 		ctrl.firstData[key].minimum = ctrl.firstData[key].minimum ? ctrl.firstData[key].minimum : '$0';
-	// 	// 		ctrl.firstData[key].maximum = ctrl.firstData[key].maximum ? ctrl.firstData[key].maximum : '$0';
-	// 	// 		ctrl.firstData[key]['Bookings %'] = ctrl.firstData[key]['Bookings %'] + '%';
-	// 	// 		ctrl.firstData[key]['Vacants %'] = ctrl.firstData[key]['Vacants %'] + '%';
-	// 	// 	});
-	// 	// })
 
 	}
 
