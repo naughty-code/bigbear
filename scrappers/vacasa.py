@@ -204,6 +204,7 @@ def extract_cabin_urls_splinter():
                 pass
             next_button = b.find_link_by_text('next')
             if next_button:
+                b.driver.execute_script("document.getElementById('place-page-left').scrollTo(0, 100000);")
                 next_button[0].click()
             else:
                 soup = BeautifulSoup(b.html, 'html.parser')
