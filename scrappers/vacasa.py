@@ -19,6 +19,7 @@ from scrappers.util import print
 
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
+from scrappers import mapgeo
 
 import itertools
 
@@ -135,6 +136,9 @@ def parse_data(html):
     splitted_address = data['address'].split(',')
 
     data['location'] = splitted_address[1] if splitted_address[1:2] else ''
+    #ANDRES METIENDO MANO
+    data['location'] = mapgeo.VACASA_location(html)
+    #ANDRES DEJO DE METER MANO
     return data
 
 @util.ignore_errors
@@ -200,6 +204,7 @@ def extract_cabin_urls_splinter():
                 pass
             next_button = b.find_link_by_text('next')
             if next_button:
+                b.driver.execute_script("document.getElementById('place-page-left').scrollTo(0, 100000);")
                 next_button[0].click()
             else:
                 soup = BeautifulSoup(b.html, 'html.parser')
@@ -254,6 +259,7 @@ def rate_scrapper_single_threaded():
                     pass
                 next_button = b.find_link_by_text('next')
                 if next_button:
+                    b.driver.execute_script("document.getElementById('place-page-left').scrollTo(0, 100000);")
                     next_button[0].click()
                 else:
                     break

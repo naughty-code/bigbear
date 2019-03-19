@@ -7,6 +7,7 @@ from datetime import datetime
 from scrappers import settings
 import os
 from scrappers.util import print
+from scrappers import mapgeo
 
 
 DB_URI = os.getenv('DATABASE_URI')
@@ -106,9 +107,17 @@ def db_format_cabin(cabin):
     if isinstance(seo_page_name, int) is True:
         seo_page_name = str(cabin.get('seo_page_name', ''))
     website = 'https://www.bigbearvacations.com/' + seo_page_name
+    #ANDRES METIENDO MANO
+    lat = cabin.get('location_latitude')
+    lon = cabin.get('location_longitude')
+    location = mapgeo.location_extract(lat,lon)
+    #HASTA ACA METI MANO
     description = cabin['short_description']
     address = f'{cabin.get("city", "")}, {cabin.get("neightborhood_name", "")}, {cabin.get("neightborhood_area_id","")}'
-    location = cabin.get('city', '')
+    #ANDRES METIENDO MANO
+    location_address = mapgeo.BBV_location_address(website) #ESTO HACE UN REQUEST POR CABANA PARA SACAR BIEN EL ADDRESS 
+    address, location = location_address if location_address else ('','')#SI ES MUY COSTOSO QUITAR
+    #HASTA ACA METI MANO
     bedrooms = cabin['bedrooms_number']
     if bedrooms is None:
         bedrooms = 1
