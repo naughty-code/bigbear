@@ -1,13 +1,13 @@
 import requests as rq
 import json
-import util
+from scrappers import util
 from psycopg2 import connect
 from psycopg2.extras import execute_values
 from datetime import datetime
-import settings
+from scrappers import settings
 import os
-from util import print
-import mapgeo
+from scrappers.util import print
+from scrappers import mapgeo
 
 
 DB_URI = os.getenv('DATABASE_URI')

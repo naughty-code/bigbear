@@ -11,15 +11,15 @@ import itertools
 import psycopg2
 from psycopg2.extras import execute_values
 from splinter import Browser
-import util
-import settings
+from scrappers import util
+from scrappers import settings
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
-from util import print
+from scrappers.util import print
 
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
-import mapgeo
+from scrappers import mapgeo
 
 import itertools
 
