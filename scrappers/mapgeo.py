@@ -1,3 +1,6 @@
+from geopy.geocoders import Nominatim
+
+
 from shapely.geometry.polygon import Polygon
 from psycopg2.extras import RealDictCursor
 from shapely.geometry import Point
@@ -80,10 +83,44 @@ def VACASA_lat_lon_extract(html):
 def VACASA_location(html):
 	location = ''
 	try:
-		location = location_extract(VACASA_lat_lon_extract(html))
+		lat_lon = VACASA_lat_lon_extract(html)
+		lat, lon = lat_lon if lat_lon else ('','')
+		location = location_extract(lat,lon)
 	except:
 		print('Location Error')
 	return location
+
+def BBCC_lat_lon_extract(html):
+	match = re.search(r"'latitude':[\s]*([^,]+)",html)
+	lat = float(match.group(1).strip().replace('"','')) if match else None
+	match = re.search(r"'longitude':[\s]*([^,]+)",html)
+	lon = float(match.group(1).strip().replace('"','')) if match else None
+	return lat, lon
+
+def BBCC_location(html):
+	location = ''
+	try:
+		lat_lon = BBCC_lat_lon_extract(html)
+		lat, lon = lat_lon if lat_lon else ('','')
+		location = location_extract(lat,lon)
+	except:
+		print('Location Error')
+	return location
+
+@failsafe
+def BBCC_address(lat, lon):
+	geolocator = Nominatim(user_agent="bigbear")
+	location = geolocator.reverse(f"{lat}, {lon}")
+	address = location.address if location else None
+	return address
+
+def BBCC_address_location(html):
+	lat_lon = BBCC_lat_lon_extract(html)
+	lat, lon = lat_lon if lat_lon else ('','')
+	location = BBCC_location(html)
+	address = BBCC_address(lat, lon)
+	return address,location
+
 
 @failsafe
 def BBV_location_address(url):
