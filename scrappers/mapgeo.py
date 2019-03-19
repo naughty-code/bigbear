@@ -3,7 +3,6 @@ from psycopg2.extras import RealDictCursor
 from shapely.geometry import Point
 import requests as rq
 import psycopg2
-import server
 import json
 import re
 import os
