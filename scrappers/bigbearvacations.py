@@ -1,12 +1,12 @@
 import requests as rq
 import json
-from scrappers import util
+import util
 from psycopg2 import connect
 from psycopg2.extras import execute_values
 from datetime import datetime
-from scrappers import settings
+import settings
 import os
-from scrappers.util import print
+from util import print
 import mapgeo
 
 

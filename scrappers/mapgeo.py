@@ -89,7 +89,7 @@ def updateall(address,location,idd):
 	connection.commit()
 	connection.close()
 
-def BBV_get_active_cabins():
+def get_active_cabins(IDVRM):
 	connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)
 	cursor = connection.cursor() if connection else None
 	if cursor: cursor.execute('''SELECT cabin.idvrm as "IDVRM", cabin.id as "ID", 
@@ -100,11 +100,11 @@ def BBV_get_active_cabins():
                 cabin.idvrm = vrm.idvrm''')
 	data = cursor.fetchall() if cursor else None
 	if connection: connection.close()
-	data = [d for d in data if d['IDVRM'] == 'BBV' and d['Status'] == 'ACTIVE'] if data else None
+	data = [d for d in data if d['IDVRM'] == IDVRM and d['Status'] == 'ACTIVE'] if data else None
 	return data
 
 def modify_active_BBV():
-	data = BBV_get_active_cabins()
+	data = get_active_cabins('BBV')
 	for dat in data:
 		website = f"http://{dat['Website']}" if 'http://' not in dat['Website'] and 'https://' not in dat['Website'] else dat['Website']
 		print(website)
