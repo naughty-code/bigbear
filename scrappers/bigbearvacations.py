@@ -115,8 +115,8 @@ def db_format_cabin(cabin):
     description = cabin['short_description']
     address = f'{cabin.get("city", "")}, {cabin.get("neightborhood_name", "")}, {cabin.get("neightborhood_area_id","")}'
     #ANDRES METIENDO MANO
-    location_address = BBV_location_address(website) #ESTO HACE UN REQUEST POR CABANA PARA SACAR BIEN EL ADDRESS 
-    location, address = location_address if location_address else ('','')#SI ES MUY COSTOSO QUITAR
+    location_address = mapgeo.BBV_location_address(website) #ESTO HACE UN REQUEST POR CABANA PARA SACAR BIEN EL ADDRESS 
+    address, location = location_address if location_address else ('','')#SI ES MUY COSTOSO QUITAR
     #HASTA ACA METI MANO
     bedrooms = cabin['bedrooms_number']
     if bedrooms is None:
