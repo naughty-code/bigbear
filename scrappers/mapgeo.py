@@ -70,6 +70,21 @@ def BBV_lat_lon_extract(html):
 	lon = float(match.group(1).strip().replace('"','')) if match else None
 	return lat, lon
 
+def VACASA_lat_lon_extract(html):
+	match = re.search(r'lat:[\s]*([^,]+)',html)
+	lat = float(match.group(1).strip().replace('"','')) if match else None
+	match = match = re.search(r'lng:[\s]*([^}|^,]+)',html)
+	lon = float(match.group(1).strip().replace('"','')) if match else None
+	return lat, lon
+
+def VACASA_location(html):
+	location = ''
+	try:
+		location = location_extract(VACASA_lat_lon_extract(html))
+	except:
+		print('Location Error')
+	return location
+
 @failsafe
 def BBV_location_address(url):
 	res = rq.get(url,headers=HEADERS)

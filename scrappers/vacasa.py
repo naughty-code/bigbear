@@ -11,14 +11,15 @@ import itertools
 import psycopg2
 from psycopg2.extras import execute_values
 from splinter import Browser
-from scrappers import util
-from scrappers import settings
+import util
+import settings
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
-from scrappers.util import print
+from util import print
 
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
+import mapgeo
 
 import itertools
 
@@ -135,6 +136,9 @@ def parse_data(html):
     splitted_address = data['address'].split(',')
 
     data['location'] = splitted_address[1] if splitted_address[1:2] else ''
+    #ANDRES METIENDO MANO
+    data['location'] = mapgeo.VACASA_location(html)
+    #ANDRES DEJO DE METER MANO
     return data
 
 @util.ignore_errors
