@@ -798,17 +798,13 @@ def insert_amenities():
     amenities = []
     for cabin in cabins:
         cabin_id = cabin['site_id']
-        # for amenity in cabin.get('amenities') :
-        #         amenities.append(amenity)
+        for amenity in cabin.get('amenities') :
+                 amenities.append(amenity)
         for k, v in cabin['properties'].items():
-            if 'Game' in k and v == 'Yes':
-                amenities.append((cabin_id,'Games'))
-            elif k == 'Internet' and v == 'Yes':
-                amenities.append((cabin_id, 'WIFI/Internet'))
-            elif k == 'Hot Tub' and v == 'Yes':
-                amenities.append((cabin_id,'SPA/Hot Tub/Jacuzzi'))
-            elif k == 'Pet Friendly' and v == 'Yes':
-                amenities.append((cabin_id,'PETS'))
+            if 'pet' in k.casefold():
+                print(f'{k}: {v}')
+            amenities.append((cabin_id, f'{k}: {v}'))
+        
     # Update amenities
     connection = psycopg2.connect(DATABASE_URI)
     with connection:
