@@ -80,6 +80,7 @@ function searchController($http, $mdDialog) {
 		$http.post(`http://${host}:5001/api/search/daterange`, requestBody)
 			.then(function (result) {
 				ctrl.result = [];
+				ctrl.addons = [];
 				for (var area of result.data.result) {
 					var area_temp = {
 						title: area.title,
@@ -120,6 +121,19 @@ function searchController($http, $mdDialog) {
 						sta['total_category'].push(tier_temp);
 				}
 				}
+				for (const addon of result.data.have) {
+					let find = result.data['not_have'].find( nh => {
+						return addon.amenity === nh.amenity
+					})
+					if (find.avg) {
+						addon.avg = parseFloat(addon.avg.slice(1))
+						find.avg = parseFloat(find.avg.slice(1))
+						ctrl.addons.push({
+							name: addon.amenity,
+							value: addon.avg - find.avg
+						})
+					}
+				}
 				ctrl.loading = false;
 				ctrl.showTable = true;
 				ctrl.buttonDisabled = false;
@@ -127,23 +141,6 @@ function searchController($http, $mdDialog) {
 			}, function (result) {
 				console.log(result)
 			});
-
-
-		ctrl.addons = [
-			{
-				name: "Spa",
-				value: "--"
-			},
-			{
-				name: "WIFI",
-				value: "--"
-			},
-			{
-				name: "Game room or table",
-				value: "--"
-			}
-		]
-
 	}
 
 	ctrl.backToSearch = function(ev) {

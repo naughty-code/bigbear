@@ -453,11 +453,30 @@ def get_rates_by_tier():
             group by bedrooms, tier;'''
         c.execute(sql, (start_date, end_date, '{' + ','.join(tiers) + '}', '{' + ','.join(vrms) + '}'))
         prime_demand = c.fetchall()
+        # have
+        sql = '''select f.amenity, (avg(a.rate) filter (where a.rate > 0))::money from db.availability as a 
+            join db.cabin as c on c.id = a.id and c.idvrm = ANY(%s) and a.check_in >= %s and a.check_out <= %s
+            join db.features as f on  f.id = c.id
+            group by f.amenity;'''
+        c.execute(sql, (vrms, start_date, end_date))
+        have = c.fetchall()
+        # not_have
+        sql = '''select f.amenity, 
+            (select (avg(a.rate) filter (where a.rate > 0))::money from db.availability as a 
+            where a.id in (
+                select f1.id from db.features as f1
+                where f1.id like any(%s) and 
+                f.amenity not in (select f2.amenity from db.features as f2 where f2.id = f1.id)
+                group by f1.id
+            )
+            and a.check_in >= %s and a.check_out <= %s)
+            from db.features as f group by f.amenity;'''
+        c.execute(sql, ([f'{vrm}%' for vrm in vrms], start_date, end_date))
+        not_have = c.fetchall()
         # statistics
         statistics = list(())
         for vrm in vrms:
             vrm_dict = dict(name=vrm)
-            total_category = list(())
             # Percent booked/Vacant shown
             sql = '''select
                 round(count(a.id) filter (where a.status = 'BOOKED')::numeric * 100/ count(a.id), 2) as "booked",  
@@ -574,6 +593,8 @@ def get_rates_by_tier():
             'title': 'Prime demand area',
             'values': prime_demand
         },],
+        'have': have,
+        'not_have': not_have,
         'statistics': statistics
     }
     return jsonify(result)
