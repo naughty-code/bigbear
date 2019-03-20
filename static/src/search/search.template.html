@@ -79,7 +79,7 @@
 					</tr>
 					<tr ng-repeat="addon in $ctrl.addons track by $index">
 						<td class="result-table">{{ addon.name }}</td>
-						<td class="result-table">{{ addon.value }}</td>
+						<td class="result-table">{{ addon.value | currency }}</td>
 					</tr>
 				</tbody>
 			</table>
