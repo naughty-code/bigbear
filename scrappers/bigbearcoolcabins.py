@@ -19,7 +19,7 @@ from bs4 import BeautifulSoup
 from psycopg2.extras import execute_values
 
 from scrappers.util import print
-import mapgeo
+from scrappers import mapgeo
 
 BASE_URL = 'https://www.bigbearcoolcabins.com'
 CABIN_URLS_FILE = './scrappers/bbcc_cabin_urls.json'
