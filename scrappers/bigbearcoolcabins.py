@@ -19,6 +19,7 @@ from bs4 import BeautifulSoup
 from psycopg2.extras import execute_values
 
 from scrappers.util import print
+from scrappers import mapgeo
 
 BASE_URL = 'https://www.bigbearcoolcabins.com'
 CABIN_URLS_FILE = './scrappers/bbcc_cabin_urls.json'
@@ -540,8 +541,8 @@ def parse_data(html):
     #availabilities_veterans = get_availability_veterans(_params['rcav[eid]'], unavailable_dates)
     #availability_thanksgiving = get_availability_thanksgiving(_params['rcav[eid]'], unavailable_dates)
     #availabilities_christmas = get_availability_christmas(_params['rcav[eid]'], unavailable_dates)
-
-
+    tup = mapgeo.BBCC_address_location(html)
+    address, location = tup if tup else ('', '')
     return {
         'name': page_title,
         'bedrooms': bedrooms,
@@ -552,6 +553,8 @@ def parse_data(html):
         'amenities_section': amenities_dict,
         'unavailable_dates': unavailable_dates,
         'half_dates': half_dates,
+        'location': location if location else '',
+        'address': address if address else '',
         '_params': _params,
         #'availabilities': availabilities_weekends + availabilities_MLK + availabilities_president + availabilities_patrick + availabilities_easter + availabilities_cincomayo + availabilities_memorial + availabilities_4july + availabilities_labor + availabilities_columbus + availabilities_veterans + availability_thanksgiving + availabilities_christmas
     }
