@@ -425,7 +425,7 @@ def get_rates_by_tier():
             and c.idvrm = ANY(%s)
             and c.status='ACTIVE' 
             group by bedrooms, tier;'''
-        c.execute(sql, (start_date, end_date, '{' + ','.join(tiers) + '}', '{' + ','.join(vrms) + '}'))
+        c.execute(sql, (start_date, end_date, tiers, vrms))
         low_demand = c.fetchall()
 
         sql = '''select c.bedrooms, c.tier, avg(avail.rate)::money from db.cabin as c 
@@ -438,7 +438,7 @@ def get_rates_by_tier():
             and c.idvrm = ANY(%s)
             and c.status='ACTIVE' 
             group by bedrooms, tier;'''
-        c.execute(sql, (start_date, end_date, '{' + ','.join(tiers) + '}', '{' + ','.join(vrms) + '}'))
+        c.execute(sql, (start_date, end_date, tiers, vrms))
         medium_demand = c.fetchall()
 
         sql = '''select c.bedrooms, c.tier, avg(avail.rate)::money from db.cabin as c 
@@ -451,18 +451,19 @@ def get_rates_by_tier():
             and c.idvrm = ANY(%s)
             and c.status='ACTIVE' 
             group by bedrooms, tier;'''
-        c.execute(sql, (start_date, end_date, '{' + ','.join(tiers) + '}', '{' + ','.join(vrms) + '}'))
+        c.execute(sql, (start_date, end_date, tiers, vrms))
         prime_demand = c.fetchall()
         # have
         sql = '''select f.amenity, (avg(a.rate) filter (where a.rate > 0))::money from db.availability as a 
-            join db.cabin as c on c.id = a.id and c.idvrm = ANY(%s) and a.check_in >= %s and a.check_out <= %s
+            join db.cabin as c on c.id = a.id and c.idvrm = ANY(%s) and a.check_in >= %s and a.check_out <= %s and c.tier = any(%s)
             join db.features as f on  f.id = c.id
             group by f.amenity;'''
-        c.execute(sql, (vrms, start_date, end_date))
+        c.execute(sql, (vrms, start_date, end_date, tiers))
         have = c.fetchall()
         # not_have
         sql = '''select f.amenity, 
-            (select (avg(a.rate) filter (where a.rate > 0))::money from db.availability as a 
+            (select (avg(a.rate) filter (where a.rate > 0))::money from db.availability as a
+            join db.cabin as c on c.id = a.id and c.tier = any(%s)
             where a.id in (
                 select f1.id from db.features as f1
                 where f1.id like any(%s) and 
@@ -471,7 +472,7 @@ def get_rates_by_tier():
             )
             and a.check_in >= %s and a.check_out <= %s)
             from db.features as f group by f.amenity;'''
-        c.execute(sql, ([f'{vrm}%' for vrm in vrms], start_date, end_date))
+        c.execute(sql, (tiers, [f'{vrm}%' for vrm in vrms], start_date, end_date))
         not_have = c.fetchall()
         # statistics
         statistics = list(())
@@ -483,9 +484,9 @@ def get_rates_by_tier():
                 round(count(a.id) filter (where a.status = 'AVAILABLE')::numeric * 100 / count(a.id), 2) as "vacant"
                 from db.availability as a
                 join db.cabin as c 
-                on c.id = a.id and c.idvrm = %s and c.status = 'ACTIVE'
+                on c.id = a.id and c.idvrm = %s and c.status = 'ACTIVE' and c.tier = any(%s)
                 where a.check_in >= %s and a.check_out <= %s;'''
-            c.execute(sql, (vrm, start_date, end_date))
+            c.execute(sql, (vrm, tiers, start_date, end_date))
             booked_vacant = c.fetchone()
             vrm_dict['statistics'] = list(())
             vrm_dict['statistics'].append({
@@ -497,9 +498,9 @@ def get_rates_by_tier():
                 round(count(c.id) filter (where c.idvrm = %s)::numeric * 100 / count(c.id), 2) as market_share
                 from db.availability as a
                 join db.cabin as c 
-                on c.id = a.id and c.status = 'ACTIVE'
+                on c.id = a.id and c.status = 'ACTIVE' and c.tier = any(%s)
                 where a.check_in >= %s and a.check_out <= %s;'''
-            c.execute(sql, (vrm, start_date, end_date))
+            c.execute(sql, (vrm, tiers, start_date, end_date))
             vrm_dict['statistics'].append({
                 "name": "Market Share",
                 "value": str(c.fetchone().get('market_share')) + '%'
@@ -509,9 +510,9 @@ def get_rates_by_tier():
                 count(c.id) filter (where c.idvrm = %s) - count(c.id) filter (where c.idvrm = 'BBV') as overunder
                 from db.availability as a
                 join db.cabin as c 
-                on c.id = a.id and c.status = 'ACTIVE'
+                on c.id = a.id and c.status = 'ACTIVE' and c.tier = any(%s)
                 where a.check_in >= %s and a.check_out <= %s and a.status='BOOKED';'''
-            c.execute(sql, (vrm, start_date, end_date))
+            c.execute(sql, (vrm, tiers, start_date, end_date))
             vrm_dict['statistics'].append({
                 "name": "Occupancy over or under ours",
                 "value": c.fetchone().get('overunder')
@@ -520,11 +521,11 @@ def get_rates_by_tier():
             sql = '''select count(a.id) 
                 from db.availability as a
                 join db.cabin as c 
-                on c.id = a.id and c.status = 'ACTIVE' and c.idvrm = %s
+                on c.id = a.id and c.status = 'ACTIVE' and c.idvrm = %s and c.tier = any(%s)
                 where a.check_in >= date_trunc('week', CURRENT_TIMESTAMP - interval '1 week') 
                 and a.check_out <= date_trunc('week', CURRENT_TIMESTAMP) 
                 and a.status='BOOKED';'''
-            c.execute(sql, (vrm,))
+            c.execute(sql, (vrm, tiers))
             vrm_dict['statistics'].append({
                 "name": "Bookings in last week",
                 "value": c.fetchone().get('count')
@@ -533,11 +534,11 @@ def get_rates_by_tier():
             sql = '''select count(a.id) 
                 from db.availability as a
                 join db.cabin as c 
-                on c.id = a.id and c.status = 'ACTIVE' and c.idvrm = %s
+                on c.id = a.id and c.status = 'ACTIVE' and c.idvrm = %s and c.tier = any(%s)
                 where a.check_in >= date_trunc('month', CURRENT_TIMESTAMP - interval '1 month') 
                 and a.check_out <= date_trunc('month', CURRENT_TIMESTAMP) 
                 and a.status='BOOKED';'''
-            c.execute(sql, (vrm,))
+            c.execute(sql, (vrm, tiers))
             vrm_dict['statistics'].append({
                 "name": "Bookings in last month",
                 "value": c.fetchone().get('count')
@@ -546,11 +547,11 @@ def get_rates_by_tier():
             sql = '''select count(a.id) 
                 from db.availability as a
                 join db.cabin as c 
-                on c.id = a.id and c.status = 'ACTIVE' and c.idvrm = %s
+                on c.id = a.id and c.status = 'ACTIVE' and c.idvrm = %s and c.tier = any(%s)
                 where a.check_in >= date_trunc('year', CURRENT_TIMESTAMP - interval '1 year') 
                 and a.check_out <= date_trunc('year', CURRENT_TIMESTAMP) 
                 and a.status='BOOKED';'''
-            c.execute(sql, (vrm,))
+            c.execute(sql, (vrm, tiers))
             vrm_dict['statistics'].append({
                 "name": "Bookings in last year",
                 "value": c.fetchone().get('count')
@@ -559,9 +560,9 @@ def get_rates_by_tier():
             sql = '''select c.tier, count(c.tier) from db.cabin as c 
                 join db.availability as a on a.id = c.id 
                 and a.check_in >= %s and a.check_out <= %s
-                where c.idvrm = %s and c.status = 'ACTIVE'
+                where c.idvrm = %s and c.status = 'ACTIVE' and c.tier = any(%s)
                 group by tier;'''
-            c.execute(sql, (start_date, end_date, vrm))
+            c.execute(sql, (start_date, end_date, vrm, tiers))
             vrm_dict['total_category'] = c.fetchall()
             # Total Units by Area
             sql = '''select count(c.id), 
@@ -571,10 +572,10 @@ def get_rates_by_tier():
                     when c.location in ('Big Bear Lake') then 'Prime demand area'
                 end as area from db.availability as a 
                 join db.cabin as c 
-                on c.id = a.id and c.idvrm = %s and c.status = 'ACTIVE'
+                on c.id = a.id and c.idvrm = %s and c.status = 'ACTIVE' and c.tier = any(%s)
                 where a.check_in >= %s and a.check_out <= %s
                 group by area;'''
-            c.execute(sql, (vrm, start_date, end_date))
+            c.execute(sql, (vrm, tiers, start_date, end_date))
             vrm_dict['total_area'] = c.fetchall()
 
             statistics.append(vrm_dict)

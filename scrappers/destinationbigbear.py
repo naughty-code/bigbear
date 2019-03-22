@@ -67,6 +67,7 @@ def scrape_rates_and_insert_faster():
     names = set(name for id_, name in cabins)
     print(len(id_from_name.keys()))
     for rates in get_quote_single_threaded():
+        time.sleep(2)
         if not rates: continue
         start_date = rates[0]['start']
         end_date = rates[0]['end']

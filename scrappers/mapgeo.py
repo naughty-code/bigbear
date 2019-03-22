@@ -55,8 +55,8 @@ def location_extract(lat,lon):
 		point = Point(lat, lon)
 		keys = locations.keys()
 		for key in keys: 
-			if point.within(locations[key]): return key
-	return None
+			if point.within(locations[key]): return key.strip()
+	return 'UNIDENTIFIED'
 
 def BBV_address_extract(html):
 	match = re.search(r'"streetAddress":[\s]*"([^"]+)',html)
