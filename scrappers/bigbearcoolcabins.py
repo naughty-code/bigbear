@@ -741,33 +741,35 @@ def insert_cabins(cabins=None):
     connection = psycopg2.connect(os.getenv('DATABASE_URI'))
     insertCabins = []
     for cabin in cabins:
-        id = 'BBCC' + cabin['_params']['rcav[eid]']
+        idd = 'BBCC' + cabin['_params']['rcav[eid]']
         name = cabin['name']
         url = cabin['url']
         description = BeautifulSoup(cabin['description'], "html.parser").text
-        location = cabin['amenities_section'].get('Area', '')
+        location = cabin['location']
+        address = cabin['address']
         bedrooms = re.match(r'\d+',cabin['bedrooms']).group()
         occupancy = re.search(r'\d+', cabin['sleeps']).group()
-        insertCabins.append([
-            id,
+        insertCabins.append((
+            idd,
             name,
             url,
             description,
+            address,
             location,
             bedrooms,
             occupancy,
             'ACTIVE',
             'BBCC'
-        ])
+        ))
     with connection:
         with connection.cursor() as cursor:
             str_sql = '''UPDATE db.cabin SET status = 'INACTIVE' WHERE idvrm = 'BBCC' '''
             cursor.execute(str_sql)
-            str_sql = '''INSERT INTO db.cabin (id, name, website, description, location, bedrooms, 
+            str_sql = '''INSERT INTO db.cabin (id, name, website, description, address,location, bedrooms, 
                 occupancy,status, idvrm) VALUES %s ON CONFLICT (id) DO UPDATE SET name = 
                 excluded.name, website = excluded.website, description = excluded.description, 
                 bedrooms = excluded.bedrooms, occupancy = excluded.occupancy, status = 
-                excluded.status;'''
+                excluded.status, location = excluded.location, address = excluded.address;''' #modifique el query
             execute_values(cursor, str_sql, insertCabins)
     connection.close()
 
