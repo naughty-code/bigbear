@@ -67,7 +67,7 @@ def get_category(cabin_amenities):
 def categorize_cabins():
     connection = psycopg2.connect(DATABASE_URI, cursor_factory=psycopg2.extras.RealDictCursor)
     with connection, connection.cursor() as c:
-        c.execute("SELECT * FROM db.cabin WHERE id NOT ILIKE 'BBV%' and status = 'ACTIVE'")
+        c.execute("SELECT * FROM db.cabin WHERE status = 'ACTIVE'")
         cabins = c.fetchall()
         for cabin in cabins:
             c.execute('SELECT amenity from db.features WHERE id = %s', (cabin['id'],))

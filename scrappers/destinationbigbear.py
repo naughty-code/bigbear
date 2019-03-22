@@ -147,15 +147,16 @@ def get_quote_single_threaded():
                 while True:
                     while b.is_element_present_by_css('body.loading'):
                         pass
-                    tries = 0
-                    while b.is_element_not_present_by_css('.panel-overlay-bottom > h4'):
-                        tries += 1
-                        if tries > 10:
-                            return results
+                    if b.is_element_not_present_by_css('.panel-overlay-bottom > h4', 60):
+                        return results
                     prices_with_dollar = [e.text for e in b.find_by_css('.panel-overlay-bottom > h4') if e.text]
+                    if b.is_element_not_present_by_css('.caption.header > h3', 60):
+                        return results
                     prices = [re.sub(r'[\$,]', '', price_with_dollar).split()[0] for price_with_dollar in prices_with_dollar]
                     names = [e.text for e in b.find_by_css('.caption.header > h3') if e.text]
                     results+= [{'name': name, 'price':price, 'start': start, 'end':end, 'holiday': holiday, 'status': 'AVAILABLE'} for name, price in zip(names, prices)]
+                    if b.is_element_not_present_by_css('.btn.next', 60):
+                        return results
                     next_ = b.find_by_css('.btn.next')
                     if next_.has_class('disabled'):
                         break
@@ -163,7 +164,8 @@ def get_quote_single_threaded():
                         next_.click()
                 yield results
             except Exception as e:
-                print(e)
+                #print(e)
+                raise e
                 yield results
 
 def insert_rates_faster(rates):
@@ -801,8 +803,8 @@ def insert_amenities():
         for amenity in cabin.get('amenities') :
                  amenities.append(amenity)
         for k, v in cabin['properties'].items():
-            if 'pet' in k.casefold():
-                print(f'{k}: {v}')
+            if 'pet' in k.casefold() and 'no' in v.casefold(): #filter this here cause its causing issues in sql filter function
+                continue
             amenities.append((cabin_id, f'{k}: {v}'))
         
     # Update amenities
