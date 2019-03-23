@@ -4,6 +4,7 @@ from geopy.geocoders import Nominatim
 from shapely.geometry.polygon import Polygon
 from psycopg2.extras import RealDictCursor
 from shapely.geometry import Point
+from bs4 import BeautifulSoup
 import requests as rq
 import psycopg2
 import json
@@ -57,6 +58,25 @@ def location_extract(lat,lon):
 		for key in keys: 
 			if point.within(locations[key]): return key.strip()
 	return 'UNIDENTIFIED'
+
+def DBB_lat_lon_extract(html):
+	soup = BeautifulSoup(html, 'html.parser')
+	lon = soup.select_one('input[name="hdnLong"]')
+	lat = soup.select_one('input[name="hdnLat"]')
+
+	lat = float(lat.get('value')) if lat else ''
+	lon = float(lon.get('value')) if lon else ''
+	return lat, lon
+
+def DBB_location(html):
+	location = ''
+	try:
+		lat_lon = DBB_lat_lon_extract(html)
+		lat, lon = lat_lon if lat_lon else ('','')
+		location = location_extract(lat,lon)
+	except:
+		print('Location Error')
+	return location
 
 def BBV_address_extract(html):
 	match = re.search(r'"streetAddress":[\s]*"([^"]+)',html)

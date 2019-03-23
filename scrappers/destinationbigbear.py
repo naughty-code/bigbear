@@ -17,10 +17,12 @@ from bs4 import BeautifulSoup
 from splinter import Browser
 from scrappers import settings
 from selenium import webdriver
+from scrappers import mapgeo
 from scrappers.util import print
 
 CABIN_URLS_FILE = './scrappers/dbb_cabin_urls.json'
 DATABASE_URI = os.environ.get('DATABASE_URL', None) or os.getenv('DATABASE_URI')
+MAP_URL = 'https://www.destinationbigbear.com/ViewMapLocation.aspx?propid='
 
 db_id = 'DBB'
 
@@ -631,6 +633,8 @@ def parse_data(html):
     id_ = extract_id(soup)
     data['site_id'] = 'DBB' + id_
 
+    data['id'] = id_
+
     name = extract_name(soup)
     data['name'] = name
 
@@ -669,6 +673,12 @@ def scrape_cabin(url):
         html = resp.text # raise for status
 
         data = parse_data(html)
+        #METIENDO MANO ANDRES
+        print(f'Scrapping... {MAP_URL}{data["id"]}')
+        resp = rq.get(f'{MAP_URL}{data["id"]}')
+        html = resp.text if resp.ok else ''
+        data['location'] = mapgeo.DBB_location(html)
+        #FIN DE METER MANO
         data['url'] = url
         return data
     
@@ -777,7 +787,7 @@ def insert_cabins():
                 cabin.get('properties').get('Occupancy'),
                 cabin.get('address'),
                 'ACTIVE',
-                cabin.get('name').split(' - ')[1]
+                cabin.get('location')
             )
         insertCabins.append(cabinInsert)
     connection = psycopg2.connect(DATABASE_URI)
