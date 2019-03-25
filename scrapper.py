@@ -24,6 +24,7 @@ def run(scrappers_to_run):
             print(e)
     print('scraping process finished')
     connection = psycopg2.connect(DATABASE_URI, cursor_factory=RealDictCursor)
+    categorize_cabins()
     with connection, connection.cursor() as c:
         c.execute("UPDATE db.status_update SET status = 'Updated' WHERE id=1;")
     connection.close()
@@ -67,7 +68,7 @@ def get_category(cabin_amenities):
 def categorize_cabins():
     connection = psycopg2.connect(DATABASE_URI, cursor_factory=psycopg2.extras.RealDictCursor)
     with connection, connection.cursor() as c:
-        c.execute("SELECT * FROM db.cabin WHERE status = 'ACTIVE'")
+        c.execute("SELECT * FROM db.cabin WHERE status = 'ACTIVE' and id not like 'BBV%'")
         cabins = c.fetchall()
         for cabin in cabins:
             c.execute('SELECT amenity from db.features WHERE id = %s', (cabin['id'],))

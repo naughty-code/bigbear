@@ -18,6 +18,7 @@ from splinter import Browser
 from scrappers import settings
 from selenium import webdriver
 from scrappers.util import print
+from selenium.common.exceptions import UnexpectedAlertPresentException
 
 CABIN_URLS_FILE = './scrappers/dbb_cabin_urls.json'
 DATABASE_URI = os.environ.get('DATABASE_URL', None) or os.getenv('DATABASE_URI')
@@ -137,37 +138,50 @@ def get_quote_single_threaded():
     prefs = {"profile.managed_default_content_settings.images":2}
     options = webdriver.ChromeOptions()
     options.add_experimental_option("prefs",prefs)
-    with Browser('chrome', headless=True, options=options, **executable_path) as b:
+    with Browser('chrome', headless=False, options=options, **executable_path) as b:
         for start_date, end_date, holiday in date_ranges:
-            results = []
             start = start_date.strftime('%m/%d/%Y')
             end = end_date.strftime('%m/%d/%Y')
             url = f'https://www.destinationbigbear.com/FindCabin.aspx?firstnight={start}&lastnight={end}'
-            try:
-                b.visit(url)
-                while True:
-                    while b.is_element_present_by_css('body.loading'):
-                        pass
-                    if b.is_element_not_present_by_css('.panel-overlay-bottom > h4', 60):
-                        return results
-                    prices_with_dollar = [e.text for e in b.find_by_css('.panel-overlay-bottom > h4') if e.text]
-                    if b.is_element_not_present_by_css('.caption.header > h3', 60):
-                        return results
-                    prices = [re.sub(r'[\$,]', '', price_with_dollar).split()[0] for price_with_dollar in prices_with_dollar]
-                    names = [e.text for e in b.find_by_css('.caption.header > h3') if e.text]
-                    results+= [{'name': name, 'price':price, 'start': start, 'end':end, 'holiday': holiday, 'status': 'AVAILABLE'} for name, price in zip(names, prices)]
-                    if b.is_element_not_present_by_css('.btn.next', 60):
-                        return results
-                    next_ = b.find_by_css('.btn.next')
-                    if next_.has_class('disabled'):
-                        break
-                    else:
-                        next_.click()
-                yield results
-            except Exception as e:
-                #print(e)
-                raise e
-                yield results
+            no_scraped = True
+            tries = 0
+            while no_scraped and tries < 3: #try to scrape if alert popup or page stuck in loading
+                results = []
+                try:
+                    b.visit(url)
+                    while True: #next page loop
+                        loading_tries = 0
+                        while b.is_element_present_by_css('body.loading', 0.1) and loading_tries < 50:
+                            loading_tries =+ 1
+                        if loading_tries > 50:
+                            no_scraped = True
+                            tries += 1
+                            break #leave next page loop to try again from the first page
+                        if b.is_element_not_present_by_css('.panel-overlay-bottom > h4', 0.1):
+                            break
+                        prices_with_dollar = [e.text for e in b.find_by_css('.panel-overlay-bottom > h4') if e.text]
+                        #if b.is_element_not_present_by_css('.caption.header > h3'):
+                        #    break
+                        prices = [re.sub(r'[\$,]', '', price_with_dollar).split()[0] for price_with_dollar in prices_with_dollar]
+                        names = [e.text for e in b.find_by_css('.caption.header > h3') if e.text]
+                        results+= [{'name': name, 'price':price, 'start': start, 'end':end, 'holiday': holiday, 'status': 'AVAILABLE'} for name, price in zip(names, prices)]
+                        #if b.is_element_not_present_by_css('.btn.next'):
+                        #    break
+                        next_ = b.find_by_css('.btn.next')
+                        if next_.has_class('disabled'):
+                            break
+                        else:
+                            next_.click()
+                except (Exception, UnexpectedAlertPresentException) as e:
+                    print('Exception in dbb.get_quote_single_theaded():', e)
+                    alert = b.get_alert()
+                    if alert:
+                        alert.accept()
+                        no_scraped = True
+                        tries =+ 1
+                else:
+                    no_scraped = False
+            yield results
 
 def insert_rates_faster(rates):
     tupled_rates = set((r['id'], r['start'], r['end'], r['status'], r['price'], r['holiday']) for r in rates)

@@ -137,7 +137,8 @@ def insert_cabins(cabins):
             occupancy, tier, status) VALUES %s ON CONFLICT (id) DO UPDATE SET 
             name = excluded.name, website = excluded.website, description = 
             excluded.description, bedrooms = excluded.bedrooms, occupancy = excluded.occupancy,
-            address = excluded.address, status = excluded.status, location = excluded.location;'''
+            address = excluded.address, status = excluded.status, location = excluded.location,
+            tier = excluded.tier;'''
         execute_values(cursor, str_sql, tuples)
     connection.close()
 
