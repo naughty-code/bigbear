@@ -420,7 +420,7 @@ def get_rates_by_tier():
             and avail.rate > 0 
             and avail.check_in >= %s
             and avail.check_out <= %s
-            where c.location in ('Sugarloaf', 'Fawnskin', 'Big Bear City')  
+            where c.location = 'LOW DEMAND'
             and c.tier = ANY(%s)
             and c.idvrm = ANY(%s)
             and c.status='ACTIVE' 
@@ -433,7 +433,7 @@ def get_rates_by_tier():
             and avail.rate > 0 
             and avail.check_in >= %s
             and avail.check_out <= %s
-            where c.location in ('Moonridge')  
+            where c.location = 'MEDIUM DEMAND'
             and c.tier = ANY(%s)
             and c.idvrm = ANY(%s)
             and c.status='ACTIVE' 
@@ -446,7 +446,7 @@ def get_rates_by_tier():
             and avail.rate > 0 
             and avail.check_in >= %s
             and avail.check_out <= %s
-            where c.location in ('Big Bear Lake')  
+            where c.location in ('PRIME AREA', 'PRIME-SKI RESORT')
             and c.tier = ANY(%s)
             and c.idvrm = ANY(%s)
             and c.status='ACTIVE' 
@@ -567,9 +567,9 @@ def get_rates_by_tier():
             # Total Units by Area
             sql = '''select count(c.id), 
                 case 
-                    when c.location in ('Sugarloaf', 'Fawnskin', 'Big Bear City') then 'Low demand area'
-                    when c.location in ('Moonridge') then 'Medium demand area'
-                    when c.location in ('Big Bear Lake') then 'Prime demand area'
+                    when c.location = 'LOW DEMAND' then 'Low demand area'
+                    when c.location = 'MEDIUM DEMAND' then 'Medium demand area'
+                    when c.location in ('PRIME AREA', 'PRIME-SKI RESORT') then 'Prime demand area'
                 end as area from db.availability as a 
                 join db.cabin as c 
                 on c.id = a.id and c.idvrm = %s and c.status = 'ACTIVE' and c.tier = any(%s)
