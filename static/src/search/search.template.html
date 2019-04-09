@@ -41,6 +41,10 @@
 			</md-input-container>
 		</div>
 	</div>
+	<div ng-if="!$ctrl.loading && $ctrl.showTable" style="text-align: center">
+		<h2>{{ $ctrl.startDate | date }} - {{ $ctrl.endDate | date }}</h2>
+	</div>
+	<md-divider ng-if="!$ctrl.loading && $ctrl.showTable" style="margin-bottom: 25px"></md-divider>
 	<div layout="column" layout-gt-sm>
 		<md-progress-circular ng-disabled="!$ctrl.loading" md-diameter="96" ng-if="$ctrl.loading"></md-progress-circular>
 		<div flex="initial" flex-gt-sm="80" ng-if="!$ctrl.loading && $ctrl.showTable" style="overflow-x:auto;">
