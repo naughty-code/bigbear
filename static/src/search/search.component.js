@@ -134,6 +134,9 @@ function searchController($http, $mdDialog) {
 						})
 					}
 				}
+				ctrl.addons = ctrl.addons.filter(a => {
+					return ['SPA/Hot Tub/Jacuzzi', 'PETS', 'WiFi/Internet', 'Games'].includes(a.name);
+				})
 				ctrl.loading = false;
 				ctrl.showTable = true;
 				ctrl.buttonDisabled = false;
