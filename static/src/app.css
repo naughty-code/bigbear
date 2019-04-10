@@ -149,6 +149,16 @@ search {
   margin: 30px;
 }
 
+.export {
+  position: fixed;
+  width: 100px;
+  height: 40px;
+  bottom: 45px;
+  right: 0;
+  z-index: 100000;
+  cursor: pointer;
+  margin: 30px;
+}
 
 table.result-table {
   border-collapse: collapse;

@@ -150,6 +150,33 @@ function searchController($http, $mdDialog) {
 		ctrl.lastDivPosition = "center center";
 	}
 
+	ctrl.export = function(ev) {
+		var wb = XLSX.utils.book_new();
+		for (const area of ctrl.result) {
+			var data = [];
+			data.push([
+				'',
+				'Bdrm/Sleeps up to 1/4',
+				'Bdrm/Sleeps up to 2/6',
+				'Bdrm/Sleeps up to 3/8',
+				'Bdrm/Sleeps up to 4/10',
+				'Bdrm/Sleeps up to 5/12',
+				'Bdrm/Sleeps up to 6/14',
+				'Bdrm/Sleeps up to 7/16',
+				'Bdrm/Sleeps up to 8/16'
+			]);
+			
+			for (const row of area.values) {
+				row_aux = [row.tier];
+				row_aux = row_aux.concat(row.values);
+				data.push(row_aux);
+			}
+			var ws = XLSX.utils.aoa_to_sheet(data);
+			XLSX.utils.book_append_sheet(wb, ws, area.title);
+		}
+		XLSX.writeFile(wb, "sheetjs.xlsx");
+	}
+
 	function validFilters() {
 		if (!ctrl.startDate || !ctrl.endDate)
 			return false;
