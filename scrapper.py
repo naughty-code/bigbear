@@ -61,7 +61,7 @@ def get_category(cabin_amenities):
     ]
     #print(f'cabin_amenities: {cabin_amenities}')
     for category, cat_amenities in categories:
-        if all(cat_amenity in cabin_amenities for cat_amenity in cat_amenities):
+        if any(cat_amenity in cabin_amenities for cat_amenity in cat_amenities):
             return category
     return 'BRONZE'                
 
