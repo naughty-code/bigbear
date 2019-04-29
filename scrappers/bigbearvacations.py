@@ -98,6 +98,10 @@ def db_format_amenity(cabin):
     for amenity in cabin['unit_amenities']['amenity']:
         amenity_name = amenity.get('amenity_name', '')
         tuples.append((id_, amenity_name))
+    tuples.append((id_, 'Pets'))
+    tuples.append((id_, 'BBQ'))
+    tuples.append((id_, 'TV/DVD/Cable'))
+    tuples.append((id_, 'Kitchen/Dining'))
     return tuples
 
 def db_format_cabin(cabin):
