@@ -11,7 +11,7 @@ function metricTable1Controller($http, $filter) {
 		"Most Expesive Date"
 	]
 	ctrl.rows = []
-	$http.get('http://35.203.21.194 :5001/api/metrics1')
+	$http.get('http://35.203.21.194:5001/api/metrics1')
 	// $http.get('http://localhost:5001/api/metrics1')
 		.then(function(response) {
 			var result = response.data;

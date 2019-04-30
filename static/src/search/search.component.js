@@ -48,7 +48,7 @@ function searchController($http, $mdDialog) {
 		}
 	}
 
-	var host = "35.203.21.194 ";
+	var host = "35.203.21.194";
 	// var host = "localhost";
 
 	ctrl.search = function(ev) {

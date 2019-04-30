@@ -50,7 +50,7 @@ function metricTable2Controller($http) {
 	ctrl.rows2 = []
 	ctrl.rows3 = []
 	ctrl.consult = function () {
-		$http.get('http://35.203.21.194 :5001/api/metrics2', {
+		$http.get('http://35.203.21.194:5001/api/metrics2', {
 		// $http.get('http://localhost:5001/api/metrics2', {
 			params: { 
 				year: ctrl.selectedYear,

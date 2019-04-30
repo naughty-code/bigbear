@@ -9,7 +9,7 @@ angular.module('app').controller('appController', function ($scope, $mdSidenav, 
 	
 	$scope.update = function() {
 		$scope.disableButton = true;
-		$http.post('http://35.203.21.194 :5001/api/update', {vrm: $scope.vrmSelected});
+		$http.post('http://35.203.21.194:5001/api/update', {vrm: $scope.vrmSelected});
 		// $http.post('http://localhost:5001/api/update', {vrm: $scope.vrmSelected});
 	}
 
@@ -24,7 +24,7 @@ angular.module('app').controller('appController', function ($scope, $mdSidenav, 
 
 	var before = ["Updating", ""];
 	$interval(function () {
-		$http.get('http://35.203.21.194 :5001/api/check')
+		$http.get('http://35.203.21.194:5001/api/check')
 		// $http.get('http://localhost:5001/api/check')
 			.then(function(response) {
 				if (response.data[0].status == "Updated") {
