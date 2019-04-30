@@ -48,7 +48,7 @@ function searchController($http, $mdDialog) {
 		}
 	}
 
-	var host = "74.91.126.179";
+	var host = "35.203.21.194 ";
 	// var host = "localhost";
 
 	ctrl.search = function(ev) {
@@ -79,6 +79,7 @@ function searchController($http, $mdDialog) {
 		}
 		$http.post(`http://${host}:5001/api/search/daterange`, requestBody)
 			.then(function (result) {
+				console.log(result)
 				ctrl.result = [];
 				ctrl.addons = [];
 				for (var area of result.data.result) {
@@ -119,7 +120,7 @@ function searchController($http, $mdDialog) {
 						if (find)
 							tier_temp.value = find.count;
 						sta['total_category'].push(tier_temp);
-				}
+					}
 				}
 				for (const addon of result.data.have) {
 					let find = result.data['not_have'].find( nh => {
