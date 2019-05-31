@@ -15,9 +15,9 @@ from datetime import datetime
 from datetime import timedelta
 from bs4 import BeautifulSoup
 from splinter import Browser
-from scrappers import settings
+#from scrappers import settings
 from selenium import webdriver
-from scrappers import mapgeo
+#from scrappers import mapgeo
 from scrappers.util import print
 from selenium.common.exceptions import UnexpectedAlertPresentException
 

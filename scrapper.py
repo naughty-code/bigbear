@@ -1,10 +1,13 @@
 import os
+import settings
 import itertools
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from scrappers import destinationbigbear, vacasa, bigbearcoolcabins, bigbearvacations
 from scrappers.util import print
 from functools import partial
+
+scraper_modules = [destinationbigbear, vacasa, bigbearcoolcabins, bigbearvacations]
 
 DATABASE_URI = os.environ.get('DATABASE_URL', None) or os.getenv('DATABASE_URI')
 
@@ -15,8 +18,7 @@ def log(e):
         f.write(str(e))
 
 def run(scrappers_to_run):
-    scrapers = [destinationbigbear, vacasa, bigbearcoolcabins, bigbearvacations]
-    for scraper in scrapers:
+    for scraper in scraper_modules:
         try:
             if 'ALL' in scrappers_to_run or scraper.db_id in scrappers_to_run:
                 scraper.run()
@@ -29,39 +31,98 @@ def run(scrappers_to_run):
         c.execute("UPDATE db.status_update SET status = 'Updated' WHERE id=1;")
     connection.close()
 
-def get_category(cabin_amenities):
+def get_category(cabin_amenities, vrm):
     categories = [
-                    ['PLATINUM', { 'SPA/Hot Tub/Jacuzzi', 
+                    ['PLATINUM', {
+                                'BBV': {
+                                    'SPA/Hot Tub/Jacuzzi', 
+                                    'Games',
+                                    'WiFi/Internet',
+                                    'Dishwasher',
+                                    'Washer/Dryer',
+                                    'Sauna',
+                                    #'Spa Tub', #possible conflict with SPA/Hot Tub/Jacuzzi
+                                    #'Bedding',
+                                    #'TV in All Rooms',
+                                    #'No Bunks/Sleepers',
+                                    #'Master Suite Avail',
+                                },
+                                'BBCC': {                                    
+                                    'Hot Tub'
+                                },
+                                'DBB': {
+                                    'Hot Tub: Yes',
+                                    'Spa Jacurzzi: Yes'
+                                },
+                                'VACASA':{
+                                    'Hot tub :Private'
+                                }
+                    }],
+                    ['GOLD', {
+                            'BBV': {  'SPA/Hot Tub/Jacuzzi', 
                                 'Games',
                                 'WiFi/Internet',
                                 'Dishwasher',
                                 'Washer/Dryer',
-                                'Sauna',
                                 #'Spa Tub', #possible conflict with SPA/Hot Tub/Jacuzzi
-                                #'Bedding',
-                                #'TV in All Rooms',
-                                #'No Bunks/Sleepers',
-                                #'Master Suite Avail',
+                            },
+                            'BBCC': {
+                                'Dock',
+                                'Fenced Yard',
+                                'Fireplace',
+                                'Internet',
+                                'Lakefront',
+                                'Lakeviews',
+                                'Walking Distance to Lake'
+                            },
+                            'DBB': {
+                                'Fireplace',
+                                'Water Front'
+                            },
+                            'VACASA': {
+                                'Dock',
+                                'Fireplace',
+                                'Waterfront'
+                            }
                     }],
-                    ['GOLD', {  'SPA/Hot Tub/Jacuzzi', 
-                                'Games',
-                                'WiFi/Internet',
-                                'Dishwasher',
-                                'Washer/Dryer',
-                                #'Spa Tub', #possible conflict with SPA/Hot Tub/Jacuzzi
+                    ['SILVER', {
+                                'BBV': { 
+                                    'SPA/Hot Tub/Jacuzzi', 
+                                    'WiFi/Internet',
+                                },
+                                'BBCC': {
+                                    'Game Room',
+                                    'Foosball',
+                                    'Pool Table',
+                                    'WiFi',
+                                    'Wood Burning Fireplace'
+                                },
+                                'DBB': {
+                                    'Internet: Yes',
+                                    'Parking'
+                                },
+                                'VACASA':{
+                                    'Foosball Table',
+                                    'Internet',
+                                    'Wood-burning fireplace'
+                                }
                     }],
-                    ['SILVER', { 'SPA/Hot Tub/Jacuzzi', 
-                                'WiFi/Internet',
-                    }],
-                    ['BRONZE', { #'PETS',
-                                #'BBQ',
-                                #'TV/DVD/Cable',
-                                #'Kitchen/Dining',
+                    ['BRONZE', {
+                        'BBV': {
+                            #'PETS',
+                            #'BBQ',
+                            #'TV/DVD/Cable',
+                            #'Kitchen/Dining',
+                        },
+                        'BBCC': {},
+                        'DBB': {},
+                        'VACASA': {}
                     }]
     ]
     #print(f'cabin_amenities: {cabin_amenities}')
     for category, cat_amenities in categories:
-        if any(cat_amenity in cabin_amenities for cat_amenity in cat_amenities):
+        match_count = sum(1 for cat_amenity in cat_amenities[vrm] if cat_amenity in cabin_amenities)
+        if  match_count >= 3 or match_count == len(cat_amenities):
             return category
     return 'BRONZE'                
 
@@ -74,10 +135,19 @@ def categorize_cabins():
             c.execute('SELECT amenity from db.features WHERE id = %s', (cabin['id'],))
             amenities = c.fetchall()
             amenities_list = [a['amenity'] for a in amenities]
-            category =  get_category(amenities_list)
+            category = get_category(amenities_list)
             if not amenities_list:
-                print(f'id:{cabin["id"]}, category: {category}, url:{cabin["website"]}')
+                print(f'cabin without amenities - id:{cabin["id"]}, category: {category}, url:{cabin["website"]}')
             c.execute('UPDATE db.cabin SET tier = %s WHERE id=%s', (category, cabin['id']))
+
+
+#def categorize_cabins_from_json():
+#    bbv_cabins = bigbearvacations.load_cabins()
+#    bbcc_cabins = bigbearcoolcabins.load_cabins()
+#    dbb_cabins = destinationbigbear.load_cabins()
+#    vacasa_cabins = vacasa.load_cabins()
+#    for c in bbcc_cabins:
+
         
 
 def update_cabin_urls():

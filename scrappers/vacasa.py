@@ -12,14 +12,14 @@ import psycopg2
 from psycopg2.extras import execute_values
 from splinter import Browser
 from scrappers import util
-from scrappers import settings
+#from scrappers import settings
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from scrappers.util import print
 
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
-from scrappers import mapgeo
+#from scrappers import mapgeo
 
 import itertools
 

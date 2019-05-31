@@ -10,7 +10,7 @@ import re
 import itertools
 from decimal import Decimal
 from scrappers import util
-from scrappers import settings
+#from scrappers import settings
 
 from urllib.parse import urljoin
 from datetime import date, datetime, timedelta
@@ -19,7 +19,7 @@ from bs4 import BeautifulSoup
 from psycopg2.extras import execute_values
 
 from scrappers.util import print
-from scrappers import mapgeo
+#from scrappers import mapgeo
 
 BASE_URL = 'https://www.bigbearcoolcabins.com'
 CABIN_URLS_FILE = './scrappers/bbcc_cabin_urls.json'
@@ -666,7 +666,7 @@ def load_rates():
     rates = []
     with open('scrappers/bbcc_quote_results.json', encoding='utf8') as f:
         rates = json.load(f)
-    return list(itertools.chain(*rates));
+    return list(itertools.chain(*rates))
 
 def rate_to_tuple(rate):
     id_ = 'BBCC' + rate['id'] if 'BBCC' not in rate['id'] else rate['id']

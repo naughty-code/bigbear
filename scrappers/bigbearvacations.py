@@ -4,10 +4,10 @@ from scrappers import util
 from psycopg2 import connect
 from psycopg2.extras import execute_values
 from datetime import datetime
-from scrappers import settings
+#from scrappers import settings
 import os
 from scrappers.util import print
-from scrappers import mapgeo
+#from scrappers import mapgeo
 
 
 DB_URI = os.getenv('DATABASE_URI')
